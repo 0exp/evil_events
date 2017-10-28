@@ -1,0 +1,12 @@
+language: ruby
+rvm:
+- 2.3.5
+- 2.4.2
+- 2.2.7
+- ruby-head
+- jruby-head
+
+sudo: false
+before_install: gem install bundler -v 1.15.3
+cache: bundler
+script: bundle exec rspec

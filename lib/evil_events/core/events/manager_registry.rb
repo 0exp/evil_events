@@ -1,0 +1,141 @@
+# frozen_string_literal: true
+
+module EvilEvents::Core::Events
+  # @api private
+  # @since 0.1.0
+  class ManagerRegistry
+    # @since 0.1.0
+    extend Forwardable
+
+    # @since 0.1.0
+    ManagerRegistryError = Class.new(StandardError)
+    # @since 0.1.0
+    IncorrectManagerObjectError = Class.new(ManagerRegistryError)
+    # @since 0.1.0
+    NonManagedEventClassError = Class.new(ManagerRegistryError)
+    # @since 0.1.0
+    AlreadyManagedEventClassError = Class.new(ManagerRegistryError)
+
+    def_delegators :managers, :empty?, :size
+
+    # @return [Concurrent::Map]
+    #
+    # @since 0.1.0
+    attr_reader :managers
+
+    # @since 0.1.0
+    def initialize
+      @managers = Concurrent::Map.new
+    end
+
+    # @param event_class [Class{EvilEvents::Core::Events::AbstractEvent}]
+    # @raise [NonManagedEventClassError]
+    # @return [EvilEvents::Core::Events::Manager]
+    #
+    # @since 0.1.0
+    def manager_of_event(event_class)
+      # NOTE: raise exceptions to simplify runtime problems
+      managers[event_class] || (raise NonManagedEventClassError)
+    end
+
+    # @param event_type [String]
+    # @return [EvilEvents::Core::Events::Manager]
+    # @see manager_of_event
+    #
+    # @since 0.1.0
+    def manager_of_event_type(event_type)
+      event_class = managed_events.find { |managed_event| managed_event.type == event_type }
+      manager_of_event(event_class)
+    end
+
+    # @param manager [EvilEvents::Core::Events::Manager]
+    # @raise [IncorrectManagerObjectError]
+    # @raise [AlreadyManagedEventClassError]
+    # @return void
+    #
+    # @since 0.1.0
+    def register(manager)
+      raise IncorrectManagerObjectError unless manager.is_a?(EvilEvents::Core::Events::Manager)
+
+      if potential_manager_duplicate?(manager) || !managed_event_type?(manager.event_type)
+        managers[manager.event_class] = manager
+      else
+        raise AlreadyManagedEventClassError
+      end
+    end
+
+    # @param event_class [Class{EvilEvents::Core::Events::AbstractEvent}]
+    # @return void
+    # @see register
+    #
+    # @since 0.1.0
+    def register_with(event_class)
+      register(ManagerFactory.create(event_class))
+    end
+
+    # @param manager [EvilEvents::Core::Events::Manager]
+    # @return void
+    #
+    # @since 0.1.0
+    def unregister(manager)
+      managers.delete_pair(manager.event_class, manager)
+    end
+
+    # @param event_class [Class{EvilEvents::Core::Events::AbstractEvent}]
+    # @return void
+    #
+    # @since 0.1.0
+    def unregister_with(event_class)
+      managers.delete(event_class)
+    end
+
+    # @param manager [EvilEvents::Core::Events::Manager]
+    # @return [Boolean]
+    #
+    # @since 0.1.0
+    def include?(manager)
+      managed_event?(manager.event_class) && manager_of_event(manager.event_class) == manager
+    end
+
+    # @param event_class [Class{EvilEvents::Core::Events::AbstractEvent}]
+    # @return [Boolean]
+    #
+    # @since 0.1.0
+    def managed_event?(event_class)
+      managers.key?(event_class)
+    end
+
+    private
+
+    # @return [Array<EvilEvents::Core::Events::AbstractEvent>]
+    #
+    # @since 0.1.0
+    def managed_events
+      managers.keys
+    end
+
+    # @return [Array<String>]
+    #
+    # @since 0.1.0
+    def managed_event_types
+      managed_events.map(&:type)
+    end
+
+    # @param event_type [String]
+    # @return [Boolean]
+    #
+    # @since 0.1.0
+    def managed_event_type?(event_type)
+      managed_event_types.include?(event_type)
+    end
+
+    # @param manager [EvilEvents::Core::Events::Manager]
+    # @return [Boolean]
+    #
+    # @since 0.1.0
+    def potential_manager_duplicate?(manager)
+      return false unless managed_event?(manager.event_class)
+      manager_of_event(manager.event_class).event_type == manager.event_type
+    end
+  end
+end

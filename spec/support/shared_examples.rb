@@ -1,0 +1,15 @@
+# frozen_string_literal: true
+
+require_relative 'shared_examples/event_subscriber_component'
+require_relative 'shared_examples/dependency_container_interface'
+require_relative 'shared_examples/event_dispatching_interface'
+require_relative 'shared_examples/event_extensions/adapter_customizable_interface'
+require_relative 'shared_examples/event_extensions/manageable_interface'
+require_relative 'shared_examples/event_extensions/observable_interface'
+require_relative 'shared_examples/event_extensions/serializable_interface'
+require_relative 'shared_examples/event_extensions/type_aliasing_interface'
+require_relative 'shared_examples/event_extensions/payloadable_interface'
+require_relative 'shared_examples/event_extensions/payload_entity_component'
+require_relative 'shared_examples/event_extensions/emittable_interface'
+require_relative 'shared_examples/event_extensions/metadata_extendable_interface'
+require_relative 'shared_examples/event_extensions/metadata_entity_component'

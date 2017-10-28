@@ -1,0 +1,90 @@
+require: rubocop-rspec
+
+AllCops:
+  DisplayCopNames:   true
+  DisplayStyleGuide: true
+  TargetRubyVersion: 2.4.2
+  Include:
+    - lib/**/*
+    - spec/**/*
+  Exclude:
+    - Gemfile
+    - Rakefile
+    - evil_events.gemspec
+
+Style/SingleLineMethods:
+  Exclude:
+    - spec/**/*
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/Alias:
+  Enabled: false
+
+Style/GuardClause:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/EmptyCaseCondition:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+
+Style/ParallelAssignment:
+  Enabled: false
+
+Style/CommentedKeyword:
+  Enabled: false
+
+Naming/FileName:
+  Enabled: false
+
+Naming/VariableNumber:
+  EnforcedStyle: snake_case
+
+Metrics/LineLength:
+  Max: 100
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+Metrics/MethodLength:
+  Max: 25
+
+RSpec/HookArgument:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 5
+
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/DescribeClass:
+  Enabled: false
+
+RSpec/LetSetup:
+  Enabled: false
+
+RSpec/AnyInstance:
+  Enabled: false
