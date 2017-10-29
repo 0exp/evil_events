@@ -34,8 +34,8 @@ module EvilEvents::Core::Events
     # @option metadata [Hash]
     #
     # @since 0.1.0
-    def initialize(payload: {}, metadata: {})
-      @id       = EvilEvents::Shared::Crypto.uuid
+    def initialize(id: nil, payload: {}, metadata: {})
+      @id       = id || EvilEvents::Shared::Crypto.uuid
       @payload  = build_payload(**payload)
       @metadata = build_metadata(**metadata)
     end

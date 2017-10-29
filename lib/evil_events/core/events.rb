@@ -5,6 +5,7 @@ module EvilEvents::Core
   # @since 0.1.0
   module Events
     require_relative 'events/serializers'
+    require_relative 'events/serializers/base'
     require_relative 'events/serializers/hash'
     require_relative 'events/serializers/json'
     require_relative 'events/event_extensions/type_aliasing'
@@ -25,6 +26,6 @@ module EvilEvents::Core
     require_relative 'events/manager_registry'
     require_relative 'events/subscriber'
     require_relative 'events/subscriber/mixin'
-    require_relative 'events/event_class_factory'
+    require_relative 'events/event_factory'
   end
 end
