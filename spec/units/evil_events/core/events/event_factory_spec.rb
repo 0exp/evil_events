@@ -15,7 +15,7 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
   end
 
   describe 'building of abstract event class' do
-    describe '#create_abstract_class' do
+    describe '.create_abstract_class' do
       include_examples 'shared class construction logic', :create_abstract_class
 
       specify 'requires event type alias only (string object)' do
@@ -101,7 +101,7 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
   end
 
   describe 'building of concrete event class' do
-    describe '#create_class' do
+    describe '.create_class' do
       include_examples 'shared class construction logic', :create_class
 
       it 'creates a concrete event class with defined type alias and registered manager' do
@@ -160,6 +160,59 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
         expect(manager_registry.managed_event?(concrete_event_class)).to eq(true)
         expect(manager_registry).to include(concrete_event_manager)
         expect(manager_registry.size).to eq(1)
+      end
+    end
+  end
+
+  describe 'building of event instances' do
+    describe '.restore_instance' do
+      let!(:event_class) do
+        build_event_class('restore_event') do
+          payload :test
+          payload :default, EvilEvents::Types::String.default('test')
+
+          metadata :test
+          metadata :default, EvilEvents::Types::Int.default(-1)
+
+          adapter :memory_async
+        end
+      end
+
+      context 'whe id is not provided' do
+        it 'returns an event object with consistent data and undefined id attribute' do
+          event_attrs = {
+            payload:  { test: gen_str },
+            metadata: { test: gen_str }
+          }
+
+          restored_event = described_class.restore_instance(event_class, **event_attrs)
+
+          expect(restored_event).to have_attributes(
+            id: 'unknown',
+            type: event_class.type,
+            payload: match(event_attrs[:payload].merge(default: 'test')),
+            metadata: match(event_attrs[:metadata].merge(default: -1))
+          )
+        end
+      end
+
+      context 'when id is provided' do
+        it 'returns an event object with consistent data' do
+          event_attrs = {
+            id: gen_str,
+            payload:  { test: gen_str },
+            metadata: { test: gen_str }
+          }
+
+          restored_event = described_class.restore_instance(event_class, **event_attrs)
+
+          expect(restored_event).to have_attributes(
+            id: event_attrs[:id],
+            type: event_class.type,
+            payload: match(event_attrs[:payload].merge(default: 'test')),
+            metadata: match(event_attrs[:metadata].merge(default: -1))
+          )
+        end
       end
     end
   end
