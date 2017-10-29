@@ -6,9 +6,9 @@ describe 'Configuration', :stub_config do
     io_logger   = Logger.new(StringIO.new)
 
     # default settings
-    expect(EvilEvents::Config.config.logger).to be_a(::Logger)
-    expect(EvilEvents::Config.config.adapter.default).to eq(:memory_sync)
-    expect(EvilEvents::Config.config.subscriber.default_delegator).to eq(:call)
+    expect(EvilEvents::Config.options.logger).to be_a(::Logger)
+    expect(EvilEvents::Config.options.adapter.default).to eq(:memory_sync)
+    expect(EvilEvents::Config.options.subscriber.default_delegator).to eq(:call)
 
     expect do
       # open configuration context
@@ -24,13 +24,13 @@ describe 'Configuration', :stub_config do
       end
     end.not_to raise_error
 
-    expect(EvilEvents::Config.config.logger).to eq(null_logger)
-    expect(EvilEvents::Config.config.adapter.default).to eq(:memory_async)
-    expect(EvilEvents::Config.config.subscriber.default_delegator).to eq(:process_event)
+    expect(EvilEvents::Config.options.logger).to eq(null_logger)
+    expect(EvilEvents::Config.options.adapter.default).to eq(:memory_async)
+    expect(EvilEvents::Config.options.subscriber.default_delegator).to eq(:process_event)
 
     expect do
       # open configuration context
-      EvilEvents::Config.config.configure do |config|
+      EvilEvents::Config.options.configure do |config|
         # configure logger object
         config.logger = io_logger
 
@@ -42,9 +42,9 @@ describe 'Configuration', :stub_config do
       end
     end.not_to raise_error
 
-    expect(EvilEvents::Config.config.logger).to eq(io_logger)
-    expect(EvilEvents::Config.config.adapter.default).to eq(:memory_sync)
-    expect(EvilEvents::Config.config.subscriber.default_delegator).to eq(:invoke)
+    expect(EvilEvents::Config.options.logger).to eq(io_logger)
+    expect(EvilEvents::Config.options.adapter.default).to eq(:memory_sync)
+    expect(EvilEvents::Config.options.subscriber.default_delegator).to eq(:invoke)
   end
 
   specify 'registration of new adapter objects' do

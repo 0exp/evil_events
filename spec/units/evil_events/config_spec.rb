@@ -15,7 +15,7 @@ describe EvilEvents::Config, :stub_event_system do
     end
   end
 
-  specify '.config' do
-    expect(described_class.config).to eq(system_config)
+  specify '.options' do
+    expect(described_class.options).to eq(system_config)
   end
 end
