@@ -5,17 +5,25 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
 
   describe '.serialize' do
     context 'when received object is an event instance' do
-      it 'returns hash representation of event object with appropriate format' do
+      it 'returns a hash representation of event object with appropriate format' do
+        user_registered_attrs = {
+          id: gen_str,
+          payload: { user_id: gen_int, comment: gen_str },
+          metadata: { timestamp: gen_int }
+        }
+
         user_registered_event = build_event_class('user_registered') do
           payload :user_id, EvilEvents::Types::Strict::Int
           payload :comment, EvilEvents::Types::Strict::String
 
           metadata :author_id, EvilEvents::Types::Coercible::Int.default(-1)
           metadata :timestamp
-        end.new(
-          payload:  { user_id: 100_500, comment: 'thx for registration!' },
-          metadata: { timestamp: 55_123 }
-        )
+        end.new(**user_registered_attrs)
+
+        email_received_event_attrs = {
+          payload:  { user_id: gen_int, email_id: gen_int, support: gen_bool },
+          metadata: { author_id: gen_int, timestamp: gen_int }
+        }
 
         email_received_event = build_event_class('email_received') do
           payload :user_id,  EvilEvents::Types::Strict::Int
@@ -24,37 +32,22 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
 
           metadata :author_id, EvilEvents::Types::Strict::Int.default(-1)
           metadata :timestamp
-        end.new(
-          payload:  { user_id: 555_666, email_id: 123, support: true },
-          metadata: { author_id: 555, timestamp: 123_123 }
-        )
+        end.new(**email_received_event_attrs)
 
         user_registered_serialiation = described_class.serialize(user_registered_event)
         email_received_serialization = described_class.serialize(email_received_event)
 
         expect(user_registered_serialiation).to match(
-          type: 'user_registered',
-          metadata: {
-            timestamp: 55_123,
-            author_id: -1
-          },
-          payload: {
-            user_id: 100_500,
-            comment: 'thx for registration!'
-          }
+          type:     'user_registered',
+          id:       user_registered_attrs[:id],
+          payload:  user_registered_attrs[:payload],
+          metadata: user_registered_attrs[:metadata].merge(author_id: -1)
         )
 
         expect(email_received_serialization).to match(
+          id: email_received_event.id,
           type: 'email_received',
-          metadata: {
-            author_id: 555,
-            timestamp: 123_123
-          },
-          payload: {
-            email_id: 123,
-            user_id:  555_666,
-            support:  true
-          }
+          **email_received_event_attrs
         )
       end
 
@@ -101,65 +94,41 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
 
     context 'when received object is a hash' do
       context 'when hash structure has all required fields: -type-, -payload-, -metadata-' do
-        it 'delegates event object resloving to the event system and returns its result' do
-          serialized_event = {
-            type: 'limit_reached',
-            payload: {
-              current_limit: 100_500.01,
-              reached:       100_600.00
-            },
-            metadata: {
-              uuid: 11,
-              desc: 'test'
-            }
-          }
-
-          expect(event_system).to(
-            receive(:resolve_event_object).with(
-              serialized_event[:type],
-              payload:  serialized_event[:payload],
-              metadata: serialized_event[:metadata]
-            )
-          )
-          described_class.deserialize(serialized_event)
-
-          deserialization_result = double
-          allow(event_system).to receive(:resolve_event_object).and_return(deserialization_result)
-          expect(described_class.deserialize(serialized_event)).to eq(deserialization_result)
-        end
-
         it 'returns event instance of concrete event class with corresponding attributes' do
           serialized_event = {
             type: 'spec_worked',
             payload: {
-              suite: 'current_spec',
-              mute:  true
+              suite: gen_str,
+              mute:  gen_bool
             },
             metadata: {
-              uuid: 123
+              uuid: gen_int
             }
           }
 
           event = described_class.deserialize(serialized_event)
-          expect(event).to          be_a(spec_worked_event_class)
-          expect(event.type).to     eq(spec_worked_event_class.type)
-          expect(event.payload).to  match(serialized_event[:payload])
+          expect(event).to be_a(spec_worked_event_class)
+          expect(event.id).to eq(EvilEvents::Core::Events::EventFactory::UNDEFINED_EVENT_ID)
+          expect(event.type).to eq(spec_worked_event_class.type)
+          expect(event.payload).to match(serialized_event[:payload])
           expect(event.metadata).to match(serialized_event[:metadata])
 
           serialized_event = {
             type: 'limit_reached',
+            id: gen_str,
             payload: {
-              current_limit: 15_300.01,
-              reached:       15_500.55
+              current_limit: gen_float,
+              reached:       gen_float
             },
             metadata: {
-              uuid: 555,
-              desc: 'special'
+              uuid: gen_int,
+              desc: gen_str
             }
           }
 
           event = described_class.deserialize(serialized_event)
           expect(event).to          be_a(limit_reached_event_class)
+          expect(event.id).to       eq(serialized_event[:id])
           expect(event.type).to     eq(limit_reached_event_class.type)
           expect(event.payload).to  match(serialized_event[:payload])
           expect(event.metadata).to match(serialized_event[:metadata])
@@ -168,39 +137,43 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
         it 'received hash attributes can contain both strings and symbols keys' do
           serialized_events = [
             {
+              id: gen_str,
               type: 'limit_reached',
-              payload: { current_limit: 15.00, reached: 16.00 },
-              metadata: { uuid: 100, desc: 'spec' }
+              payload: { current_limit: gen_float, reached: gen_float },
+              metadata: { uuid: gen_int, desc: 'spec' }
+            },
+
+            {
+              'id' => gen_str,
+              'type' => 'limit_reached',
+              'payload' => { current_limit: gen_float, reached: gen_float },
+              metadata: { uuid: gen_int, desc: 'spec' }
             },
 
             {
               'type' => 'limit_reached',
-              'payload' => { current_limit: 15.00, reached: 16.00 },
-              metadata: { uuid: 100, desc: 'spec' }
+              payload: { current_limit: gen_float, reached: gen_float },
+              'metadata' => { uuid: gen_int, desc: 'spec' }
             },
 
             {
-              'type' => 'limit_reached',
-              payload: { current_limit: 15.00, reached: 16.00 },
-              'metadata' => { uuid: 100, desc: 'spec' }
+              id: gen_str,
+              type: 'limit_reached',
+              'payload' => { current_limit: gen_float, reached: gen_float },
+              metadata: { uuid: gen_int, desc: 'spec' }
             },
 
             {
               type: 'limit_reached',
-              'payload' => { current_limit: 15.00, reached: 16.00 },
-              metadata: { uuid: 100, desc: 'spec' }
+              'payload' => { 'current_limit' => gen_float, reached: gen_float },
+              'metadata' => { 'uuid' => gen_int, desc: 'spec' }
             },
 
             {
+              'id' => gen_str,
               type: 'limit_reached',
-              'payload' => { 'current_limit' => 15.00, reached: 16.00 },
-              'metadata' => { 'uuid' => 100, desc: 'spec' }
-            },
-
-            {
-              type: 'limit_reached',
-              payload: { 'current_limit' => 15.00, 'reached' => 16.00 },
-              metadata: { uuid: 100, 'desc' => 'spec' }
+              payload: { 'current_limit' => gen_float, 'reached' => gen_float },
+              metadata: { uuid: gen_int, 'desc' => 'spec' }
             }
           ]
 
@@ -212,7 +185,7 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
 
         context 'when passed hash represents non-existed event' do
           let(:incompatible_hash) do
-            { type: 'wow_installed', payload: { user_money: 0.0 }, metadata: {} }
+            { id: gen_str, type: gen_str, payload: { gen_symb => gen_float }, metadata: {} }
           end
 
           it 'fails with non-managed-event-class error' do
@@ -241,7 +214,8 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
             {},
             { type: 'limit_reached' },
             { payload: {} },
-            { metadata: {} }
+            { metadata: {} },
+            { id: gen_str }
           ].each do |serialized_event|
             expect { described_class.deserialize(serialized_event) }.to(
               raise_error(EvilEvents::Core::Events::Serializers::DeserializationError)

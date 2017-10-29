@@ -3,19 +3,32 @@
 module SpecSupport::FakeDataGenerator
   module_function
 
-  def gen_integer(max = 1_000_000)
-    rand(max)
+  BOOL_VARIANTS = [true, false].freeze
+  INT_RANGE     = (0..100)
+  FLOAT_RANGE   = (0.0..100.0)
+  STR_LENGTH    = 10
+
+  def gen_int(range = INT_RANGE)
+    rand(range)
   end
 
-  def gen_float(max = 1_000_000.0)
-    rand(max)
+  def gen_float(range = FLOAT_RANGE)
+    rand(range)
   end
 
-  def gen_string(max_len = 100)
+  def gen_str(max_len = STR_LENGTH)
     SecureRandom.hex(max_len)
   end
 
-  def gen_object
+  def gen_obj
     Object.new
+  end
+
+  def gen_bool
+    BOOL_VARIANTS.sample
+  end
+
+  def gen_symb(max_len = STR_LENGTH)
+    gen_str(max_len).to_sym
   end
 end

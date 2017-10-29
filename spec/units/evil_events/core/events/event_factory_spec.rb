@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe EvilEvents::Core::Events::EventClassFactory, :stub_event_system do
+describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
   include_context 'event system'
 
   let(:events_namespace)     { EvilEvents::Core::Events }
@@ -15,51 +15,56 @@ describe EvilEvents::Core::Events::EventClassFactory, :stub_event_system do
   end
 
   describe 'building of abstract event class' do
-    describe '#create_abstract' do
-      include_examples 'shared class construction logic', :create_abstract
+    describe '#create_abstract_class' do
+      include_examples 'shared class construction logic', :create_abstract_class
 
       specify 'requires event type alias only (string object)' do
-        expect { described_class.create_abstract('user_registered') }.not_to raise_error
-        expect { described_class.create_abstract('overwatched', &(proc {})) }.not_to raise_error
+        expect do
+          described_class.create_abstract_class('user_registered')
+        end.not_to raise_error
 
-        expect { described_class.create_abstract }.to(
+        expect do
+          described_class.create_abstract_class('overwatched', &(proc {}))
+        end.not_to raise_error
+
+        expect { described_class.create_abstract_class }.to(
           raise_error(ArgumentError)
         )
 
-        expect { described_class.create_abstract('test_event', double) }.to(
+        expect { described_class.create_abstract_class('test_event', double) }.to(
           raise_error(ArgumentError)
         )
 
-        expect { described_class.create_abstract(double) }.to(
+        expect { described_class.create_abstract_class(double) }.to(
           raise_error(extensions_namespace::TypeAliasing::IncopatibleEventTypeError)
         )
 
-        expect { described_class.create_abstract(nil) }.to(
+        expect { described_class.create_abstract_class(nil) }.to(
           raise_error(extensions_namespace::TypeAliasing::EventTypeNotDefinedError)
         )
       end
 
       specify 'passed type alias becomes a type alias of a new created abstract class' do
-        abstract_event_class = described_class.create_abstract('overwatched')
+        abstract_event_class = described_class.create_abstract_class('overwatched')
         expect(abstract_event_class.type).to eq('overwatched')
 
-        abstract_event_class = described_class.create_abstract('healed')
+        abstract_event_class = described_class.create_abstract_class('healed')
         expect(abstract_event_class.type).to eq('healed')
       end
 
       it 'doesnt registers new created class in manager regestry' do
-        described_class.create_abstract('destroyed')
+        described_class.create_abstract_class('destroyed')
         expect(event_system.event_manager.manager_registry).to be_empty
 
-        described_class.create_abstract('installed')
+        described_class.create_abstract_class('installed')
         expect(event_system.event_manager.manager_registry).to be_empty
       end
 
       specify 'descendant of created class automatically registrates in manager registry' do
-        abstract_event_class         = described_class.create_abstract('created')
+        abstract_event_class         = described_class.create_abstract_class('created')
         concrete_event_class         = Class.new(abstract_event_class)
 
-        another_abstract_event_class = described_class.create_abstract('used')
+        another_abstract_event_class = described_class.create_abstract_class('used')
         another_event_class          = Class.new(another_abstract_event_class)
 
         [
@@ -75,7 +80,7 @@ describe EvilEvents::Core::Events::EventClassFactory, :stub_event_system do
       end
 
       specify 'duplications doesnt affects manager registry and fails with registry error' do
-        abstract_event_class   = described_class.create_abstract('inherited')
+        abstract_event_class   = described_class.create_abstract_class('inherited')
         concrete_event_class   = Class.new(abstract_event_class)
         concrete_event_manager = manager_registry.manager_of_event(concrete_event_class)
 
@@ -96,12 +101,12 @@ describe EvilEvents::Core::Events::EventClassFactory, :stub_event_system do
   end
 
   describe 'building of concrete event class' do
-    describe '#create' do
-      include_examples 'shared class construction logic', :create
+    describe '#create_class' do
+      include_examples 'shared class construction logic', :create_class
 
       it 'creates a concrete event class with defined type alias and registered manager' do
-        concrete_event_class = described_class.create('overwatched')
-        another_event_class  = described_class.create('covered')
+        concrete_event_class = described_class.create_class('overwatched')
+        another_event_class  = described_class.create_class('covered')
 
         [
           [concrete_event_class, 'overwatched'],
@@ -117,12 +122,12 @@ describe EvilEvents::Core::Events::EventClassFactory, :stub_event_system do
       end
 
       it 'requires event type alias and optional proc with class definitions' do
-        expect { described_class.create }.to raise_error(ArgumentError)
-        expect { described_class.create('deleted', double) }.to raise_error(ArgumentError)
-        expect { described_class.create('destroyed') }.not_to raise_error
-        expect { described_class.create('ignored', &(proc {})) }.not_to raise_error
+        expect { described_class.create_class }.to raise_error(ArgumentError)
+        expect { described_class.create_class('deleted', double) }.to raise_error(ArgumentError)
+        expect { described_class.create_class('destroyed') }.not_to raise_error
+        expect { described_class.create_class('ignored', &(proc {})) }.not_to raise_error
 
-        concrete_class = described_class.create('tested') do
+        concrete_class = described_class.create_class('tested') do
           payload :a
           payload :b
           payload :c
@@ -140,15 +145,15 @@ describe EvilEvents::Core::Events::EventClassFactory, :stub_event_system do
       end
 
       specify 'duplication doesnt affects manager registry and fails with registry error' do
-        concrete_event_class   = described_class.create('requested')
+        concrete_event_class   = described_class.create_class('requested')
         concrete_event_manager = manager_registry.manager_of_event(concrete_event_class)
 
         # try to duplicate: run registration hooks again
-        expect { described_class.create('requested') }.to(
+        expect { described_class.create_class('requested') }.to(
           raise_error(events_namespace::ManagerRegistry::AlreadyManagedEventClassError)
         )
         # try again
-        expect { described_class.create('requested') }.to(
+        expect { described_class.create_class('requested') }.to(
           raise_error(events_namespace::ManagerRegistry::AlreadyManagedEventClassError)
         )
 

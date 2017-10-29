@@ -16,7 +16,7 @@ module EvilEvents::Core::Broadcasting
     # @since 0.1.0
     def emit(event)
       raise IncorrectEventError unless event.is_a?(EvilEvents::Core::Events::AbstractEvent)
-      log_emitter_activity(event)
+      log_activity(event)
       event.adapter.call(event)
     end
 
@@ -40,7 +40,7 @@ module EvilEvents::Core::Broadcasting
     # @return void
     #
     # @since 0.1.0
-    def log_emitter_activity(event)
+    def log_activity(event)
       activity = "EventEmitted(#{event.adapter_name})"
       message  = "ID: #{event.id} :: " \
                  "TYPE: #{event.type} :: " \

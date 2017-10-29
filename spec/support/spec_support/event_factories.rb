@@ -12,10 +12,10 @@ module SpecSupport::EventFactories
   end
 
   def build_abstract_event_class(type_alias)
-    EvilEvents::Core::Events::EventClassFactory.create_abstract(type_alias)
+    EvilEvents::Core::Events::EventFactory.create_abstract_class(type_alias)
   end
 
   def build_event_class(type_alias, &definitions)
-    EvilEvents::Core::Events::EventClassFactory.create(type_alias, &definitions)
+    EvilEvents::Core::Events::EventFactory.create_class(type_alias, &definitions)
   end
 end

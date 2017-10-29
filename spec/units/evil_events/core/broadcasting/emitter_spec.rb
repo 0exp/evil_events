@@ -167,7 +167,7 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
 
             expected_message = Regexp.union(
               /\[EvilEvents:EventEmitted\(#{expected_adapter}\)\]\s/,
-              /UUID:\s[a-b0-9\-]s\s::\s/,
+              /ID:\s[a-b0-9\-]s\s::\s/,
               /TYPE:\s#{expected_type}\s::\s/,
               /PAYLOAD:\s#{event_payload}\s::\s/,
               /METADATA:\s#{event_metadata}/

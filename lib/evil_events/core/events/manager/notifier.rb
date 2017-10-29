@@ -61,6 +61,7 @@ class EvilEvents::Core::Events::Manager
 
       # @param event [EvilEvents::Core::Events::AbstractEvent]
       # @param subscriber [EvilEvents::Core::Events::Subscriber]
+      # @param status [String,Symbol]
       # @return void
       #
       # @since 0.1.1

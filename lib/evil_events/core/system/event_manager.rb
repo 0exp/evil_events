@@ -81,8 +81,18 @@ class EvilEvents::Core::System
     # @return [EvilEvents::Core::Events::AbstractEvent]
     #
     # @since 0.1.0
-    def resolve_event_object(event_type, payload: {}, metadata: {})
-      manager_of_event_type(event_type).event_class.new(payload: payload, metadata: metadata)
+    def resolve_event_object(event_type, id: nil, payload: {}, metadata: {})
+      manager_of_event_type(event_type).event_class.new(
+        id: id, payload: payload, metadata: metadata
+      )
+    end
+
+    # @param event_type [String]
+    # @return [Class{EvilEvents::Core::Events::AbstractEvent}]
+    #
+    # @since 0.1.0
+    def resolve_event_class(event_type)
+      manager_of_event_type(event_type).event_class
     end
 
     # @param event_class [EvilEvents::Core::Events::AbstractEvent]

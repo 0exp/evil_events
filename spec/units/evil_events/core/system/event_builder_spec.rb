@@ -16,9 +16,9 @@ describe EvilEvents::Core::System::EventBuilder, :stub_event_system do
   end
 
   describe '.define_event_class' do
-    it 'delegates non-abstract event class creation to EventClassFactory' do
-      expect(EvilEvents::Core::Events::EventClassFactory).to(
-        receive(:create).with(event_type).once do |&received_block|
+    it 'delegates non-abstract event class creation to EventFactory' do
+      expect(EvilEvents::Core::Events::EventFactory).to(
+        receive(:create_class).with(event_type).once do |&received_block|
           expect(received_block).to eq(event_definitions)
         end
       )
@@ -46,9 +46,9 @@ describe EvilEvents::Core::System::EventBuilder, :stub_event_system do
   end
 
   describe '.define_abstract_event_class' do
-    it 'delegates abstract event class creation to EventClassFactory' do
-      expect(EvilEvents::Core::Events::EventClassFactory).to(
-        receive(:create_abstract).with(event_type).once
+    it 'delegates abstract event class creation to EventFactory' do
+      expect(EvilEvents::Core::Events::EventFactory).to(
+        receive(:create_abstract_class).with(event_type).once
       )
 
       described_class.define_abstract_event_class(event_type)

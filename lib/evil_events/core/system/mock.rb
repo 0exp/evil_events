@@ -61,7 +61,11 @@ class EvilEvents::Core::System
 
     # @see EvilEvents::Core::System
     # @since 0.1.0
-    def resolve_event_object(event_type, payload: {}, metadata: {}); end
+    def resolve_event_object(event_type, id: nil, payload: {}, metadata: {}); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.1.0
+    def resolve_event_class(event_type); end
 
     # @see EvilEvents::Core::System
     # @since 0.1.0

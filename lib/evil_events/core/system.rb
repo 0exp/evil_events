@@ -33,6 +33,7 @@ module EvilEvents::Core
                    :unregister_event_class,
                    :manager_of_event,
                    :manager_of_event_type,
+                   :resolve_event_class,
                    :resolve_event_object,
                    :managed_event?
 
