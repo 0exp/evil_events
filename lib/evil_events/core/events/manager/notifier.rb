@@ -47,12 +47,30 @@ class EvilEvents::Core::Events::Manager
         manager.subscribers.each do |subscriber|
           begin
             subscriber.notify(event)
+            log_activity(event, subscriber, :successful)
           rescue StandardError => error
             errors_stack << error
+            log_activity(event, subscriber, :failed)
           end
         end
 
         raise errors_stack unless errors_stack.empty?
+      end
+
+      private
+
+      # @param event [EvilEvents::Core::Events::AbstractEvent]
+      # @param subscriber [EvilEvents::Core::Events::Subscriber]
+      # @return void
+      #
+      # @since 0.1.1
+      def log_activity(event, subscriber, status)
+        activity = "EventProcessed(#{event.type})"
+        message  = "EVENT_ID: #{event.id} :: " \
+                   "STATUS: #{status} :: " \
+                   "SUBSCRIBER: #{subscriber.source_object}"
+
+        EvilEvents::Core::ActivityLogger.log(activity: activity, message: message)
       end
     end
   end

@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 describe EvilEvents::Core::Events::Manager::Notifier, :stub_event_system do
-  describe 'notification logic' do
+  include_context 'event system'
+
+  describe 'notification logic', :null_logger do
     describe '.run' do
       let(:event_class) { build_event_class('test_event') }
       let(:manager)     { build_event_manager(event_class) }
@@ -43,7 +45,7 @@ describe EvilEvents::Core::Events::Manager::Notifier, :stub_event_system do
         end.to raise_error(described_class::FailedSubscribersError)
       end
 
-      it 'returns all errors raised due to notification process via errors stack exception' do
+      it 'returns all errors raised by subscribers' do
         super_elegant_error = Class.new(StandardError)
         non_elegant_error   = Class.new(StandardError)
 
@@ -68,6 +70,51 @@ describe EvilEvents::Core::Events::Manager::Notifier, :stub_event_system do
           expect(error.errors_stack).to contain_exactly(
             an_instance_of(super_elegant_error),
             an_instance_of(non_elegant_error)
+          )
+        end
+      end
+
+      describe 'logging' do
+        let(:silent_output)   { StringIO.new }
+        let(:silent_logger)   { ::Logger.new(silent_output) }
+
+        before do
+          system_config.configure do |config|
+            config.logger = silent_logger
+          end
+        end
+
+        specify 'activity: event type :: message: event id / processing status / subscriber#to_s' do
+          expect(silent_output.string).to be_empty
+
+          good_subscriber = ->(event) {}
+          bad_subscriber  = ->() {} # will raise ArgumentError
+
+          manager.observe(good_subscriber, :call)
+          manager.observe(bad_subscriber, :call)
+
+          begin
+            described_class.run(manager, event)
+          rescue described_class::FailedSubscribersError => error
+            expect(error.errors_stack).to contain_exactly(ArgumentError)
+          end
+
+          expect(silent_output.string).to match(
+            Regexp.union(
+              /\[EvilEvents:EventProcessed\(#{event.type}\)\s/,
+              /EVENT_ID:\s#{event.id}\s::\s/,
+              /STATUS:\ssuccessful\s/,
+              /SUBSCRIBER:\s#{good_subscriber.to_s}/
+            )
+          )
+
+          expect(silent_output.string).to match(
+            Regexp.union(
+              /\[EvilEvents:EventProcessed\(#{event.type}\)\s/,
+              /EVENT_ID:\s#{event.id}\s::\s/,
+              /STATUS:\sfailed\s/,
+              /SUBSCRIBER:\s#{bad_subscriber.to_s}/
+            )
           )
         end
       end
