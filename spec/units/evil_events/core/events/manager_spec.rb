@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe EvilEvents::Core::Events::Manager, :stub_event_system do
+describe EvilEvents::Core::Events::Manager, :stub_event_system, :null_logger do
   include_context 'event system'
 
   specify 'instantiation requirements' do
