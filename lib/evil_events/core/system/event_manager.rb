@@ -76,11 +76,12 @@ class EvilEvents::Core::System
     end
 
     # @param event_type [String]
+    # @option id [String,NilClass]
     # @option payload [Hash]
     # @option metadata [Hash]
     # @return [EvilEvents::Core::Events::AbstractEvent]
     #
-    # @since 0.1.0
+    # @since 0.1.1
     def resolve_event_object(event_type, id: nil, payload: {}, metadata: {})
       manager_of_event_type(event_type).event_class.new(
         id: id, payload: payload, metadata: metadata
