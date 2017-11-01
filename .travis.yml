@@ -9,6 +9,7 @@ rvm:
 sudo: false
 before_install: gem install bundler -v 1.16.0
 cache: bundler
+bundler_args: --binstubs
 script:
   - bin/rubocop
   - bin/rspec
