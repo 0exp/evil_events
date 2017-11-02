@@ -38,8 +38,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov',      '0.14.1'
   spec.add_development_dependency 'simplecov-json', '0.2'
   spec.add_development_dependency 'rubocop',        '0.51.0'
-  spec.add_development_dependency 'bundler',        '1.15.4'
   spec.add_development_dependency 'rake',           '12.2.1'
   spec.add_development_dependency 'rspec',          '3.7.0'
   spec.add_development_dependency 'rubocop-rspec',  '1.19.0'
+
+  spec.add_development_dependency 'bundler'
 end
