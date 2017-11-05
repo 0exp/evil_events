@@ -16,6 +16,7 @@ module EvilEvents::Core::Events
     # @since 0.1.0
     AlreadyManagedEventClassError = Class.new(ManagerRegistryError)
 
+    # @since 0.1.0
     def_delegators :managers, :empty?, :size
 
     # @return [Concurrent::Map]

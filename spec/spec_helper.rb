@@ -17,7 +17,6 @@ require 'pry'
 require 'bundler/setup'
 require 'dry/container/stub'
 require 'evil_events'
-require 'securerandom'
 
 require_relative 'support/spec_support'
 require_relative 'support/shared_examples'

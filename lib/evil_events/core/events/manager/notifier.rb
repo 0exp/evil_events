@@ -14,6 +14,7 @@ class EvilEvents::Core::Events::Manager
       # @since 0.1.0
       extend Forwardable
 
+      # @since 0.1.0
       def_delegators :errors_stack, :<<, :empty?
 
       # @return [Concurrent::Array]

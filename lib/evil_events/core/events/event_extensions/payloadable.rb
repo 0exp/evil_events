@@ -19,7 +19,7 @@ module EvilEvents::Core::Events::EventExtensions
     #
     # @since 0.1.0
     def build_payload(**payload_attributes)
-      self.class.const_get(:Payload).new(**payload_attributes)
+      self.class.payload_class.new(**payload_attributes)
     end
 
     # @since 0.1.0
@@ -32,20 +32,32 @@ module EvilEvents::Core::Events::EventExtensions
         super
       end
 
+      # @return [Class{AbstractPayload}]
+      #
+      # @since 0.2.0
+      def payload_class
+        const_get(:Payload)
+      end
+
       # @param key [Symbol]
       # @param type [EvilEvents::Shared::Types::Any]
+      # @param options [Hash]
       # @return void
       #
       # @since 0.1.0
-      def payload(key, type = EvilEvents::Types::Any)
-        const_get(:Payload).attribute(key, type)
+      def payload(key, type = EvilEvents::Types::Any, **options)
+        if type.is_a?(Symbol)
+          type = EvilEvents::Core::Bootstrap[:event_system].resolve_type(type, **options)
+        end
+
+        payload_class.attribute(key, type)
       end
 
       # @return [Array<Symbol>]
       #
       # @since 0.1.0
       def payload_fields
-        const_get(:Payload).attribute_names
+        payload_class.attribute_names
       end
     end
   end

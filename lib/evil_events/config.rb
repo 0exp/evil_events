@@ -4,19 +4,36 @@ module EvilEvents
   # @api public
   # @since 0.1.0
   module Config
+    require_relative 'config/adapters'
+    require_relative 'config/types_setup'
+
     class << self
-      # @see EvilEvents::Config
+      # @see EvilEvents::Core::Config
+      # @api public
+      # @since 0.1.0
+      def options
+        EvilEvents::Core::Bootstrap[:config]
+      end
+
+      # @see EvilEvents::Core::Config
       # @api public
       # @since 0.1.0
       def configure
         options.configure { |conf| yield(conf) if block_given? }
       end
 
-      # @see EvilEvents::Config
+      # @see EvilEvents::Config::TypesSetup
       # @api public
-      # @since 0.1.0
-      def options
-        EvilEvents::Core::Bootstrap[:config]
+      # @since 0.2.0
+      def setup_types
+        yield(Config::TypesSetup) if block_given?
+      end
+
+      # @see EvilEvents::Config::adapters
+      # @api public
+      # @since 0.2.0
+      def setup_adapters
+        yield(Config::Adapters) if block_given?
       end
     end
   end

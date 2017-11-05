@@ -9,6 +9,7 @@ module EvilEvents::Core
     require_relative 'system/broadcaster'
     require_relative 'system/event_builder'
     require_relative 'system/event_manager'
+    require_relative 'system/type_manager'
 
     # @since 0.1.0
     extend Forwardable
@@ -45,6 +46,12 @@ module EvilEvents::Core
                    :deserialize_from_json,
                    :deserialize_from_hash
 
+    # @see EvilEvents::Core::System::TypeManager
+    # @since 0.2.0
+    def_delegators :type_manager,
+                   :register_converter,
+                   :resolve_type
+
     # @return [EvilEvents::Core::System::Broadcaster]
     #
     # @since 0.1.0
@@ -55,10 +62,16 @@ module EvilEvents::Core
     # @since 0.1.0
     attr_reader :event_manager
 
+    # @return [EvilEvents::Core::System::TypeManager]
+    #
+    # @since 0.2.0
+    attr_reader :type_manager
+
     # @since 0.1.0
     def initialize
       @broadcaster   = Broadcaster.new
       @event_manager = EventManager.new
+      @type_manager  = TypeManager.new
     end
   end
 end

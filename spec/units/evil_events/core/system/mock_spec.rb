@@ -38,7 +38,10 @@ describe EvilEvents::Core::System::Mock do
                                        excluded: %i[event_emitter adapters_container]
   it_behaves_like 'mocked dependency', EvilEvents::Core::System::EventManager,
                                        excluded: [:manager_registry]
+  it_behaves_like 'mocked dependency', EvilEvents::Core::System::TypeManager,
+                                       excluded: [:converter]
   it_behaves_like 'mocked dependency', EvilEvents::Core::System,
                                        only: %i[broadcaster event_manager]
+
   # rubocop:enable Layout/AlignParameters
 end

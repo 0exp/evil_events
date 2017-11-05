@@ -6,6 +6,7 @@ require 'dry-struct'
 require 'dry-types'
 require 'concurrent/array'
 require 'concurrent/map'
+require 'securerandom'
 require 'logger'
 require 'json'
 
