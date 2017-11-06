@@ -16,9 +16,8 @@ class EvilEvents::Core::System
 
     # @param type [Symbol]
     # @param coercer [Proc]
-    # @return [EvilEvents::Shared::Converter]
+    # @return [EvilEvents::Shared::TypeConverter::Converter]
     #
-    # @api private
     # @since 0.2.0
     def register_converter(type, coercer)
       converter.register(type, coercer)
@@ -26,6 +25,9 @@ class EvilEvents::Core::System
 
     # @param type [Symbol]
     # @param options [Hash]
+    # @return [EvilEvents::Shared::Types::Any]
+    #
+    # @since 0.2.0
     def resolve_type(type, **options)
       converter.resolve_type(type, **options)
     end

@@ -11,9 +11,11 @@ class EvilEvents::Shared::TypeConverter
 
     # @return [Coucnrrent::Map]
     #
+    # @api public
     # @since 0.2.0
     attr_reader :converters
 
+    # @api public
     # @since 0.2.0
     def initialize
       @converters = EvilEvents::Shared::DependencyContainer.new

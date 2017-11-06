@@ -4,11 +4,15 @@ class EvilEvents::Shared::TypeConverter
   # @api public
   # @since 0.2.0
   class Converter
+    # @return [Proc]
+    #
+    # @api public
     # @since 0.2.0
     attr_reader :coercer
 
-    # @param coercer [proc]
+    # @param coercer [Proc]
     #
+    # @api public
     # @since 0.2.0
     def initialize(coercer)
       raise ArgumentError unless coercer.is_a?(Proc)
@@ -16,12 +20,19 @@ class EvilEvents::Shared::TypeConverter
       @coercer = coercer
     end
 
-    # @param value
+    # @param value [Mixed]
+    # @return [Mixed]
+    #
+    # @api public
+    # @since 0.2.0
     def convert(value)
       coercer.call(value)
     end
 
     # @option :default [Mixed]
+    # @return [EvilEvents::Shared::Types::Any]
+    #
+    # @see EvilEvents::Shared::TypeConverter::TypeBuilder
     #
     # @since 0.2.0
     def transform_to_type(**options)

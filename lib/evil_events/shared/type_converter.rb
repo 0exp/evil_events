@@ -6,9 +6,11 @@ module EvilEvents::Shared
   class TypeConverter
     # @return [EvilEvents::Shared::TypeConverter::ConverterRegistry]
     #
+    # @api public
     # @since 0.2.0
     attr_reader :registry
 
+    # @api public
     # @since 0.2.0
     def initialize
       @registry = ConverterRegistry.new
@@ -30,6 +32,9 @@ module EvilEvents::Shared
     # @param options [Hash]
     # @return [EvilEvents::Shared::Types::Any]
     #
+    # @see EvilEvents::Shared::TypeConverter::ConverterRegistry
+    #
+    # @api public
     # @since 0.2.0
     def resolve_type(type_name, **options)
       registry.resolve(type_name).transform_to_type(**options)

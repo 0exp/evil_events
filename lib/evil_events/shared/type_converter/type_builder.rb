@@ -4,6 +4,7 @@ class EvilEvents::Shared::TypeConverter
   # @api public
   # @since 0.2.0
   class TypeBuilder
+    # @api public
     # @since 0.2.0
     def initialize
       @type_atom = Concurrent::Atom.new(EvilEvents::Shared::Types::Any)
@@ -13,6 +14,7 @@ class EvilEvents::Shared::TypeConverter
     # @param value [Mixed]
     # @return self
     #
+    # @api public
     # @since 0.2.0
     def append(option, value)
       type_atom.swap do |type|
@@ -33,6 +35,7 @@ class EvilEvents::Shared::TypeConverter
 
     # @return [EvilEvents::Shared::Types::Any]
     #
+    # @api public
     # @since 0.2.0
     def result
       type_atom.value
@@ -40,6 +43,9 @@ class EvilEvents::Shared::TypeConverter
 
     private
 
+    # @return [Concurrent::Atom<EvilEvents::Shared::Types::Any>]
+    #
+    # @since 0.2.0
     attr_reader :type_atom
   end
 end

@@ -22,14 +22,14 @@ module EvilEvents
         options.configure { |conf| yield(conf) if block_given? }
       end
 
-      # @see EvilEvents::Config::TypesSetup
+      # @see EvilEvents::Config::Types
       # @api public
       # @since 0.2.0
       def setup_types
         yield(Config::Types) if block_given?
       end
 
-      # @see EvilEvents::Config::adapters
+      # @see EvilEvents::Config::Adapters
       # @api public
       # @since 0.2.0
       def setup_adapters
