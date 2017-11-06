@@ -5,7 +5,7 @@ class EvilEvents::Core::Events::Manager
   # @since 0.1.0
   module Notifier
     # @since 0.1.0
-    NotifierError = Class.new(StandardError)
+    NotifierError = Class.new(EvilEvents::Core::Error)
     # @since 0.1.0
     InconsistentEventClassError = Class.new(NotifierError)
 

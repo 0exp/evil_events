@@ -4,8 +4,8 @@ describe EvilEvents::Event, :stub_event_system do
   include_context 'event system'
 
   describe '.[]' do
-    it 'delegates creation of the abstract event class to the event system' do
-      event_type = 'simplest_event'
+    it 'delegates the creation of the abstract event class to the event system' do
+      event_type = gen_str
 
       expect(event_system).to(
         receive(:define_abstract_event_class).with(event_type).once
@@ -15,7 +15,7 @@ describe EvilEvents::Event, :stub_event_system do
     end
 
     it 'returns a result of the class creation process' do
-      event_type = 'simplest_event'
+      event_type = gen_str
       creation_result = double
 
       allow(event_system).to(
@@ -27,14 +27,14 @@ describe EvilEvents::Event, :stub_event_system do
 
     it 'requires an event type alias only' do
       expect { described_class[] }.to raise_error(ArgumentError)
-      expect { described_class['test', 'test'] }.to raise_error(ArgumentError)
-      expect { described_class['test'] }.not_to raise_error
+      expect { described_class[gen_str, gen_str] }.to raise_error(ArgumentError)
+      expect { described_class[gen_str] }.not_to raise_error
     end
   end
 
   describe '.define' do
     it 'delegates the creation of the full event class to the event system' do
-      event_type = 'simplest_event'
+      event_type = gen_str
       event_definitions = proc {}
 
       expect(event_system).to(
@@ -47,7 +47,7 @@ describe EvilEvents::Event, :stub_event_system do
     end
 
     it 'returns a result of the class creation process' do
-      event_type = 'simplest_event'
+      event_type = gen_str
       event_definitions = proc {}
       creation_result = double
 
@@ -60,9 +60,9 @@ describe EvilEvents::Event, :stub_event_system do
 
     specify 'required attributes' do
       expect { described_class.define }.to raise_error(ArgumentError)
-      expect { described_class.define('test', double) }.to raise_error(ArgumentError)
-      expect { described_class.define('suite_event') }.not_to raise_error
-      expect { described_class.define('spec_event', &(proc {})) }.not_to raise_error
+      expect { described_class.define(gen_str, double) }.to raise_error(ArgumentError)
+      expect { described_class.define(gen_str) }.not_to raise_error
+      expect { described_class.define(gen_str, &(proc {})) }.not_to raise_error
     end
   end
 end

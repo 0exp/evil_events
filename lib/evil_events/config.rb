@@ -5,7 +5,7 @@ module EvilEvents
   # @since 0.1.0
   module Config
     require_relative 'config/adapters'
-    require_relative 'config/types_setup'
+    require_relative 'config/types'
 
     class << self
       # @see EvilEvents::Core::Config
@@ -26,7 +26,7 @@ module EvilEvents
       # @api public
       # @since 0.2.0
       def setup_types
-        yield(Config::TypesSetup) if block_given?
+        yield(Config::Types) if block_given?
       end
 
       # @see EvilEvents::Config::adapters

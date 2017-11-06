@@ -89,7 +89,7 @@ class EvilEvents::Core::System
 
     # @see EvilEvents::Core::System
     # @since 0.2.0
-    def register_converter(type, &block); end
+    def register_converter(type, coercer); end
 
     # @see EvilEvents::Core::System
     # @since 0.2.0

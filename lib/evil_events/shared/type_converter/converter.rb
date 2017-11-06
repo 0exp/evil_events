@@ -5,19 +5,20 @@ class EvilEvents::Shared::TypeConverter
   # @since 0.2.0
   class Converter
     # @since 0.2.0
-    attr_reader :convertion_proc
+    attr_reader :coercer
 
-    # @param type [Symbol]
-    # @param convertion_proc [proc]
+    # @param coercer [proc]
     #
     # @since 0.2.0
-    def initialize(convertion_proc)
-      @convertion_proc = convertion_proc
+    def initialize(coercer)
+      raise ArgumentError unless coercer.is_a?(Proc)
+
+      @coercer = coercer
     end
 
     # @param value
     def convert(value)
-      convertion_proc.call(value)
+      coercer.call(value)
     end
 
     # @option :default [Mixed]
@@ -25,7 +26,7 @@ class EvilEvents::Shared::TypeConverter
     # @since 0.2.0
     def transform_to_type(**options)
       TypeBuilder.new.tap do |builder|
-        builder.append(:constructor, convertion_proc)
+        builder.append(:constructor, coercer)
         builder.append(:default, options[:default]) if options.key?(:default)
       end.result
     end

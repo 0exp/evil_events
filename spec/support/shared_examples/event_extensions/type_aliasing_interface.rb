@@ -4,25 +4,25 @@ shared_examples 'type aliasing interface' do
   describe 'DSL extensions' do
     describe '.type' do
       it 'fails when a function argument (type_name) has incopatible type (non-nil/non-string)' do
-        expect { pseudo_identifiable.type(:test) }.to raise_error(
+        expect { pseudo_identifiable.type(gen_symb) }.to raise_error(
           described_class::IncopatibleEventTypeError
         )
 
-        expect { pseudo_identifiable.type(Object) }.to raise_error(
+        expect { pseudo_identifiable.type(gen_class) }.to raise_error(
           described_class::IncopatibleEventTypeError
         )
 
-        expect { pseudo_identifiable.type(100_500) }.to raise_error(
+        expect { pseudo_identifiable.type(gen_int) }.to raise_error(
           described_class::IncopatibleEventTypeError
         )
 
-        expect { pseudo_identifiable.type('test') }.not_to raise_error
-        expect { pseudo_identifiable.type }.not_to         raise_error
+        expect { pseudo_identifiable.type(gen_str) }.not_to raise_error
+        expect { pseudo_identifiable.type }.not_to raise_error
       end
 
       it 'fails when we tries to redefine the already defined type name' do
-        pseudo_identifiable.type 'event_alias'
-        expect { pseudo_identifiable.type 'another_event_alias' }.to raise_error(
+        pseudo_identifiable.type gen_str
+        expect { pseudo_identifiable.type gen_str }.to raise_error(
           described_class::EventTypeAlreadyDefinedError
         )
       end
@@ -33,14 +33,18 @@ shared_examples 'type aliasing interface' do
         )
       end
 
-      it 'registrates the type name with passed string if type name was not defined previously' do
-        expect { pseudo_identifiable.type('test_event_alias') }.not_to raise_error
-        expect(pseudo_identifiable.type).to eq('test_event_alias')
+      it 'registrates a type name with passed string if type name was not defined previously' do
+        random_type_name = gen_str
+
+        expect { pseudo_identifiable.type(random_type_name) }.not_to raise_error
+        expect(pseudo_identifiable.type).to eq(random_type_name)
       end
 
       it 'returns the defined type name after the correct definition and getting operations' do
-        expect(pseudo_identifiable.type('final_event_alias')).to eq('final_event_alias')
-        expect(pseudo_identifiable.type).to eq('final_event_alias')
+        random_type_name = gen_str
+
+        expect(pseudo_identifiable.type(random_type_name)).to eq(random_type_name)
+        expect(pseudo_identifiable.type).to eq(random_type_name)
       end
     end
   end
@@ -48,11 +52,13 @@ shared_examples 'type aliasing interface' do
   describe 'instance extensions' do
     describe '#type' do
       it 'returns the previously defined type defined on a class' do
-        pseudo_identifiable.type 'super_mega_test_alias'
+        type_name = gen_str
+
+        pseudo_identifiable.type type_name
 
         # check that all instances has the same type alias
-        expect(pseudo_identifiable.new.type).to eq('super_mega_test_alias')
-        expect(pseudo_identifiable.new.type).to eq('super_mega_test_alias')
+        expect(pseudo_identifiable.new.type).to eq(type_name)
+        expect(pseudo_identifiable.new.type).to eq(type_name)
       end
     end
   end

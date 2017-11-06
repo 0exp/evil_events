@@ -43,7 +43,7 @@ module EvilEvents::Core::Events
           klass.type(event_type)
           klass.manage!
           klass.evaluate(&event_class_definitions) if block_given?
-        rescue EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError
+        rescue StandardError
           EvilEvents::Core::Bootstrap[:event_system].unregister_event_class(klass)
           raise
         end

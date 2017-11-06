@@ -18,11 +18,11 @@ class EvilEvents::Shared::TypeConverter
       type_atom.swap do |type|
         case option
         when :default
-          # NOTE: Dry::Types callable fallback (see Dry::Types::Default::Callable#evaulate)
-          default_value = value.is_a?(Proc) ? (->(t) { value.call }) : (proc { value })
+          # NOTE: Dry::Types callable wrapper (see Dry::Types::Default::Callable#evaulate)
+          default_value = value.is_a?(Proc) ? (->(_type) { value.call }) : (proc { value })
           type.default(default_value)
         when :constructor
-          type = type.constructor(value)
+          type.constructor(value)
         else
           type
         end

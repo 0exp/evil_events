@@ -8,7 +8,7 @@ module EvilEvents::Core::Events
     extend Forwardable
 
     # @since 0.1.0
-    ManagerRegistryError = Class.new(StandardError)
+    ManagerRegistryError = Class.new(EvilEvents::Core::Error)
     # @since 0.1.0
     IncorrectManagerObjectError = Class.new(ManagerRegistryError)
     # @since 0.1.0

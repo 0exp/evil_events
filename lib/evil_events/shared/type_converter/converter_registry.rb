@@ -20,17 +20,19 @@ class EvilEvents::Shared::TypeConverter
     end
 
     # @param type_name [Symbol]
-    # @param convertion [proc]
+    # @param coercer [Proc]
     # @raise ArgumentError
-    # @return void
+    # @return [Converter]
     #
     # @api public
     # @since 0.2.0
-    def register(type_name, &convertion)
-      raise ArgumentError unless block_given?
+    def register(type_name, coercer)
       raise ArgumentError unless type_name.is_a?(Symbol)
+      raise ArgumentError unless coercer.is_a?(Proc)
 
-      converters.register(type_name, Converter.new(convertion))
+      Converter.new(coercer).tap do |converter|
+        converters.register(type_name, converter)
+      end
     end
 
     # @param type [Mixed]

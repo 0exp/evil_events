@@ -15,19 +15,19 @@ class EvilEvents::Core::System
     end
 
     # @param type [Symbol]
-    # @param block [Block]
-    # @return void
+    # @param coercer [Proc]
+    # @return [EvilEvents::Shared::Converter]
     #
     # @api private
     # @since 0.2.0
-    def register_converter(type, &block)
-      converter.register(type, &block)
+    def register_converter(type, coercer)
+      converter.register(type, coercer)
     end
 
     # @param type [Symbol]
     # @param options [Hash]
     def resolve_type(type, **options)
-      converter.resolve(type, **options)
+      converter.resolve_type(type, **options)
     end
   end
 end

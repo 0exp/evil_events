@@ -20,7 +20,6 @@ module EvilEvents
   require_relative 'evil_events/config'
   require_relative 'evil_events/event'
   require_relative 'evil_events/serializer'
-  require_relative 'evil_events/adapters'
   require_relative 'evil_events/emitter'
   require_relative 'evil_events/subscriber_mixin'
   require_relative 'evil_events/dispatcher_mixin'

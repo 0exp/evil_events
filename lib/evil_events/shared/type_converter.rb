@@ -15,16 +15,15 @@ module EvilEvents::Shared
     end
 
     # @param type_name [Symbol]
-    # @param callable [Nil,Mixed]
-    # @param convertion [Block]
-    # @return void
+    # @param coercer [Proc]
+    # @return [EvilEvents::Shared::TypeConverter::Converter]
     #
     # @see EvilEvents::Shared::TypeConverter::ConverterRegistry
     #
     # @api public
     # @since 0.2.0
-    def register(type_name, &convertion)
-      registry.register(type_name, &convertion)
+    def register(type_name, coercer)
+      registry.register(type_name, coercer)
     end
 
     # @param type_name [Symbol]
@@ -32,7 +31,7 @@ module EvilEvents::Shared
     # @return [EvilEvents::Shared::Types::Any]
     #
     # @since 0.2.0
-    def resolve(type_name, **options)
+    def resolve_type(type_name, **options)
       registry.resolve(type_name).transform_to_type(**options)
     end
   end

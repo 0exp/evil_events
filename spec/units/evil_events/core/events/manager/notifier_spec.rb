@@ -103,7 +103,7 @@ describe EvilEvents::Core::Events::Manager::Notifier, :stub_event_system do
             Regexp.union(
               /\[EvilEvents:EventProcessed\(#{event.type}\)\s/,
               /EVENT_ID:\s#{event.id}\s::\s/,
-              /STATUS:\ssuccessful\s/,
+              /STATUS:\ssuccessful\s::\s/,
               /SUBSCRIBER:\s#{good_subscriber.to_s}/
             )
           )
@@ -112,7 +112,7 @@ describe EvilEvents::Core::Events::Manager::Notifier, :stub_event_system do
             Regexp.union(
               /\[EvilEvents:EventProcessed\(#{event.type}\)\s/,
               /EVENT_ID:\s#{event.id}\s::\s/,
-              /STATUS:\sfailed\s/,
+              /STATUS:\sfailed\s::\s/,
               /SUBSCRIBER:\s#{bad_subscriber.to_s}/
             )
           )

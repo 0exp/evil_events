@@ -41,6 +41,29 @@ describe 'Event Creation', :stub_event_system do
     stub_const('::ElasticSearchStub', elastic_search)
     stub_const('::EventDatabaseStub', event_database)
     stub_const('::RegistratorStub',   registrator)
+
+    EvilEvents::Config.setup_types do |types|
+      types.define_converter(:uuid) do |value|
+        value.gsub(/[0-9]/, '*')
+      end
+
+      types.define_converter(:comment) do |value|
+        value.to_s.strip
+      end
+
+      types.define_converter(:bigdecimal) do |value|
+        BigDecimal.new(value)
+      end
+
+      types.define_converter(:timestamp) do |value|
+        Time.parse(value)
+      end
+    end
+
+    EvilEvents::Config.setup_adapters do |adapters|
+      adapters.register(:sidekiq, build_adapter_class)
+      adapters.register(:faktory, build_adapter_class)
+    end
   end
 
   describe 'class creation' do
@@ -54,9 +77,11 @@ describe 'Event Creation', :stub_event_system do
           # payload keys
           payload :user_id,  EvilEvents::Types::Strict::Int
           payload :utm_link, EvilEvents::Types::Strict::String
+          payload :comment,  :comment
 
           # metadata keys
-          metadata :timestamp
+          metadata :timestamp # Dry::Types
+          metadata :secure_id, :uuid, default: 'unknown'
 
           # observers that will receive/handle events via delegator method
           observe ElasticSearchStub, delegator: :store
@@ -70,7 +95,7 @@ describe 'Event Creation', :stub_event_system do
         # event type alias ('access_granted')
         EvilEvents::Event.define('access_granted') do
           # payload keys
-          payload :user_id
+          payload :user_id, :bigdecimal, default: -1
           payload :access_level
           payload :grant_service
 
@@ -81,7 +106,7 @@ describe 'Event Creation', :stub_event_system do
           observe ElasticSearchStub, delegator: :store
 
           # adapter that will handle events of this class
-          adapter :memory_async
+          adapter :sidekiq
         end
       end.not_to raise_error
     end
@@ -99,7 +124,8 @@ describe 'Event Creation', :stub_event_system do
 
           # metadata keys
           metadata :timestamp
-          metadata :ref_id
+          metadata :ref_id,   :bigdecimal
+          metadata :tech_msg, :comment, default: -> { 'nothing' }
 
           # observers that will receive/handle events via delegator method
           observe ElasticSearchStub, delegator: :store
@@ -117,7 +143,7 @@ describe 'Event Creation', :stub_event_system do
           payload :score,     EvilEvents::Types::Strict::Float
 
           # metadata keys
-          metadata :timestamp
+          metadata :timestamp, :timestamp
           metadata :version
 
           # observers that will receive/handle events via delegator method
@@ -126,7 +152,7 @@ describe 'Event Creation', :stub_event_system do
           observe RegistratorStub,   delegator: :process_event
 
           # adapter that will handle events of this class
-          adapter :memory_async
+          adapter :faktory
         end
       end.not_to raise_error
     end
@@ -182,15 +208,17 @@ describe 'Event Creation', :stub_event_system do
       DocumentRejected = EvilEvents::Event.define('document_rejected') do
         payload :document_type, EvilEvents::Types::Strict::String
         payload :reason,        EvilEvents::Types::Strict::String.default('violation')
+        payload :tech_comment,  :comment, default: nil
 
         metadata :timestamp, EvilEvents::Types::Strict::Int.default(0)
+        metadata :server_id, :uuid, default: 'undefined'
       end
 
       # define event object with valid types of attributes
       expect do
         DocumentRejected.new(
-          payload:  { document_type: 'bank_card', reason: 'invalid' },
-          metadata: { timestamp: 147_555 }
+          payload:  { document_type: 'bank_card', reason: 'invalid', tech_comment: 'test' },
+          metadata: { timestamp: 147_555, server_id: 'A123B456C789D0' }
         )
       end.not_to raise_error
 
@@ -220,16 +248,30 @@ describe 'Event Creation', :stub_event_system do
 
       # fetching object attributes (payload and metadata with default values)
       event = DocumentRejected.new(payload: { document_type: 'employee_data' })
-      expect(event.payload).to  match(document_type: 'employee_data', reason: 'violation')
-      expect(event.metadata).to match(timestamp: 0)
-
-      # fetchong object attrobutes (payload and metadata with defined default options)
-      event = DocumentRejected.new(
-        payload:  { document_type: 'disk_info', reason: 'broken_data' },
-        metadata: { timestamp: 666_777 }
+      expect(event.metadata).to match(
+        timestamp: 0, # Dry::Types is used
+        server_id: 'undefined', # coercible type is used
       )
-      expect(event.payload).to  match(document_type: 'disk_info', reason: 'broken_data')
-      expect(event.metadata).to match(timestamp: 666_777)
+      expect(event.payload).to match(
+        document_type: 'employee_data',
+        reason:        'violation', # Dry::Types is used
+        tech_comment:  nil # coercible type is used
+      )
+
+      # fetching object attributes (payload and metadata with defined default options)
+      event = DocumentRejected.new(
+        payload:  { document_type: 'disk_info', reason: 'broken_data', tech_comment: ' rspec ' },
+        metadata: { timestamp: 666_777, server_id: 'A123B456C789D0' }
+      )
+      expect(event.payload).to match(
+        document_type: 'disk_info',
+        reason:        'broken_data',
+        tech_comment:  'rspec' # coercible type is used
+      )
+      expect(event.metadata).to match(
+        timestamp: 666_777,
+        server_id: 'A***B***C***D*' # coercible type is used
+      )
     end
   end
 end

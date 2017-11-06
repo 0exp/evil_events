@@ -32,4 +32,5 @@ RSpec.configure do |config|
   config.include SpecSupport::EventManagerFactories
   config.include SpecSupport::DispatchingAdapterFactories
   config.include SpecSupport::FakeDataGenerator
+  config.extend  SpecSupport::FakeDataGenerator
 end
