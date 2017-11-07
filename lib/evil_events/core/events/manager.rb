@@ -5,7 +5,7 @@ module EvilEvents::Core::Events
   # @since 0.1.0
   class Manager
     # @since 0.1.0
-    ManagerError = Class.new(StandardError)
+    ManagerError = Class.new(EvilEvents::Core::Error)
     # @since 0.1.0
     InconsistentEventClassError = Class.new(ManagerError)
     # @since 0.1.0

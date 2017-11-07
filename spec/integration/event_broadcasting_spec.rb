@@ -48,10 +48,12 @@ describe 'Event Broadcasting', :stub_event_system do
     stub_const('::ElasticSearchStub', elastic_search)
     stub_const('::EventStoreStub', event_store)
 
-    EvilEvents::Adapters.register(:sidekiq, build_adapter_class.new)
-
     EvilEvents::Config.configure do |config|
       config.logger = silent_logger
+    end
+
+    EvilEvents::Config.setup_adapters do |adapters|
+      adapters.register(:sidekiq, build_adapter_class.new)
     end
   end
 
@@ -119,6 +121,23 @@ describe 'Event Broadcasting', :stub_event_system do
       "PAYLOAD: #{overwatch_event.payload} :: " \
       "METADATA: #{overwatch_event.metadata}"
     )
+
+    # check log output for the notifier activity
+    [match_event, overwatch_event].each do |published_event|
+      expect(silent_output.string).to include(
+        "[EvilEvents:EventProcessed(#{published_event.type})]: " \
+        "EVENT_ID: #{published_event.id} :: " \
+        'STATUS: successful :: ' \
+        "SUBSCRIBER: #{ElasticSearchStub}"
+      )
+
+      expect(silent_output.string).to include(
+        "[EvilEvents:EventProcessed(#{published_event.type})]: " \
+        "EVENT_ID: #{published_event.id} :: " \
+        'STATUS: successful :: ' \
+        "SUBSCRIBER: #{EventStoreStub}"
+      )
+    end
 
     # check the second approach: event attributes
     # prepare event attributes for testability
@@ -188,5 +207,25 @@ describe 'Event Broadcasting', :stub_event_system do
         /METADATA:\s#{overwatch_released_attrs[:metadata]}/
       )
     )
+
+    # check log output for the notifier activity
+    [ElasticSearchStub, EventStoreStub].each do |subscriber|
+      expect(silent_output.string).to match(
+        Regexp.union(
+          /\[EvilEvents:EventProcessed\(match_lost\)\s/,
+          /EVENT_ID:\s[a-z0-9\-]\s::\s/,
+          /STATUS:\ssuccessful\s::\s/,
+          /SUBSCRIBER:\s#{subscriber.to_s}/
+        )
+      )
+      expect(silent_output.string).to match(
+        Regexp.union(
+          /\[EvilEvents:EventProcessed\(overwatch_released\)\s/,
+          /EVENT_ID:\s[a-z0-9\-]\s::\s/,
+          /STATUS:\ssuccessful\s::\s/,
+          /SUBSCRIBER:\s#{subscriber.to_s}/
+        )
+      )
+    end
   end
 end

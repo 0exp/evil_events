@@ -5,7 +5,7 @@ shared_examples 'payload entity component' do
   describe 'payload behaviour' do
     describe 'attribute definition DSL' do
       describe '.attribute and initialization' do
-        it 'defines a typed instance attribute with constructor affect' do
+        it 'defines a typed instance attribute (modifying the constructor)', :stub_event_system do
           payload_class = Class.new(payload_abstraction)
 
           # 'empty' constructor
@@ -22,37 +22,64 @@ shared_examples 'payload entity component' do
           # rubocop:disable Metrics/LineLength
           # defined attributes affects constructor
           expect { payload_class.new }.to raise_error(Dry::Struct::Error)
-          expect { payload_class.new(payload: { foo: 1 }) }.to raise_error(Dry::Struct::Error)
-          expect { payload_class.new(payload: { bar: 2 }) }.to raise_error(Dry::Struct::Error)
-          expect { payload_class.new(payload: { foo: 1, bar: 2 }) }.not_to raise_error
+          expect { payload_class.new(payload: { foo: gen_int }) }.to raise_error(Dry::Struct::Error)
+          expect { payload_class.new(payload: { bar: gen_int }) }.to raise_error(Dry::Struct::Error)
+          expect { payload_class.new(payload: { foo: gen_int, bar: gen_int }) }.not_to raise_error
 
           # define new attribute
           expect { payload_class.class_eval { payload :baz } }.not_to raise_error
 
           # new attribute affects a constructor
           expect { payload_class.new }.to raise_error(Dry::Struct::Error)
-          expect { payload_class.new(payload: { foo: 1 }) }.to raise_error(Dry::Struct::Error)
-          expect { payload_class.new(payload: { bar: 2 }) }.to raise_error(Dry::Struct::Error)
-          expect { payload_class.new(payload: { foo: 1, bar: 2 }) }.to raise_error(Dry::Struct::Error)
-          expect { payload_class.new(payload: { foo: 1, bar: 2, baz: 3 }) }.not_to raise_error
+          expect { payload_class.new(payload: { foo: gen_int }) }.to raise_error(Dry::Struct::Error)
+          expect { payload_class.new(payload: { bar: gen_int }) }.to raise_error(Dry::Struct::Error)
+          expect { payload_class.new(payload: { foo: gen_int, bar: gen_int }) }.to raise_error(Dry::Struct::Error)
+          expect { payload_class.new(payload: { foo: gen_int, bar: gen_int, baz: gen_int }) }.not_to raise_error
           # rubocop:enable Metrics/LineLength
 
-          # define typed attributes (dry-rb implementation)
           payload_class = Class.new(payload_abstraction)
+
+          # define type converters (TypeConverter API)
+          EvilEvents::Core::Bootstrap[:event_system].tap do |system|
+            system.register_converter(:string,  proc { |value| value.to_s })
+            system.register_converter(:integer, proc { |value| Integer(value) })
+          end
+
           expect do
             payload_class.class_eval do
+              # Dry::Types API
               payload :foo, EvilEvents::Types::Int
               payload :bar, EvilEvents::Types::Strict::String.default(proc { 'KEK' })
               payload :baz, EvilEvents::Types::Strict::Bool.default(false)
+
+              # TypeConverter API
+              payload :custom_foo, :string
+              payload :custom_bar, :integer
+              payload :custom_baz, :string,  default: 'test'
+              payload :custom_zet, :integer, default: -> { 'test' }
             end
           end.not_to raise_error
 
           # fails on attribute duplication due to attribute definition
           payload_class = Class.new(payload_abstraction)
           expect do
-            payload_class.class_eval do
+            payload_class.class_eval do # only Dry::Types
               payload :foo, EvilEvents::Types::Int
               payload :foo, EvilEvents::Types::Strict::String.default(proc { 'KEK' })
+            end
+          end.to raise_error(Dry::Struct::RepeatedAttributeError)
+
+          expect do
+            payload_class.class_eval do # only TypeConverter
+              payload :bar, :string
+              payload :bar, :integer
+            end
+          end.to raise_error(Dry::Struct::RepeatedAttributeError)
+
+          expect do
+            payload_class.class_eval do # both TypeConverter and Dry::Types
+              payload :baz, EvilEvents::Types::Int
+              payload :baz, :string, default: -> { 'test' }
             end
           end.to raise_error(Dry::Struct::RepeatedAttributeError)
         end
@@ -73,12 +100,14 @@ shared_examples 'payload entity component' do
 
           payload_class.class_eval { payload :enough }
           expect(payload_class.payload_fields).to contain_exactly(:kek, :pek, :user_id, :enough)
+
+          # ...and etc.
         end
       end
     end
 
     describe 'instantiation' do
-      it 'fails when passed constructor parameters have incopatible type' do
+      it 'fails when constructor parameters have incopatible type' do
         payload_class = Class.new(payload_abstraction)
         expect do
           payload_class.class_eval do
@@ -91,43 +120,52 @@ shared_examples 'payload entity component' do
         # valid type cheking
         # can use/reassign defaults explicitly
         expect do
-          payload_class.new(payload: { amount: 10, done: true })
+          payload_class.new(payload: { amount: gen_int, done: gen_bool })
         end.not_to raise_error
 
         # amount can be anything (cuz non-strict)
         expect do
-          payload_class.new(payload: { amount: :test })
+          payload_class.new(payload: { amount: gen_symb })
         end.not_to raise_error
 
         # can use/reassign defaults explicitly
         expect do
-          payload_class.new(payload: { amount: '10', done: false, currency: 'RUB' })
+          payload_class.new(payload: { amount: gen_str, done: gen_bool, currency: gen_str })
         end.not_to raise_error
 
         # invalid type checking
         expect do
           # invalid types: :done (non-boolean)
-          payload_class.new(payload: { amount: 10, done: 10 })
+          payload_class.new(payload: { amount: gen_int, done: gen_int })
         end.to raise_error(Dry::Struct::Error)
 
         expect do
           # invalid types: :currency (non-string), :done (non-boolean)
-          payload_class.new(payload: { amount: 10, done: 30, currency: 40 })
+          payload_class.new(payload: { amount: gen_int, done: gen_int, currency: gen_int })
         end.to raise_error(Dry::Struct::Error)
       end
 
-      it 'attributes with default-valued types can be ignored due to instantiaton' do
+      it 'attributes with default-valued types can be ignored', :stub_event_system do
+        # register custom types (coercible types)
+        EvilEvents::Core::Bootstrap[:event_system].tap do |system|
+          system.register_converter(:string, proc { |value| value.to_s })
+          system.register_converter(:amount, proc { |value| Integer(value) })
+        end
+
         payload_class = Class.new(payload_abstraction) do
           payload :size, EvilEvents::Types::Strict::Int.default(proc { 123_456 })
           payload :name, EvilEvents::Types::String
           payload :role, EvilEvents::Types::Strict::Symbol.default(proc { :admin })
+          payload :path, :string
+          payload :cost, :amount, default: -> { 0 }
         end
 
         # rubocop:disable Metrics/LineLength
-        expect { payload_class.new(payload: { name: 'test' }) }.not_to raise_error
-        expect { payload_class.new(payload: { name: 'test', size: 10 }) }.not_to raise_error
-        expect { payload_class.new(payload: { name: 'test', role: :test }) }.not_to raise_error
-        expect { payload_class.new(payload: { name: 'test', size: 10, role: :test }) }.not_to raise_error
+        expect { payload_class.new(payload: { name: gen_str, path: gen_str }) }.not_to raise_error
+        expect { payload_class.new(payload: { name: gen_str, path: gen_str, size: gen_int }) }.not_to raise_error
+        expect { payload_class.new(payload: { name: gen_str, path: gen_str, role: gen_symb }) }.not_to raise_error
+        expect { payload_class.new(payload: { name: gen_str, path: gen_str, size: gen_int, role: gen_symb }) }.not_to raise_error
+        expect { payload_class.new(payload: { name: gen_str, path: gen_str, size: gen_int, role: gen_symb, cost: gen_int }) }.not_to raise_error
         # rubocop:enable Metrics/LineLength
       end
     end

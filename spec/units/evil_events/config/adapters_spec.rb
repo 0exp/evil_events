@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe EvilEvents::Adapters, :stub_event_system do
+describe EvilEvents::Config::Adapters, :stub_event_system do
   include_context 'event system'
 
   describe '.register' do

@@ -5,7 +5,7 @@ module EvilEvents::Core::Events
   # @since 0.1.0
   module ManagerFactory
     # @since 0.1.0
-    ManagerFactoryError = Class.new(StandardError)
+    ManagerFactoryError = Class.new(EvilEvents::Core::Error)
     # @since 0.1.0
     IncorrectEventClassError = Class.new(ManagerFactoryError)
 

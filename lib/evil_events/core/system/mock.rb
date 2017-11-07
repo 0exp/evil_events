@@ -86,5 +86,13 @@ class EvilEvents::Core::System
     # @see EvilEvents::Core::System
     # @since 0.1.0
     def managed_event?(event_class); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.2.0
+    def register_converter(type, coercer); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.2.0
+    def resolve_type(type, **options); end
   end
 end

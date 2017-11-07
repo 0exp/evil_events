@@ -5,8 +5,9 @@ describe EvilEvents::Core::System, :stub_event_system do
 
   describe 'instance' do
     it 'has appropriate instances of corresponding logical modules' do
-      expect(event_system.broadcaster).to be_a(EvilEvents::Core::System::Broadcaster)
+      expect(event_system.broadcaster).to   be_a(EvilEvents::Core::System::Broadcaster)
       expect(event_system.event_manager).to be_a(EvilEvents::Core::System::EventManager)
+      expect(event_system.type_manager).to  be_a(EvilEvents::Core::System::TypeManager)
     end
   end
 
@@ -14,6 +15,7 @@ describe EvilEvents::Core::System, :stub_event_system do
     it 'delegates the received method to the appropriate module' do
       broadcaster_module   = event_system.broadcaster
       event_manager_module = event_system.event_manager
+      type_manager_module  = event_system.type_manager
       event_builder_module = EvilEvents::Core::System::EventBuilder
 
       %i[emit raw_emit resolve_adapter].each do |method_name|
@@ -32,6 +34,11 @@ describe EvilEvents::Core::System, :stub_event_system do
 
       %i[define_event_class define_abstract_event_class].each do |method_name|
         expect(event_builder_module).to receive(method_name)
+        event_system.public_send(method_name)
+      end
+
+      %i[register_converter resolve_type].each do |method_name|
+        expect(type_manager_module).to receive(method_name)
         event_system.public_send(method_name)
       end
     end

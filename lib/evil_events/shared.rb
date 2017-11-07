@@ -14,5 +14,9 @@ module EvilEvents
     require_relative 'shared/delegator_resolver'
     require_relative 'shared/dependency_container'
     require_relative 'shared/clonable_module_builder'
+    require_relative 'shared/type_converter'
+    require_relative 'shared/type_converter/converter'
+    require_relative 'shared/type_converter/type_builder'
+    require_relative 'shared/type_converter/converter_registry'
   end
 end
