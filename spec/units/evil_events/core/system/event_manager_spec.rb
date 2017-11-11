@@ -82,6 +82,35 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
       end
     end
 
+    describe '#registered_events' do
+      it 'returns a list of created event classes in event_class#type_alias => event_class form' do
+        expect(event_manager.registered_events).to eq({})
+
+        event_manager.register_event_class(event_class)
+
+        expect(event_manager.registered_events).to match(
+          event_class.type => event_class
+        )
+
+        event_manager.register_event_class(another_event_class)
+
+        expect(event_manager.registered_events).to match(
+          event_class.type => event_class,
+          another_event_class.type => another_event_class
+        )
+
+        event_manager.unregister_event_class(event_class)
+
+        expect(event_manager.registered_events).to match(
+          another_event_class.type => another_event_class
+        )
+
+        event_manager.unregister_event_class(another_event_class)
+
+        expect(event_manager.registered_events).to eq({})
+      end
+    end
+
     describe '#resolve_event_object' do
       context 'when required event class is registered' do
         let(:event_class) do

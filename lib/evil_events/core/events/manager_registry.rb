@@ -106,6 +106,15 @@ module EvilEvents::Core::Events
       managers.key?(event_class)
     end
 
+    # @return [Hash]
+    #
+    # @since 0.2.0
+    def managed_events_map
+      managed_events.each_with_object({}) do |event, accumulator|
+        accumulator[event.type] = event
+      end
+    end
+
     private
 
     # @return [Array<EvilEvents::Core::Events::AbstractEvent>]

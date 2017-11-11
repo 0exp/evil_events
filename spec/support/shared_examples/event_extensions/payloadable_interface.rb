@@ -16,7 +16,7 @@ shared_examples 'payloadable interface' do
       let(:event_class) { Class.new(payloadable_abstraction) }
 
       describe '#attribute' do
-        it 'defines the payload attribute with a custom type', :stub_event_system do
+        it 'defines payload attribute with a custom type', :stub_event_system do
           # register two coercible types
           EvilEvents::Core::Bootstrap[:event_system].tap do |system|
             system.register_converter(:string,  ->(value) { value.to_s })

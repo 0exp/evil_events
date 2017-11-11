@@ -94,5 +94,9 @@ class EvilEvents::Core::System
     # @see EvilEvents::Core::System
     # @since 0.2.0
     def resolve_type(type, **options); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.2.0
+    def registered_events; end
   end
 end

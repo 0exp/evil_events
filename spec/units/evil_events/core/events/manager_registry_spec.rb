@@ -157,6 +157,31 @@ describe EvilEvents::Core::Events::ManagerRegistry do
     end
 
     describe 'common interface' do
+      describe '#managed_events_map' do
+        it 'retruns an event class list in event_class.type => event_class hash form' do
+          expect(registry.managed_events_map).to eq({}) # empty in start
+
+          registry.register(first_manager)
+          expect(registry.managed_events_map).to match(
+            first_event_class.type => first_event_class
+          )
+
+          registry.register(second_manager)
+          expect(registry.managed_events_map).to match(
+            first_event_class.type  => first_event_class,
+            second_event_class.type => second_event_class
+          )
+
+          registry.unregister(first_manager)
+          expect(registry.managed_events_map).to match(
+            second_event_class.type => second_event_class
+          )
+
+          registry.unregister(second_manager)
+          expect(registry.managed_events_map).to eq({})
+        end
+      end
+
       describe '#managed_event?' do
         it 'required event class is managed => true, otherwise => false' do
           expect(registry.managed_event?(first_event_class)).to  eq(false)
