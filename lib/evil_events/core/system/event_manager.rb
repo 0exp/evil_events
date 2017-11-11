@@ -96,6 +96,13 @@ class EvilEvents::Core::System
       manager_of_event_type(event_type).event_class
     end
 
+    # @return [Hash]
+    #
+    # @since 0.2.0
+    def registered_events
+      manager_registry.managed_events_map
+    end
+
     # @param event_class [EvilEvents::Core::Events::AbstractEvent]
     # @return [Boolean]
     #

@@ -175,6 +175,24 @@ describe 'Event Creation', :stub_event_system do
         EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError
       )
     end
+
+    specify 'list of created event classes' do
+      class DeployFinished < EvilEvents::Event['deploy_finished']
+      end
+
+      class PullRequestCreated < EvilEvents::Event['pull_request_created']
+      end
+
+      withdraw_processed = EvilEvents::Event.define('withdraw_processed')
+      deposit_rejected   = EvilEvents::Event.define('deposit_rejected')
+
+      expect(EvilEvents::Application.registered_events).to match(
+        'deploy_finished'      => DeployFinished,
+        'pull_request_created' => PullRequestCreated,
+        'withdraw_processed'   => withdraw_processed,
+        'deposit_rejected'     => deposit_rejected
+      )
+    end
   end
 
   describe 'object creation' do

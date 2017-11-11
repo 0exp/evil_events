@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe EvilEvents::Core::Events::EventExtensions::MetadataExtendable do
+describe EvilEvents::Core::Events::EventExtensions::MetadataExtendable, :stub_event_system do
   it_behaves_like 'metadata extendable interface' do
     let(:metadata_extendable_abstraction) do
       build_event_class_signature do |klass|
