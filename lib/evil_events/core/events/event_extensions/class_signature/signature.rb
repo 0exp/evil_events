@@ -32,7 +32,7 @@ module EvilEvents::Core::Events::EventExtensions::ClassSignature
     #
     # @since 0.2.0
     def class_stamp
-      { name: event_class.name,  creation_strategy: event_class.__creation_strategy }
+      { name: event_class.name, creation_strategy: event_class.__creation_strategy }
     end
 
     # @return [String]
@@ -59,8 +59,8 @@ module EvilEvents::Core::Events::EventExtensions::ClassSignature
     # @return [Boolean]
     #
     # @since 0.2.0
-    def ==(signature)
-      Equalizer.new(self, signature).similar_signatures?
+    def ==(other)
+      Equalizer.new(self, other).similar_signatures?
     end
     alias_method :eql?, :==
   end

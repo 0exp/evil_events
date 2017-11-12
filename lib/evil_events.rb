@@ -24,4 +24,5 @@ module EvilEvents
   require_relative 'evil_events/subscriber_mixin'
   require_relative 'evil_events/dispatcher_mixin'
   require_relative 'evil_events/application'
+  require_relative 'evil_events/plugins'
 end

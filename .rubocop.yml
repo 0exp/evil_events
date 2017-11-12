@@ -16,6 +16,10 @@ Style/SingleLineMethods:
   Exclude:
     - spec/**/*
 
+Style/RescueModifier:
+  Exclude:
+    - spec/**/*
+
 Style/AsciiComments:
   Enabled: false
 
