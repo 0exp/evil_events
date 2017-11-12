@@ -5,12 +5,21 @@ All notable changes to this project will be documented in this file.
 
 ### [Added]
 - Support for custom coercive types:
-  - New utility for generating the custom coercive types: `EvilEvents::Shared::TypeConverter`
+  - New utility for custom coercive types: `EvilEvents::Shared::TypeConverter`
   - `AbstractEvent` supports new coercive types (metadata and payload are supported)
   - Configuration point for coercive types: `EvilEvents::Config.setup_types { |types| ... }`
 - Configuration point for adapters: `EvilEvents::Config.setup_adapters { |adapters| ... }`
 - General class for internal errors: now all internal `*Error` classes inherits from `EvilEvents::Core::Error`
 - Access to the list of registered event classes via `EvilEvents::Application.registered_events`
+- Plugin ecosystem: see `EvilEvents::Plugins` (simple API example: `EvilEvents::Plugins.load!(:rails)`)
+- Comparable event class signature object `<EventClass>.signature` with data about:
+  -  class name
+  -  class creation strategy
+  -  adapter info (name and object)
+  -  default delegator method name
+  -  metadata attributes schema
+  -  payload attributes schema
+  -  string type alias
 
 ### [Changed]
 - Renamed config opts aggregator: `EvilEvents::Config.config` => `EvilEvents::Config.options`
