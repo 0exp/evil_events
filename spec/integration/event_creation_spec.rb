@@ -157,7 +157,7 @@ describe 'Event Creation', :stub_event_system do
       end.not_to raise_error
     end
 
-    specify 'fails when event type is already created' do
+    specify 'fails when event type is already in use' do
       EvilEvents::Event.define('mission_lost')
       expect { EvilEvents::Event.define('mission_lost') }.to raise_error(
         EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError

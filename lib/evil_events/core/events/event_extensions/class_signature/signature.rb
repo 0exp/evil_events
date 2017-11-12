@@ -28,11 +28,11 @@ module EvilEvents::Core::Events::EventExtensions::ClassSignature
       event_class::Metadata.schema
     end
 
-    # @return [String]
+    # @return [Hash]
     #
     # @since 0.2.0
     def class_stamp
-      event_class.name
+      { name: event_class.name,  creation_strategy: event_class.__creation_strategy }
     end
 
     # @return [String]

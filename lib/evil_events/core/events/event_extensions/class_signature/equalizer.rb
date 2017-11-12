@@ -68,13 +68,13 @@ module EvilEvents::Core::Events::EventExtensions::ClassSignature
     # @return [Boolean]
     #
     # @since 0.2.0
-    def similar_signatures?(strict: false)
-      equal_payload?   &&
-      equal_metadata?  &&
-      equal_delegator? &&
-      equal_adapter?   &&
-      (strict ? (equal_class? && equal_type_alias?)
-              : (equal_class? || equal_type_alias?))
+    def similar_signatures?
+      equal_type_alias? &&
+      equal_class?      &&
+      equal_payload?    &&
+      equal_metadata?   &&
+      equal_delegator?  &&
+      equal_adapter?
     end
   end
 end
