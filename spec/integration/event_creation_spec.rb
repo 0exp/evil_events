@@ -193,6 +193,116 @@ describe 'Event Creation', :stub_event_system do
         'deposit_rejected'     => deposit_rejected
       )
     end
+
+    specify 'event class signature' do
+      # anonymous block definition
+      deposit_approved = EvilEvents::Event.define('deposit_approved') do
+        default_delegator :process_event
+
+        payload :deposit_id, EvilEvents::Types::Strict::Int
+        payload :comment, :comment
+
+        metadata :timestamp
+        metadata :secure_id, :uuid, default: 'unknown'
+
+        adapter :memory_sync
+      end
+      signature = deposit_approved.signature
+
+      expect(signature.type_alias_stamp).to eq('deposit_approved')
+      expect(signature.delegator_stamp).to eq(:process_event)
+      expect(signature.adapter_stamp).to eq(memory_sync: EvilEvents::Config::Adapters[:memory_sync])
+      expect(signature.payload_stamp).to match(
+        deposit_id: EvilEvents::Types::Strict::Int,
+        comment: be_a(Dry::Types::Definition)
+      )
+      expect(signature.metadata_stamp).to match(
+        timestamp: EvilEvents::Types::Any,
+        secure_id: be_a(Dry::Types::Default::Callable)
+      )
+      expect(signature.class_stamp).to eq(
+        name: nil,
+        creation_strategy: :proc_eval
+      )
+
+      # constant-assigned block definition
+      DepositRejected = EvilEvents::Event.define('deposit_rejected') do
+        default_delegator :process_event
+
+        payload :deposit_id, EvilEvents::Types::Strict::Int
+        payload :comment, :comment
+
+        metadata :timestamp
+        metadata :secure_id, :uuid, default: 'unknown'
+
+        adapter :memory_sync
+      end
+      signature = DepositRejected.signature
+
+      expect(signature.type_alias_stamp).to eq('deposit_rejected')
+      expect(signature.delegator_stamp).to eq(:process_event)
+      expect(signature.adapter_stamp).to eq(memory_sync: EvilEvents::Config::Adapters[:memory_sync])
+      expect(signature.payload_stamp).to match(
+        deposit_id: EvilEvents::Types::Strict::Int,
+        comment:    be_a(Dry::Types::Definition)
+      )
+      expect(signature.metadata_stamp).to match(
+        timestamp: EvilEvents::Types::Any,
+        secure_id: be_a(Dry::Types::Default::Callable)
+      )
+      expect(signature.class_stamp).to eq(
+        name: 'DepositRejected',
+        creation_strategy: :proc_eval
+      )
+
+      # anonymous class definition
+      sprint_passed = Class.new(EvilEvents::Event['sprint_passed']) do
+        default_delegator :manage_event
+
+        payload :sprint_id, EvilEvents::Types::Int
+
+        metadata :points, EvilEvents::Types::Float
+
+        adapter :memory_async
+      end
+      signature = sprint_passed.signature
+
+      expect(signature.type_alias_stamp).to eq('sprint_passed')
+      expect(signature.delegator_stamp).to eq(:manage_event)
+      expect(signature.payload_stamp).to match(sprint_id: EvilEvents::Types::Int)
+      expect(signature.metadata_stamp).to match(points: EvilEvents::Types::Float)
+      expect(signature.adapter_stamp).to eq(
+        memory_async: EvilEvents::Config::Adapters[:memory_async]
+      )
+      expect(signature.class_stamp).to eq(
+        name: nil,
+        creation_strategy: :class_inheritance
+      )
+
+      # constant-assigned class definition
+      class SprintFailed < EvilEvents::Event['sprint_failed']
+        default_delegator :manage_event
+
+        payload :sprint_id, EvilEvents::Types::Int
+
+        metadata :points, EvilEvents::Types::Float
+
+        adapter :memory_async
+      end
+      signature = SprintFailed.signature
+
+      expect(signature.type_alias_stamp).to eq('sprint_failed')
+      expect(signature.delegator_stamp).to eq(:manage_event)
+      expect(signature.payload_stamp).to match(sprint_id: EvilEvents::Types::Int)
+      expect(signature.metadata_stamp).to match(points: EvilEvents::Types::Float)
+      expect(signature.adapter_stamp).to eq(
+        memory_async: EvilEvents::Config::Adapters[:memory_async]
+      )
+      expect(signature.class_stamp).to eq(
+        name: 'SprintFailed',
+        creation_strategy: :class_inheritance
+      )
+    end
   end
 
   describe 'object creation' do

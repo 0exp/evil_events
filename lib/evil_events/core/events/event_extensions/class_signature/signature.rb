@@ -5,6 +5,8 @@ module EvilEvents::Core::Events::EventExtensions::ClassSignature
   # @since 0.2.0
   class Signature
     # @return [Class{EvilEvents::Core::Events::AbstractEvent}]
+    #
+    # @since 0.2.0
     attr_reader :event_class
 
     # @param event_calass [Class{EvilEvents::Core::Events::AbstractEvent}]
@@ -56,6 +58,7 @@ module EvilEvents::Core::Events::EventExtensions::ClassSignature
       { event_class.adapter_name => event_class.adapter }
     end
 
+    # @param other [Signature]
     # @return [Boolean]
     #
     # @since 0.2.0

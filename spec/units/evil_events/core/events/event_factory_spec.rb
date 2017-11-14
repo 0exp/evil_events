@@ -45,22 +45,29 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
       end
 
       specify 'passed type alias becomes a type alias of a new created abstract class' do
-        abstract_event_class = described_class.create_abstract_class('overwatched')
-        expect(abstract_event_class.type).to eq('overwatched')
+        event_type = gen_str
+        abstract_event_class = described_class.create_abstract_class(event_type)
+        expect(abstract_event_class.type).to eq(event_type)
 
-        abstract_event_class = described_class.create_abstract_class('healed')
-        expect(abstract_event_class.type).to eq('healed')
+        event_type = gen_str
+        abstract_event_class = described_class.create_abstract_class(event_type)
+        expect(abstract_event_class.type).to eq(event_type)
       end
 
-      it 'doesnt registers new created class in manager regestry' do
-        described_class.create_abstract_class('destroyed')
+      it 'doesnt register new created class in manager regestry' do
+        described_class.create_abstract_class(gen_str)
         expect(event_system.event_manager.manager_registry).to be_empty
 
-        described_class.create_abstract_class('installed')
+        described_class.create_abstract_class(gen_str)
         expect(event_system.event_manager.manager_registry).to be_empty
       end
 
-      specify 'descendant of created class automatically registrates in manager registry' do
+      specify 'sets class creation strategy flag to :class_inheritance strategy' do
+        abstract_event_class = described_class.create_abstract_class(gen_str)
+        expect(abstract_event_class.__creation_strategy).to eq(:class_inheritance)
+      end
+
+      specify 'descendant of created class automatically registers in manager registry' do
         abstract_event_class         = described_class.create_abstract_class('created')
         concrete_event_class         = Class.new(abstract_event_class)
 
@@ -79,7 +86,7 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
         expect(manager_registry.size).to eq(2)
       end
 
-      specify 'duplications doesnt affects manager registry and fails with registry error' do
+      specify 'duplication doesnt affect manager registry and fails with registry error' do
         abstract_event_class   = described_class.create_abstract_class('inherited')
         concrete_event_class   = Class.new(abstract_event_class)
         concrete_event_manager = manager_registry.manager_of_event(concrete_event_class)
@@ -144,16 +151,22 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
         expect(event_instance).to be_a(events_namespace::AbstractEvent)
       end
 
-      specify 'duplication doesnt affects manager registry and fails with registry error' do
-        concrete_event_class   = described_class.create_class('requested')
+      specify 'sets class creation strategy flag to :proc_eval strategy' do
+        event_class = described_class.create_class(gen_str)
+        expect(event_class.__creation_strategy).to eq(:proc_eval)
+      end
+
+      specify 'duplication doesnt affect manager registry and fails with registry error' do
+        concrete_event_type    = gen_str
+        concrete_event_class   = described_class.create_class(concrete_event_type)
         concrete_event_manager = manager_registry.manager_of_event(concrete_event_class)
 
         # try to duplicate: run registration hooks again
-        expect { described_class.create_class('requested') }.to(
+        expect { described_class.create_class(concrete_event_type) }.to(
           raise_error(events_namespace::ManagerRegistry::AlreadyManagedEventClassError)
         )
         # try again
-        expect { described_class.create_class('requested') }.to(
+        expect { described_class.create_class(concrete_event_type) }.to(
           raise_error(events_namespace::ManagerRegistry::AlreadyManagedEventClassError)
         )
 

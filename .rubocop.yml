@@ -29,6 +29,9 @@ Style/Alias:
 Style/GuardClause:
   Enabled: false
 
+Style/DoubleNegation:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 
