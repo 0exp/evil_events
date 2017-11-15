@@ -3,9 +3,9 @@
 module SpecSupport::EventFactories
   module_function
 
-  def build_event_class_signature
+  def build_event_class_stub
     Class.new do
-      def initialize(payload: {}, metadata: {}); end
+      def initialize(id: nil, payload: {}, metadata: {}); end
 
       yield(self) if block_given?
     end

@@ -157,7 +157,7 @@ describe 'Event Creation', :stub_event_system do
       end.not_to raise_error
     end
 
-    specify 'fails when event type is already created' do
+    specify 'fails when event type is already in use' do
       EvilEvents::Event.define('mission_lost')
       expect { EvilEvents::Event.define('mission_lost') }.to raise_error(
         EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError
@@ -292,4 +292,141 @@ describe 'Event Creation', :stub_event_system do
       )
     end
   end
+
+  # rubocop:disable Metrics/LineLength
+  specify 'event class signature and signature equality' do
+    # anonymous block definition
+    deposit_approved = EvilEvents::Event.define('deposit_approved') do
+      default_delegator :process_event
+
+      payload :deposit_id, EvilEvents::Types::Strict::Int
+      payload :comment, :comment
+
+      metadata :timestamp
+      metadata :secure_id, :uuid, default: 'unknown'
+
+      adapter :memory_sync
+    end
+
+    # constant-assigned block definition
+    DepositRejected = EvilEvents::Event.define('deposit_rejected') do
+      default_delegator :process_event
+
+      payload :deposit_id, EvilEvents::Types::Strict::Int
+      payload :comment, :comment
+
+      metadata :timestamp
+      metadata :secure_id, :uuid, default: 'unknown'
+
+      adapter :memory_sync
+    end
+
+    # anonymous class definition
+    sprint_passed = Class.new(EvilEvents::Event['sprint_passed']) do
+      default_delegator :manage_event
+
+      payload :sprint_id, EvilEvents::Types::Int
+
+      metadata :points, EvilEvents::Types::Float
+
+      adapter :memory_async
+    end
+
+    # constant-assigned class definition
+    class SprintFailed < EvilEvents::Event['sprint_failed']
+      default_delegator :manage_event
+
+      payload :sprint_id, EvilEvents::Types::Int
+
+      metadata :points, EvilEvents::Types::Float
+
+      adapter :memory_async
+    end
+
+    deposit_approved_signature = deposit_approved.signature
+    deposit_rejected_signature = DepositRejected.signature
+    sprint_passed_signature    = sprint_passed.signature
+    sprint_failed_signature    = SprintFailed.signature
+
+    deposit_approved_signature.tap do |signature|
+      expect(signature.class_stamp).to      eq(name: nil, creation_strategy: :proc_eval)
+      expect(signature.type_alias_stamp).to eq('deposit_approved')
+      expect(signature.delegator_stamp).to  eq(:process_event)
+      expect(signature.adapter_stamp).to    eq(memory_sync: EvilEvents::Config::Adapters[:memory_sync])
+
+      expect(signature.payload_stamp).to match(
+        deposit_id: EvilEvents::Types::Strict::Int,
+        comment:    be_a(Dry::Types::Definition)
+      )
+
+      expect(signature.metadata_stamp).to match(
+        timestamp: EvilEvents::Types::Any,
+        secure_id: be_a(Dry::Types::Default::Callable)
+      )
+    end
+
+    deposit_rejected_signature.tap do |signature|
+      expect(signature.class_stamp).to      eq(name: 'DepositRejected', creation_strategy: :proc_eval)
+      expect(signature.type_alias_stamp).to eq('deposit_rejected')
+      expect(signature.delegator_stamp).to  eq(:process_event)
+      expect(signature.adapter_stamp).to    eq(memory_sync: EvilEvents::Config::Adapters[:memory_sync])
+
+      expect(signature.payload_stamp).to match(
+        deposit_id: EvilEvents::Types::Strict::Int,
+        comment:    be_a(Dry::Types::Definition)
+      )
+
+      expect(signature.metadata_stamp).to match(
+        timestamp: EvilEvents::Types::Any,
+        secure_id: be_a(Dry::Types::Default::Callable)
+      )
+    end
+
+    sprint_passed_signature.tap do |signature|
+      expect(signature.class_stamp).to      eq(name: nil, creation_strategy: :class_inheritance)
+      expect(signature.type_alias_stamp).to eq('sprint_passed')
+      expect(signature.delegator_stamp).to  eq(:manage_event)
+      expect(signature.adapter_stamp).to    eq(memory_async: EvilEvents::Config::Adapters[:memory_async])
+      expect(signature.payload_stamp).to    match(sprint_id: EvilEvents::Types::Int)
+      expect(signature.metadata_stamp).to   match(points: EvilEvents::Types::Float)
+    end
+
+    sprint_failed_signature.tap do |signature|
+      expect(signature.class_stamp).to      eq(name: 'SprintFailed', creation_strategy: :class_inheritance)
+      expect(signature.type_alias_stamp).to eq('sprint_failed')
+      expect(signature.delegator_stamp).to  eq(:manage_event)
+      expect(signature.adapter_stamp).to    eq(memory_async: EvilEvents::Config::Adapters[:memory_async])
+      expect(signature.payload_stamp).to    match(sprint_id: EvilEvents::Types::Int)
+      expect(signature.metadata_stamp).to   match(points: EvilEvents::Types::Float)
+    end
+
+    signatures = [
+      deposit_approved_signature,
+      deposit_rejected_signature,
+      sprint_passed_signature,
+      sprint_failed_signature
+    ]
+
+    signatures.product(signatures) do |(signature_a, signature_b)|
+      next if signature_a.object_id == signature_b.object_id
+      expect(signature_a).not_to eq(signature_b)
+    end
+
+    similar_sprint_passed_signature = sprint_passed.signature
+    expect(sprint_passed_signature).to eq(similar_sprint_passed_signature)
+    expect(sprint_passed_signature.object_id).not_to eq(similar_sprint_passed_signature.object_id)
+
+    similar_sprint_failed_signature = SprintFailed.signature
+    expect(sprint_failed_signature).to eq(similar_sprint_failed_signature)
+    expect(sprint_failed_signature.object_id).not_to eq(similar_sprint_failed_signature.object_id)
+
+    similar_deposit_approved_signature = deposit_approved.signature
+    expect(deposit_approved_signature).to eq(similar_deposit_approved_signature)
+    expect(deposit_approved_signature.object_id).not_to eq(similar_deposit_approved_signature.object_id)
+
+    similar_deposit_rejected_signature = DepositRejected.signature
+    expect(deposit_rejected_signature).to eq(similar_deposit_rejected_signature)
+    expect(deposit_rejected_signature.object_id).not_to eq(similar_deposit_rejected_signature.object_id)
+  end
+  # rubocop:enable Metrics/LineLength
 end

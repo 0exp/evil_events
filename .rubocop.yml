@@ -16,6 +16,10 @@ Style/SingleLineMethods:
   Exclude:
     - spec/**/*
 
+Style/RescueModifier:
+  Exclude:
+    - spec/**/*
+
 Style/AsciiComments:
   Enabled: false
 
@@ -23,6 +27,9 @@ Style/Alias:
   Enabled: false
 
 Style/GuardClause:
+  Enabled: false
+
+Style/DoubleNegation:
   Enabled: false
 
 Style/Documentation:
