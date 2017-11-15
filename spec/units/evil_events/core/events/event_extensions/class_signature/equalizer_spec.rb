@@ -42,13 +42,13 @@ describe EvilEvents::Core::Events::EventExtensions::ClassSignature::Equalizer do
     describe "##{equality_method}" do
       subject { equalizer.public_send(equality_method) }
 
-      context 'signatures with similar payload stmaps' do
+      context 'signatures with similar stmaps' do
         let(:equalizer) { equalizer_with_same_signatures }
 
         it { is_expected.to eq(true) }
       end
 
-      context 'signatures with different payload stamps' do
+      context 'signatures with different stamps' do
         let(:equalizer) { equalizer_with_different_signatures }
 
         it { is_expected.to eq(false) }

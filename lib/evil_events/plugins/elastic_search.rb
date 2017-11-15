@@ -2,5 +2,5 @@
 
 # @api public
 # @since 0.2.0
-module EvilEvents::Rails
+module EvilEvents::ElasticSearch
 end
