@@ -18,21 +18,24 @@ describe EvilEvents::Core::System, :stub_event_system do
       type_manager_module  = event_system.type_manager
       event_builder_module = EvilEvents::Core::System::EventBuilder
 
-      %i[emit raw_emit resolve_adapter].each do |method_name|
+      %i[emit raw_emit resolve_adapter register_adapter].each do |method_name|
         expect(broadcaster_module).to receive(method_name)
         event_system.public_send(method_name)
       end
 
       %i[
-        observe raw_observe observers register_event_class
+        observe raw_observe observe_list observers register_event_class
         unregister_event_class manager_of_event manager_of_event_type
-        resolve_event_object managed_event?
+        registered_events resolve_event_class resolve_event_object managed_event?
       ].each do |method_name|
         expect(event_manager_module).to receive(method_name)
         event_system.public_send(method_name)
       end
 
-      %i[define_event_class define_abstract_event_class].each do |method_name|
+      %i[
+        define_event_class define_abstract_event_class
+        deserialize_from_json deserialize_from_hash
+      ].each do |method_name|
         expect(event_builder_module).to receive(method_name)
         event_system.public_send(method_name)
       end

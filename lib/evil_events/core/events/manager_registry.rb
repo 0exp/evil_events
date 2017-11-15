@@ -45,8 +45,23 @@ module EvilEvents::Core::Events
     #
     # @since 0.1.0
     def manager_of_event_type(event_type)
-      event_class = managed_events.find { |managed_event| managed_event.type == event_type }
+      event_class = managed_events.find do |managed_event|
+        managed_event.type == event_type
+      end
+
       manager_of_event(event_class)
+    end
+
+    # @param event_pattern [Regexp]
+    # @return [Array<EvilEvents::Core::Events::Manager>]
+    #
+    # @since 0.2.0
+    def managers_of_event_pattern(event_pattern)
+      event_classes = managed_events.select do |managed_event|
+        managed_event.type.match(event_pattern)
+      end
+
+      event_classes.map { |event_class| manager_of_event(event_class) }
     end
 
     # @param manager [EvilEvents::Core::Events::Manager]

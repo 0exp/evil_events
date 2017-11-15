@@ -15,6 +15,8 @@ class EvilEvents::Core::Events::Subscriber
         EvilEvents::Core::Bootstrap[:event_system].observe(event_type, self, delegator)
       when String
         EvilEvents::Core::Bootstrap[:event_system].raw_observe(event_type, self, delegator)
+      when Regexp
+        EvilEvents::Core::Bootstrap[:event_system].observe_list(event_type, self, delegator)
       else
         raise ArgumentError
       end
