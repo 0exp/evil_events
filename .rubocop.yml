@@ -44,6 +44,9 @@ Style/EmptyCaseCondition:
 Style/FrozenStringLiteralComment:
   Enabled: true
 
+Style/InverseMethods:
+  Enabled: false
+
 Style/ParallelAssignment:
   Enabled: false
 

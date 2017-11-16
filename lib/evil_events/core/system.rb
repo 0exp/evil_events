@@ -30,6 +30,7 @@ module EvilEvents::Core
                    :observe,
                    :raw_observe,
                    :observe_list,
+                   :conditional_observe,
                    :observers,
                    :register_event_class,
                    :unregister_event_class,

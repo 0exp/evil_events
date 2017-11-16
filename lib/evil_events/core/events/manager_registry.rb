@@ -64,6 +64,18 @@ module EvilEvents::Core::Events
       event_classes.map { |event_class| manager_of_event(event_class) }
     end
 
+    # @param event_condition [Proc]
+    # @return [Array<EvilEvents::Core::Event::Manager>]
+    #
+    # @since 0.2.0
+    def managers_of_event_condition(event_condition)
+      event_classes = managed_events.select do |managed_event|
+        !!event_condition.call(managed_event.type)
+      end
+
+      event_classes.map { |event_class| manager_of_event(event_class) }
+    end
+
     # @param manager [EvilEvents::Core::Events::Manager]
     # @raise [IncorrectManagerObjectError]
     # @raise [AlreadyManagedEventClassError]

@@ -46,6 +46,17 @@ class EvilEvents::Core::System
                       .each { |manager| manager.observe(raw_subscriber, delegator) }
     end
 
+    # @param event_condition [Proc]
+    # @param raw_subscriber [Mixed]
+    # @param delegator [String, Symbol, NilClass]
+    # @return void
+    #
+    # @since 0.2.0
+    def conditional_observe(event_condition, raw_subscriber, delegator)
+      manager_registry.managers_of_event_condition(event_condition)
+                      .each { |manager| manager.observe(raw_subscriber, delegator) }
+    end
+
     # @param event_class [Class{EvilEvents::Core::Events::AbstractEvent}]
     # @return [Array<EvilEvents::Core::Events::Subscriber>]
     #

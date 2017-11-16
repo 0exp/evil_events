@@ -24,7 +24,7 @@ describe EvilEvents::Core::System, :stub_event_system do
       end
 
       %i[
-        observe raw_observe observe_list observers register_event_class
+        observe raw_observe observe_list conditional_observe observers register_event_class
         unregister_event_class manager_of_event manager_of_event_type
         registered_events resolve_event_class resolve_event_object managed_event?
       ].each do |method_name|
