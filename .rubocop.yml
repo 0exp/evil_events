@@ -78,6 +78,9 @@ Metrics/PerceivedComplexity:
 Metrics/MethodLength:
   Max: 25
 
+RSpec/ContextWording:
+  Enabled: false
+
 RSpec/HookArgument:
   Enabled: false
 
