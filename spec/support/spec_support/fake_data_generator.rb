@@ -8,7 +8,6 @@ module SpecSupport::FakeDataGenerator
   FLOAT_RANGE     = (0.0..100.0)
   STR_LENGTH      = 10
   STR_LETTERS     = (('a'..'z').to_a | ('A'..'Z').to_a).freeze
-  CLASS_LIST      = [Object, Class, BasicObject].freeze
 
   FACTORY_METHODS = %i[
     gen_int
@@ -91,7 +90,7 @@ module SpecSupport::FakeDataGenerator
   end
 
   def gen_class
-    CLASS_LIST.sample
+    Class.new
   end
 
   def gen_proc
