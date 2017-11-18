@@ -20,6 +20,8 @@ All notable changes to this project will be documented in this file.
   -  metadata attributes schema
   -  payload attributes schema
   -  string type alias
+- Event subscriptions via event type alias pattern (Regexp) and conditional proc (Proc)
+- The ability to subscribe to a list of events (via list of event type attributes)
 
 ### [Changed]
 - Renamed config opts aggregator: `EvilEvents::Config.config` => `EvilEvents::Config.options`
