@@ -26,21 +26,21 @@ Gem::Specification.new do |spec|
     f.match(%r{^(spec|features)/})
   end
 
-  spec.add_dependency 'dry-monads',       '0.3.1'
-  spec.add_dependency 'dry-types',        '0.12.1'
-  spec.add_dependency 'dry-struct',       '0.3.1'
-  spec.add_dependency 'dry-configurable', '0.7.0'
-  spec.add_dependency 'dry-container',    '0.6.0'
-  spec.add_dependency 'concurrent-ruby',  '1.0.5'
+  spec.add_dependency 'dry-monads',       '~> 0.4.0'
+  spec.add_dependency 'dry-types',        '~> 0.12.1'
+  spec.add_dependency 'dry-struct',       '~> 0.3.1'
+  spec.add_dependency 'dry-configurable', '~> 0.7.0'
+  spec.add_dependency 'dry-container',    '~> 0.6.0'
+  spec.add_dependency 'concurrent-ruby',  '~> 1.0.5'
 
-  spec.add_development_dependency 'coveralls',      '0.8.21'
-  spec.add_development_dependency 'pry',            '0.11.2'
-  spec.add_development_dependency 'simplecov',      '0.14.1'
-  spec.add_development_dependency 'simplecov-json', '0.2'
-  spec.add_development_dependency 'rubocop',        '0.51.0'
-  spec.add_development_dependency 'rake',           '12.2.1'
-  spec.add_development_dependency 'rspec',          '3.7.0'
-  spec.add_development_dependency 'rubocop-rspec',  '1.19.0'
+  spec.add_development_dependency 'coveralls',      '~> 0.8.21'
+  spec.add_development_dependency 'simplecov',      '~> 0.14.1'
+  spec.add_development_dependency 'simplecov-json', '~> 0.2'
+  spec.add_development_dependency 'rubocop',        '~> 0.51.0'
+  spec.add_development_dependency 'rspec',          '~> 3.7.0'
+  spec.add_development_dependency 'rubocop-rspec',  '~> 1.20.1'
 
+  spec.add_development_dependency 'pry'
+  spec.add_development_dependency 'rake'
   spec.add_development_dependency 'bundler'
 end
