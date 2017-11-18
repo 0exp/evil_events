@@ -14,10 +14,6 @@ describe 'Event Broadcasting', :stub_event_system do
         @event_store = []
       end
 
-      def clear!
-        event_store.clear
-      end
-
       def store(event)
         event_store << event
       end
@@ -34,19 +30,38 @@ describe 'Event Broadcasting', :stub_event_system do
         @events = []
       end
 
-      def clear!
-        events.clear
-      end
-
       def push(event)
         events << event
       end
     end.new
   end
 
+  let(:event_counter) do
+    Class.new do
+      include EvilEvents::SubscriberMixin
+
+      def initialize
+        @event_counter = Concurrent::Atom.new(0)
+      end
+
+      def increase!(_event)
+        event_counter.swap { |count| count + 1 }
+      end
+
+      def count
+        event_counter.value
+      end
+
+      private
+
+      attr_reader :event_counter
+    end.new
+  end
+
   before do
     stub_const('::ElasticSearchStub', elastic_search)
     stub_const('::EventStoreStub', event_store)
+    stub_const('::EventCounter', event_counter)
 
     EvilEvents::Config.configure do |config|
       config.logger = silent_logger
@@ -78,12 +93,32 @@ describe 'Event Broadcasting', :stub_event_system do
     end
 
     # subscribe to events
-    ElasticSearchStub.subscribe_to 'overwatch_released', delegator: :store # via identificator
-    ElasticSearchStub.subscribe_to MatchLost, delegator: :store # via class
 
-    # subscribe to events
-    EventStoreStub.subscribe_to OverwatchReleased, delegator: :push # via class
-    EventStoreStub.subscribe_to 'match_lost', delegator: :push # via identificator
+    # via event type alias
+    ElasticSearchStub.subscribe_to 'overwatch_released', delegator: :store
+    # via event class
+    ElasticSearchStub.subscribe_to MatchLost, delegator: :store
+    # via conditional proc
+    EventCounter.subscribe_to ->(event_type) { event_type == 'match_lost' }, delegator: :increase!
+    # via event pattern
+    EventCounter.subscribe_to /.*?overwatch.*?/i, delegator: :increase!
+    # combination
+    EventStoreStub.subscribe_to 'match_lost', OverwatchReleased, delegator: :push
+
+    # fails: unexistent event type alias
+    expect do
+      ElasticSearchStub.subscribe_to 'withdraw_processed', delegator: :complete
+    end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+
+    # fails: unexistent event  class
+    expect do
+      EventStoreStub.subscribe_to Object
+    end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+
+    # fails: unsupported attribute type
+    expect { EventStoreStub.subscribe_to 123 }.to    raise_error(EvilEvents::Core::ArgumentError)
+    expect { ElasticSearchStub.subscribe_to 1.0 }.to raise_error(EvilEvents::Core::ArgumentError)
+    expect { EventCounter.subscribe_to :none }.to    raise_error(EvilEvents::Core::ArgumentError)
 
     # check the first approach: event objects
     # create event objects
@@ -103,6 +138,7 @@ describe 'Event Broadcasting', :stub_event_system do
     # check state of subscribers
     expect(ElasticSearchStub.event_store).to contain_exactly(match_event, overwatch_event)
     expect(EventStoreStub.events).to contain_exactly(match_event, overwatch_event)
+    expect(EventCounter.count).to eq(2)
 
     # check log output of the first event data
     expect(silent_output.string).to include(
@@ -153,6 +189,9 @@ describe 'Event Broadcasting', :stub_event_system do
     # BROADCASTING: attributes aproach
     EvilEvents::Emitter.emit('match_lost', **match_lost_attrs)
     EvilEvents::Emitter.emit('overwatch_released', **overwatch_released_attrs)
+
+    # check state of subscriber
+    expect(EventCounter.count).to eq(4)
 
     # check state of subscriber
     # check consistency
@@ -209,7 +248,7 @@ describe 'Event Broadcasting', :stub_event_system do
     )
 
     # check log output for the notifier activity
-    [ElasticSearchStub, EventStoreStub].each do |subscriber|
+    [ElasticSearchStub, EventStoreStub, EventCounter].each do |subscriber|
       expect(silent_output.string).to match(
         Regexp.union(
           /\[EvilEvents:EventProcessed\(match_lost\)\s/,

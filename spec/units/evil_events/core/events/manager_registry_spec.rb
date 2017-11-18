@@ -205,51 +205,108 @@ describe EvilEvents::Core::Events::ManagerRegistry do
         end
       end
 
-      describe '#manager_of_event' do
+      describe 'fetching event manager objects' do
         context 'when registry has manager of required event' do
           before do
             registry.register(first_manager)
             registry.register(second_manager)
           end
 
-          it 'returns manager of required event by event class' do
-            expect(registry.manager_of_event(first_event_class)).to  eq(first_manager)
-            expect(registry.manager_of_event(second_event_class)).to eq(second_manager)
+          describe '#manager_of_event' do
+            it 'returns manager of required event by event class' do
+              expect(registry.manager_of_event(first_event_class)).to  eq(first_manager)
+              expect(registry.manager_of_event(second_event_class)).to eq(second_manager)
+            end
+          end
+
+          describe '#manager_of_event_type' do
+            it 'returns manager of required event by event type alias' do
+              expect(registry.manager_of_event_type(first_event_class.type)).to eq(
+                first_manager
+              )
+
+              expect(registry.manager_of_event_type(second_event_class.type)).to eq(
+                second_manager
+              )
+            end
+          end
+
+          describe '#managers_of_event_pattern' do
+            it 'returns manager of required event by type alias regexp' do
+              first_event_pattern = /\Afirst_event\z/
+
+              expect(registry.managers_of_event_pattern(first_event_pattern)).to contain_exactly(
+                first_manager
+              )
+
+              second_event_pattern = /\Asecond_event\z/
+
+              expect(registry.managers_of_event_pattern(second_event_pattern)).to contain_exactly(
+                second_manager
+              )
+
+              all_in_pattern = /.+/
+
+              expect(registry.managers_of_event_pattern(all_in_pattern)).to contain_exactly(
+                first_manager,
+                second_manager
+              )
+            end
+          end
+
+          describe '#managers_of_event_condition' do
+            it 'returns a list of managers which aliases has passed required condition (proc)' do
+              condition = ->(event_type) { event_type.match(/\A[a-z]+_[a-z]+\z/i) }
+
+              expect(registry.managers_of_event_condition(condition)).to contain_exactly(
+                first_manager,
+                second_manager
+              )
+
+              condition = ->(event_type) { event_type == 'first_event' }
+
+              expect(registry.managers_of_event_condition(condition)).to contain_exactly(
+                first_manager
+              )
+
+              condition = ->(event_type) { event_type == 'second_event' }
+
+              expect(registry.managers_of_event_condition(condition)).to contain_exactly(
+                second_manager
+              )
+            end
           end
         end
 
         context 'when registry doesnt have manager of required event' do
-          it 'fails with appropriate error' do
-            expect { registry.manager_of_event(first_event_class) }.to(
-              raise_error(described_class::NonManagedEventClassError)
-            )
-          end
-        end
-      end
-
-      describe '#manager_of_event_type' do
-        context 'when registry has manager of required event type' do
-          before do
-            registry.register(first_manager)
-            registry.register(second_manager)
+          describe '#manager_of_event' do
+            it 'fails with appropriate error' do
+              expect { registry.manager_of_event(first_event_class) }.to(
+                raise_error(described_class::NonManagedEventClassError)
+              )
+            end
           end
 
-          it 'returns manager of required event by event type alias' do
-            expect(registry.manager_of_event_type(first_event_class.type)).to eq(
-              first_manager
-            )
-
-            expect(registry.manager_of_event_type(second_event_class.type)).to eq(
-              second_manager
-            )
+          describe '#manager_of_event_type' do
+            it 'fails with appropirated error' do
+              expect { registry.manager_of_event_type('test_event') }.to(
+                raise_error(described_class::NonManagedEventClassError)
+              )
+            end
           end
-        end
 
-        context 'when registry hasnt manager of required event type' do
-          it 'fails with appropirated error' do
-            expect { registry.manager_of_event_type('test_event') }.to(
-              raise_error(described_class::NonManagedEventClassError)
-            )
+          describe '#managers_of_event_pattern' do
+            it 'fails with appropriate error' do
+              expect(registry.managers_of_event_pattern(/\Afirst_event\z/)).to   eq([])
+              expect(registry.managers_of_event_pattern(/\Asecond_event\z/)).to  eq([])
+              expect(registry.managers_of_event_pattern(/\A.+\z/)).to eq([])
+            end
+          end
+
+          describe '#manager_of_event_condition' do
+            it 'returns an empty collection' do
+              expect(registry.managers_of_event_condition(proc {})).to eq([])
+            end
           end
         end
       end

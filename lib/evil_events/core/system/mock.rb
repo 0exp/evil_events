@@ -24,6 +24,14 @@ class EvilEvents::Core::System
     def raw_observe(event_type, raw_subscriber, delegator); end
 
     # @see EvilEvents::Core::System
+    # @since 0.2.0
+    def observe_list(event_pattern, raw_subscriber, delegator); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.2.0
+    def conditional_observe(event_condition, raw_subscriber, delegator); end
+
+    # @see EvilEvents::Core::System
     # @since 0.1.0
     def observers(event_class); end
 

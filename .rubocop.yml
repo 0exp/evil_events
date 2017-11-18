@@ -44,10 +44,16 @@ Style/EmptyCaseCondition:
 Style/FrozenStringLiteralComment:
   Enabled: true
 
+Style/InverseMethods:
+  Enabled: false
+
 Style/ParallelAssignment:
   Enabled: false
 
 Style/CommentedKeyword:
+  Enabled: false
+
+Lint/AmbiguousRegexpLiteral:
   Enabled: false
 
 Naming/FileName:
@@ -76,7 +82,7 @@ RSpec/HookArgument:
   Enabled: false
 
 RSpec/NestedGroups:
-  Max: 5
+  Max: 6
 
 RSpec/MessageSpies:
   Enabled: false

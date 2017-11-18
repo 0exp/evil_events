@@ -14,7 +14,7 @@ class EvilEvents::Core::System
     end
 
     # @param event_class [Class{Evilevents::Core::Events::AbstractEvent}]
-    # @param raw_subscriber [Object]
+    # @param raw_subscriber [Mixed]
     # @param delegator [String, Symbol, NilClass]
     # @return void
     #
@@ -25,7 +25,7 @@ class EvilEvents::Core::System
     end
 
     # @param event_type [String, Symbol]
-    # @param raw_subscriber [Object]
+    # @param raw_subscriber [Mixed]
     # @param delegator [String, Symbol, NilClass]
     # @return void
     #
@@ -33,6 +33,28 @@ class EvilEvents::Core::System
     def raw_observe(event_type, raw_subscriber, delegator)
       manager_registry.manager_of_event_type(event_type)
                       .observe(raw_subscriber, delegator)
+    end
+
+    # @param event_pattern [Regexp]
+    # @param raw_subscriber [Mixed]
+    # @param delegator [String, Symbol, NilClass]
+    # @return void
+    #
+    # @since 0.2.0
+    def observe_list(event_pattern, raw_subscriber, delegator)
+      manager_registry.managers_of_event_pattern(event_pattern)
+                      .each { |manager| manager.observe(raw_subscriber, delegator) }
+    end
+
+    # @param event_condition [Proc]
+    # @param raw_subscriber [Mixed]
+    # @param delegator [String, Symbol, NilClass]
+    # @return void
+    #
+    # @since 0.2.0
+    def conditional_observe(event_condition, raw_subscriber, delegator)
+      manager_registry.managers_of_event_condition(event_condition)
+                      .each { |manager| manager.observe(raw_subscriber, delegator) }
     end
 
     # @param event_class [Class{EvilEvents::Core::Events::AbstractEvent}]
