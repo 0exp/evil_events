@@ -93,14 +93,32 @@ describe 'Event Broadcasting', :stub_event_system do
     end
 
     # subscribe to events
-    ElasticSearchStub.subscribe_to 'overwatch_released', MatchLost, delegator: :store
-    EventStoreStub.subscribe_to    'match_lost', OverwatchReleased, delegator: :push
 
-    EventCounter.subscribe_to(
-      ->(event_type) { event_type == 'match_lost' },
-      /.*?overwatch.*?/i,
-      delegator: :increase!
-    )
+    # via event type alias
+    ElasticSearchStub.subscribe_to 'overwatch_released', delegator: :store
+    # via event class
+    ElasticSearchStub.subscribe_to MatchLost, delegator: :store
+    # via conditional proc
+    EventCounter.subscribe_to ->(event_type) { event_type == 'match_lost' }, delegator: :increase!
+    # via event pattern
+    EventCounter.subscribe_to /.*?overwatch.*?/i, delegator: :increase!
+    # combination
+    EventStoreStub.subscribe_to 'match_lost', OverwatchReleased, delegator: :push
+
+    # fails: unexistent event type alias
+    expect do
+      ElasticSearchStub.subscribe_to 'withdraw_processed', delegator: :complete
+    end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+
+    # fails: unexistent event  class
+    expect do
+      EventStoreStub.subscribe_to Object
+    end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+
+    # fails: unsupported attribute type
+    expect { EventStoreStub.subscribe_to 123 }.to    raise_error(EvilEvents::Core::ArgumentError)
+    expect { ElasticSearchStub.subscribe_to 1.0 }.to raise_error(EvilEvents::Core::ArgumentError)
+    expect { EventCounter.subscribe_to :none }.to    raise_error(EvilEvents::Core::ArgumentError)
 
     # check the first approach: event objects
     # create event objects

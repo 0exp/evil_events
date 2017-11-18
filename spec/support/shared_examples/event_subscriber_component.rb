@@ -166,7 +166,10 @@ shared_context 'event subscriber component' do
       end
 
       it 'raises ArgumentError for non-string/non-class event type argument' do
-        expect { subscribeable.subscribe_to event_class.new }.to raise_error(ArgumentError)
+        expect do
+          subscribeable.subscribe_to event_class.new
+        end.to raise_error(EvilEvents::Core::ArgumentError)
+
         expect(event_class.observers).to be_empty
       end
 

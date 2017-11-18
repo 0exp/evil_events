@@ -6,11 +6,11 @@ class EvilEvents::Core::Events::Subscriber
   Mixin = EvilEvents::Shared::ClonableModuleBuilder.build do
     # @param event_type [Array<String, Class{EvilEvents::Core::Events::AbstractEvent}, Regexp>]
     # @param delegator [String, Symbol, NilClass]
-    # @raise [ArgumentError]
+    # @raise [EvilEvents::Core::ArgumentError]
     #
     # @since 0.2.0
     def subscribe_to(*event_types, delegator: nil)
-      raise ArgumentError unless event_types.all? do |event_type|
+      raise EvilEvents::Core::ArgumentError unless event_types.all? do |event_type|
         event_type.is_a?(Class) ||
         event_type.is_a?(String) ||
         event_type.is_a?(Regexp) ||
