@@ -44,7 +44,7 @@ describe 'Event Broadcasting', :stub_event_system do
         @event_counter = Concurrent::Atom.new(0)
       end
 
-      def increase!(event)
+      def increase!(_event)
         event_counter.swap { |count| count + 1 }
       end
 

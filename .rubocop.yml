@@ -53,6 +53,9 @@ Style/ParallelAssignment:
 Style/CommentedKeyword:
   Enabled: false
 
+Lint/AmbiguousRegexpLiteral:
+  Enabled: false
+
 Naming/FileName:
   Enabled: false
 
@@ -79,7 +82,7 @@ RSpec/HookArgument:
   Enabled: false
 
 RSpec/NestedGroups:
-  Max: 5
+  Max: 6
 
 RSpec/MessageSpies:
   Enabled: false

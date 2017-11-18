@@ -267,7 +267,7 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
 
       describe '#observe_list' do
         it 'subscribes an object to events whose alias is comparable with a pattern' do
-          subscriber, delegator = (-> (event) {}), gen_symb(only_letters: true)
+          subscriber, delegator = (->(event) {}), gen_symb(only_letters: true)
 
           pattern = /#{gen_str}/ # no matches
           event_manager.observe_list(pattern, subscriber, delegator)
@@ -294,17 +294,17 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
 
       describe '#conditional_observe' do
         specify 'condition of alias isnt false/nil ==> subscribes an object to this event' do
-          subscriber, delegator = (-> (event) {}), gen_symb(only_letters: true)
+          subscriber, delegator = (->(event) {}), gen_symb(only_letters: true)
 
           # fail condition => doesnt register
-          condition = -> (event_type) { false }
+          condition = ->(_event_type) { false }
           event_manager.conditional_observe(condition, subscriber, delegator)
 
           expect(first_manager.subscribers.registered?(subscriber)).to eq(false)
           expect(second_manager.subscribers.registered?(subscriber)).to eq(false)
 
           # true for another_event_class => subscribes on this
-          condition = -> (event_type) { event_type == 'another_test_event' }
+          condition = ->(event_type) { event_type == 'another_test_event' }
           event_manager.conditional_observe(condition, subscriber, delegator)
 
           expect(first_manager.subscribers.registered?(subscriber)).to eq(false)
@@ -312,7 +312,7 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
           expect(second_manager.subscribers.wrapper_of(subscriber).delegator).to eq(delegator)
 
           # true for all => subscribes on all
-          condition = -> (event_type) { event_type.match(/.+/) }
+          condition = ->(event_type) { event_type.match(/.+/) }
           event_manager.conditional_observe(condition, subscriber, delegator)
 
           expect(first_manager.subscribers.registered?(subscriber)).to eq(true)
