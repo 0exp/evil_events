@@ -5,7 +5,7 @@ module EvilEvents::Core::Events::EventExtensions
   # @since 0.1.0
   module TypeAliasing
     # @since 0.1.0
-    TypeAliasingError = Class.new(StandardError)
+    TypeAliasingError = Class.new(EvilEvents::Core::Error)
     # @since 0.1.0
     IncopatibleEventTypeError = Class.new(TypeAliasingError)
     # @since 0.1.0

@@ -11,7 +11,7 @@ module EvilEvents::Shared
     # @api public
     # @since 0.1.0
     def uuid
-      SecureRandom.uuid
+      ::SecureRandom.uuid
     end
   end
 end

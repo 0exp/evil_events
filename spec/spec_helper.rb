@@ -17,7 +17,6 @@ require 'pry'
 require 'bundler/setup'
 require 'dry/container/stub'
 require 'evil_events'
-require 'securerandom'
 
 require_relative 'support/spec_support'
 require_relative 'support/shared_examples'
@@ -33,4 +32,5 @@ RSpec.configure do |config|
   config.include SpecSupport::EventManagerFactories
   config.include SpecSupport::DispatchingAdapterFactories
   config.include SpecSupport::FakeDataGenerator
+  config.extend  SpecSupport::FakeDataGenerator
 end

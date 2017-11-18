@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 shared_examples 'emittable interface' do
-  describe 'event invokation behaviour', :mock_event_system do
+  describe 'event invocation behaviour', :mock_event_system do
     describe '#emit!' do
       it 'delegates event handling process to the event system' do
         expect(EvilEvents::Core::Bootstrap[:event_system]).to(

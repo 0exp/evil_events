@@ -5,7 +5,9 @@ module EvilEvents::Core::Events
   # @since 0.1.1
   module EventFactory
     # @since 0.1.1
-    UNDEFINED_EVENT_ID = 'unknown'
+    UNDEFINED_EVENT_ID         = 'unknown'
+    CLASS_INHERITANCE_STRATEGY = :class_inheritance
+    PROC_EVAL_STRATEGY         = :proc_eval
 
     module_function
 
@@ -17,10 +19,12 @@ module EvilEvents::Core::Events
     def create_abstract_class(event_type)
       Class.new(AbstractEvent).tap do |klass|
         klass.type(event_type)
+        klass.__creation_strategy = CLASS_INHERITANCE_STRATEGY
 
         class << klass
           def inherited(child_class)
             child_class.type(type)
+            child_class.__creation_strategy = CLASS_INHERITANCE_STRATEGY
             child_class.manage!
           rescue EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError
             EvilEvents::Core::Bootstrap[:event_system].unregister_event_class(child_class)
@@ -40,10 +44,11 @@ module EvilEvents::Core::Events
     def create_class(event_type, &event_class_definitions)
       Class.new(AbstractEvent).tap do |klass|
         begin
+          klass.__creation_strategy = PROC_EVAL_STRATEGY
           klass.type(event_type)
           klass.manage!
           klass.evaluate(&event_class_definitions) if block_given?
-        rescue EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError
+        rescue StandardError
           EvilEvents::Core::Bootstrap[:event_system].unregister_event_class(klass)
           raise
         end

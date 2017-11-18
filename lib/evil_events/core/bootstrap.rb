@@ -8,6 +8,6 @@ module EvilEvents::Core
     extend EvilEvents::Shared::DependencyContainer::Mixin
 
     register(:event_system, memoize: true) { EvilEvents::Core::System.new }
-    register(:config, memoize: true) { EvilEvents::Config.new }
+    register(:config, memoize: true) { EvilEvents::Core::Config.new }
   end
 end

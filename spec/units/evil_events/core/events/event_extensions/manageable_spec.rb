@@ -3,7 +3,7 @@
 describe EvilEvents::Core::Events::EventExtensions::Manageable do
   it_behaves_like 'manageable interface' do
     let(:manageable) do
-      build_event_class_signature do |klass|
+      build_event_class_stub do |klass|
         klass.include described_class
       end
     end

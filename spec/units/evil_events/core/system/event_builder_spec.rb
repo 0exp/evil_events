@@ -39,9 +39,9 @@ describe EvilEvents::Core::System::EventBuilder, :stub_event_system do
 
     specify 'required attributes' do
       expect { described_class.define_event_class }.to raise_error(ArgumentError)
-      expect { described_class.define_event_class('test', double) }.to raise_error(ArgumentError)
-      expect { described_class.define_event_class('suite_event') }.not_to raise_error
-      expect { described_class.define_event_class('spec_event', &(proc {})) }.not_to raise_error
+      expect { described_class.define_event_class(gen_str, double) }.to raise_error(ArgumentError)
+      expect { described_class.define_event_class(gen_str) }.not_to raise_error
+      expect { described_class.define_event_class(gen_str, &gen_proc) }.not_to raise_error
     end
   end
 
@@ -66,9 +66,9 @@ describe EvilEvents::Core::System::EventBuilder, :stub_event_system do
 
     specify 'required attributes' do
       expect { described_class.define_event_class }.to raise_error(ArgumentError)
-      expect { described_class.define_event_class('test', double) }.to raise_error(ArgumentError)
-      expect { described_class.define_event_class('suite_event') }.not_to raise_error
-      expect { described_class.define_event_class('spec_event', &(proc {})) }.not_to raise_error
+      expect { described_class.define_event_class(gen_str, double) }.to raise_error(ArgumentError)
+      expect { described_class.define_event_class(gen_str) }.not_to raise_error
+      expect { described_class.define_event_class(gen_str, &gen_proc) }.not_to raise_error
     end
   end
 end

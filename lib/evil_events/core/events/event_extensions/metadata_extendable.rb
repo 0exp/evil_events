@@ -19,7 +19,7 @@ module EvilEvents::Core::Events::EventExtensions
     #
     # @since 0.1.0
     def build_metadata(**metadata_attributes)
-      self.class.const_get(:Metadata).new(**metadata_attributes)
+      self.class.metadata_class.new(**metadata_attributes)
     end
 
     # @since 0.1.0
@@ -32,20 +32,32 @@ module EvilEvents::Core::Events::EventExtensions
         super
       end
 
+      # @return [Class{AbstractMetadata}]
+      #
+      # @since 0.2.0
+      def metadata_class
+        const_get(:Metadata)
+      end
+
       # @param key [Symbol]
       # @param type [EvilEvents::Shared::Types::Any]
+      # @param options [Hash]
       # @return void
       #
       # @since 0.1.0
-      def metadata(key, type = EvilEvents::Types::Any)
-        const_get(:Metadata).attribute(key, type)
+      def metadata(key, type = EvilEvents::Types::Any, **options)
+        if type.is_a?(Symbol)
+          type = EvilEvents::Core::Bootstrap[:event_system].resolve_type(type, **options)
+        end
+
+        metadata_class.attribute(key, type)
       end
 
       # @return [Array<Symbol>]
       #
       # @since 0.1.0
       def metadata_fields
-        const_get(:Metadata).attribute_names
+        metadata_class.attribute_names
       end
     end
   end

@@ -41,6 +41,29 @@ describe 'Event Creation', :stub_event_system do
     stub_const('::ElasticSearchStub', elastic_search)
     stub_const('::EventDatabaseStub', event_database)
     stub_const('::RegistratorStub',   registrator)
+
+    EvilEvents::Config.setup_types do |types|
+      types.define_converter(:uuid) do |value|
+        value.gsub(/[0-9]/, '*')
+      end
+
+      types.define_converter(:comment) do |value|
+        value.to_s.strip
+      end
+
+      types.define_converter(:bigdecimal) do |value|
+        BigDecimal.new(value)
+      end
+
+      types.define_converter(:timestamp) do |value|
+        Time.parse(value)
+      end
+    end
+
+    EvilEvents::Config.setup_adapters do |adapters|
+      adapters.register(:sidekiq, build_adapter_class)
+      adapters.register(:faktory, build_adapter_class)
+    end
   end
 
   describe 'class creation' do
@@ -54,9 +77,11 @@ describe 'Event Creation', :stub_event_system do
           # payload keys
           payload :user_id,  EvilEvents::Types::Strict::Int
           payload :utm_link, EvilEvents::Types::Strict::String
+          payload :comment,  :comment
 
           # metadata keys
-          metadata :timestamp
+          metadata :timestamp # Dry::Types
+          metadata :secure_id, :uuid, default: 'unknown'
 
           # observers that will receive/handle events via delegator method
           observe ElasticSearchStub, delegator: :store
@@ -70,7 +95,7 @@ describe 'Event Creation', :stub_event_system do
         # event type alias ('access_granted')
         EvilEvents::Event.define('access_granted') do
           # payload keys
-          payload :user_id
+          payload :user_id, :bigdecimal, default: -1
           payload :access_level
           payload :grant_service
 
@@ -81,7 +106,7 @@ describe 'Event Creation', :stub_event_system do
           observe ElasticSearchStub, delegator: :store
 
           # adapter that will handle events of this class
-          adapter :memory_async
+          adapter :sidekiq
         end
       end.not_to raise_error
     end
@@ -99,7 +124,8 @@ describe 'Event Creation', :stub_event_system do
 
           # metadata keys
           metadata :timestamp
-          metadata :ref_id
+          metadata :ref_id,   :bigdecimal
+          metadata :tech_msg, :comment, default: -> { 'nothing' }
 
           # observers that will receive/handle events via delegator method
           observe ElasticSearchStub, delegator: :store
@@ -117,7 +143,7 @@ describe 'Event Creation', :stub_event_system do
           payload :score,     EvilEvents::Types::Strict::Float
 
           # metadata keys
-          metadata :timestamp
+          metadata :timestamp, :timestamp
           metadata :version
 
           # observers that will receive/handle events via delegator method
@@ -126,12 +152,12 @@ describe 'Event Creation', :stub_event_system do
           observe RegistratorStub,   delegator: :process_event
 
           # adapter that will handle events of this class
-          adapter :memory_async
+          adapter :faktory
         end
       end.not_to raise_error
     end
 
-    specify 'fails when event type is already created' do
+    specify 'fails when event type is already in use' do
       EvilEvents::Event.define('mission_lost')
       expect { EvilEvents::Event.define('mission_lost') }.to raise_error(
         EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError
@@ -147,6 +173,24 @@ describe 'Event Creation', :stub_event_system do
       )
       expect { Class.new(EvilEvents::Event['mission_lost']) }.to raise_error(
         EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError
+      )
+    end
+
+    specify 'list of created event classes' do
+      class DeployFinished < EvilEvents::Event['deploy_finished']
+      end
+
+      class PullRequestCreated < EvilEvents::Event['pull_request_created']
+      end
+
+      withdraw_processed = EvilEvents::Event.define('withdraw_processed')
+      deposit_rejected   = EvilEvents::Event.define('deposit_rejected')
+
+      expect(EvilEvents::Application.registered_events).to match(
+        'deploy_finished'      => DeployFinished,
+        'pull_request_created' => PullRequestCreated,
+        'withdraw_processed'   => withdraw_processed,
+        'deposit_rejected'     => deposit_rejected
       )
     end
   end
@@ -182,15 +226,17 @@ describe 'Event Creation', :stub_event_system do
       DocumentRejected = EvilEvents::Event.define('document_rejected') do
         payload :document_type, EvilEvents::Types::Strict::String
         payload :reason,        EvilEvents::Types::Strict::String.default('violation')
+        payload :tech_comment,  :comment, default: nil
 
         metadata :timestamp, EvilEvents::Types::Strict::Int.default(0)
+        metadata :server_id, :uuid, default: 'undefined'
       end
 
       # define event object with valid types of attributes
       expect do
         DocumentRejected.new(
-          payload:  { document_type: 'bank_card', reason: 'invalid' },
-          metadata: { timestamp: 147_555 }
+          payload:  { document_type: 'bank_card', reason: 'invalid', tech_comment: 'test' },
+          metadata: { timestamp: 147_555, server_id: 'A123B456C789D0' }
         )
       end.not_to raise_error
 
@@ -220,16 +266,167 @@ describe 'Event Creation', :stub_event_system do
 
       # fetching object attributes (payload and metadata with default values)
       event = DocumentRejected.new(payload: { document_type: 'employee_data' })
-      expect(event.payload).to  match(document_type: 'employee_data', reason: 'violation')
-      expect(event.metadata).to match(timestamp: 0)
-
-      # fetchong object attrobutes (payload and metadata with defined default options)
-      event = DocumentRejected.new(
-        payload:  { document_type: 'disk_info', reason: 'broken_data' },
-        metadata: { timestamp: 666_777 }
+      expect(event.metadata).to match(
+        timestamp: 0, # Dry::Types is used
+        server_id: 'undefined', # coercible type is used
       )
-      expect(event.payload).to  match(document_type: 'disk_info', reason: 'broken_data')
-      expect(event.metadata).to match(timestamp: 666_777)
+      expect(event.payload).to match(
+        document_type: 'employee_data',
+        reason:        'violation', # Dry::Types is used
+        tech_comment:  nil # coercible type is used
+      )
+
+      # fetching object attributes (payload and metadata with defined default options)
+      event = DocumentRejected.new(
+        payload:  { document_type: 'disk_info', reason: 'broken_data', tech_comment: ' rspec ' },
+        metadata: { timestamp: 666_777, server_id: 'A123B456C789D0' }
+      )
+      expect(event.payload).to match(
+        document_type: 'disk_info',
+        reason:        'broken_data',
+        tech_comment:  'rspec' # coercible type is used
+      )
+      expect(event.metadata).to match(
+        timestamp: 666_777,
+        server_id: 'A***B***C***D*' # coercible type is used
+      )
     end
   end
+
+  # rubocop:disable Metrics/LineLength
+  specify 'event class signature and signature equality' do
+    # anonymous block definition
+    deposit_approved = EvilEvents::Event.define('deposit_approved') do
+      default_delegator :process_event
+
+      payload :deposit_id, EvilEvents::Types::Strict::Int
+      payload :comment, :comment
+
+      metadata :timestamp
+      metadata :secure_id, :uuid, default: 'unknown'
+
+      adapter :memory_sync
+    end
+
+    # constant-assigned block definition
+    DepositRejected = EvilEvents::Event.define('deposit_rejected') do
+      default_delegator :process_event
+
+      payload :deposit_id, EvilEvents::Types::Strict::Int
+      payload :comment, :comment
+
+      metadata :timestamp
+      metadata :secure_id, :uuid, default: 'unknown'
+
+      adapter :memory_sync
+    end
+
+    # anonymous class definition
+    sprint_passed = Class.new(EvilEvents::Event['sprint_passed']) do
+      default_delegator :manage_event
+
+      payload :sprint_id, EvilEvents::Types::Int
+
+      metadata :points, EvilEvents::Types::Float
+
+      adapter :memory_async
+    end
+
+    # constant-assigned class definition
+    class SprintFailed < EvilEvents::Event['sprint_failed']
+      default_delegator :manage_event
+
+      payload :sprint_id, EvilEvents::Types::Int
+
+      metadata :points, EvilEvents::Types::Float
+
+      adapter :memory_async
+    end
+
+    deposit_approved_signature = deposit_approved.signature
+    deposit_rejected_signature = DepositRejected.signature
+    sprint_passed_signature    = sprint_passed.signature
+    sprint_failed_signature    = SprintFailed.signature
+
+    deposit_approved_signature.tap do |signature|
+      expect(signature.class_stamp).to      eq(name: nil, creation_strategy: :proc_eval)
+      expect(signature.type_alias_stamp).to eq('deposit_approved')
+      expect(signature.delegator_stamp).to  eq(:process_event)
+      expect(signature.adapter_stamp).to    eq(memory_sync: EvilEvents::Config::Adapters[:memory_sync])
+
+      expect(signature.payload_stamp).to match(
+        deposit_id: EvilEvents::Types::Strict::Int,
+        comment:    be_a(Dry::Types::Definition)
+      )
+
+      expect(signature.metadata_stamp).to match(
+        timestamp: EvilEvents::Types::Any,
+        secure_id: be_a(Dry::Types::Default::Callable)
+      )
+    end
+
+    deposit_rejected_signature.tap do |signature|
+      expect(signature.class_stamp).to      eq(name: 'DepositRejected', creation_strategy: :proc_eval)
+      expect(signature.type_alias_stamp).to eq('deposit_rejected')
+      expect(signature.delegator_stamp).to  eq(:process_event)
+      expect(signature.adapter_stamp).to    eq(memory_sync: EvilEvents::Config::Adapters[:memory_sync])
+
+      expect(signature.payload_stamp).to match(
+        deposit_id: EvilEvents::Types::Strict::Int,
+        comment:    be_a(Dry::Types::Definition)
+      )
+
+      expect(signature.metadata_stamp).to match(
+        timestamp: EvilEvents::Types::Any,
+        secure_id: be_a(Dry::Types::Default::Callable)
+      )
+    end
+
+    sprint_passed_signature.tap do |signature|
+      expect(signature.class_stamp).to      eq(name: nil, creation_strategy: :class_inheritance)
+      expect(signature.type_alias_stamp).to eq('sprint_passed')
+      expect(signature.delegator_stamp).to  eq(:manage_event)
+      expect(signature.adapter_stamp).to    eq(memory_async: EvilEvents::Config::Adapters[:memory_async])
+      expect(signature.payload_stamp).to    match(sprint_id: EvilEvents::Types::Int)
+      expect(signature.metadata_stamp).to   match(points: EvilEvents::Types::Float)
+    end
+
+    sprint_failed_signature.tap do |signature|
+      expect(signature.class_stamp).to      eq(name: 'SprintFailed', creation_strategy: :class_inheritance)
+      expect(signature.type_alias_stamp).to eq('sprint_failed')
+      expect(signature.delegator_stamp).to  eq(:manage_event)
+      expect(signature.adapter_stamp).to    eq(memory_async: EvilEvents::Config::Adapters[:memory_async])
+      expect(signature.payload_stamp).to    match(sprint_id: EvilEvents::Types::Int)
+      expect(signature.metadata_stamp).to   match(points: EvilEvents::Types::Float)
+    end
+
+    signatures = [
+      deposit_approved_signature,
+      deposit_rejected_signature,
+      sprint_passed_signature,
+      sprint_failed_signature
+    ]
+
+    signatures.product(signatures) do |(signature_a, signature_b)|
+      next if signature_a.object_id == signature_b.object_id
+      expect(signature_a).not_to eq(signature_b)
+    end
+
+    similar_sprint_passed_signature = sprint_passed.signature
+    expect(sprint_passed_signature).to eq(similar_sprint_passed_signature)
+    expect(sprint_passed_signature.object_id).not_to eq(similar_sprint_passed_signature.object_id)
+
+    similar_sprint_failed_signature = SprintFailed.signature
+    expect(sprint_failed_signature).to eq(similar_sprint_failed_signature)
+    expect(sprint_failed_signature.object_id).not_to eq(similar_sprint_failed_signature.object_id)
+
+    similar_deposit_approved_signature = deposit_approved.signature
+    expect(deposit_approved_signature).to eq(similar_deposit_approved_signature)
+    expect(deposit_approved_signature.object_id).not_to eq(similar_deposit_approved_signature.object_id)
+
+    similar_deposit_rejected_signature = DepositRejected.signature
+    expect(deposit_rejected_signature).to eq(similar_deposit_rejected_signature)
+    expect(deposit_rejected_signature.object_id).not_to eq(similar_deposit_rejected_signature.object_id)
+  end
+  # rubocop:enable Metrics/LineLength
 end

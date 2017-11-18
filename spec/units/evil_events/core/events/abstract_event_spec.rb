@@ -33,6 +33,10 @@ describe EvilEvents::Core::Events::AbstractEvent do
     let(:emittable) { Class.new(described_class).new }
   end
 
+  it_behaves_like 'class signature interface' do
+    let(:event_class) { described_class }
+  end
+
   it_behaves_like 'type aliasing interface' do
     let(:pseudo_identifiable) { Class.new(described_class) }
 

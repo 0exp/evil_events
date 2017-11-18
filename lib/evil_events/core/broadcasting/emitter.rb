@@ -5,7 +5,7 @@ module EvilEvents::Core::Broadcasting
   # @since 0.1.0
   class Emitter
     # @since 0.1.0
-    EmitterError = Class.new(StandardError)
+    EmitterError = Class.new(EvilEvents::Core::Error)
     # @since 0.1.0
     IncorrectEventError = Class.new(EmitterError)
 

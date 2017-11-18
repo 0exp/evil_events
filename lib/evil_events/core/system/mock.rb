@@ -24,6 +24,14 @@ class EvilEvents::Core::System
     def raw_observe(event_type, raw_subscriber, delegator); end
 
     # @see EvilEvents::Core::System
+    # @since 0.2.0
+    def observe_list(event_pattern, raw_subscriber, delegator); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.2.0
+    def conditional_observe(event_condition, raw_subscriber, delegator); end
+
+    # @see EvilEvents::Core::System
     # @since 0.1.0
     def observers(event_class); end
 
@@ -86,5 +94,17 @@ class EvilEvents::Core::System
     # @see EvilEvents::Core::System
     # @since 0.1.0
     def managed_event?(event_class); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.2.0
+    def register_converter(type, coercer); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.2.0
+    def resolve_type(type, **options); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.2.0
+    def registered_events; end
   end
 end

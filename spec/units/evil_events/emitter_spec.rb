@@ -5,7 +5,7 @@ describe EvilEvents::Emitter, :stub_event_system do
 
   describe '.emit' do
     it 'receives event attributes and delegates event handling process to the event system' do
-      event_type       = 'suite_event'
+      event_type = 'suite_event'
       event_attributes = { a: 10, b: 20, c: 30 }
 
       expect(event_system).to(

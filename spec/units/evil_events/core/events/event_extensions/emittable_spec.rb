@@ -3,7 +3,7 @@
 describe EvilEvents::Core::Events::EventExtensions::Emittable do
   it_behaves_like 'emittable interface' do
     let(:emittable) do
-      build_event_class_signature do |klass|
+      build_event_class_stub do |klass|
         klass.include described_class
       end.new
     end
