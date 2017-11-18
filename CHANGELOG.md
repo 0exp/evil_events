@@ -1,9 +1,8 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
-
-### [Added]
+## [0.2.0] - 2017-11-19
+### Added
 - Support for custom coercive types:
   - New utility for custom coercive types: `EvilEvents::Shared::TypeConverter`
   - `AbstractEvent` supports new coercive types (metadata and payload are supported)
@@ -21,15 +20,15 @@ All notable changes to this project will be documented in this file.
   -  payload attributes schema
   -  string type alias
 - Event subscriptions via event type alias pattern (Regexp) and conditional proc (Proc)
-- The ability to subscribe to a list of events (via list of event type attributes)
+- The ability to subscribe to the list of events (via list of event type attributes)
 
-### [Changed]
+### Changed
 - Renamed config opts aggregator: `EvilEvents::Config.config` => `EvilEvents::Config.options`
 - Moved adapters config object: `EvilEvents::Adapters` => `EvilEvents::Config::Adapters`
 
-### [Fixed]
+### Fixed
 - Fixed a bug when an event created by an exceptional block still remains in the internal event registry
 
 ## [0.1.1] - 2017-10-29
-### [Added]
+### Added
 - Serialization of event ids: support for using :id key in JSON/Hash serialization/deserialization.
