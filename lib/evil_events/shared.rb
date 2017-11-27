@@ -13,6 +13,7 @@ module EvilEvents
     require_relative 'shared/combined_context/mixin'
     require_relative 'shared/delegator_resolver'
     require_relative 'shared/dependency_container'
+    require_relative 'shared/extensions_mixin'
     require_relative 'shared/clonable_module_builder'
     require_relative 'shared/type_converter'
     require_relative 'shared/type_converter/converter'
