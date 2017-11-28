@@ -11,6 +11,9 @@ describe 'plugins ecosystem' do
     expect { EvilEvents::RedisAdapter }.to raise_error(NameError)
     expect { EvilEvents::SidekiqAdapter }.to raise_error(NameError)
 
+    # try to load non-registered plugin
+    expect { EvilEvents::Plugins.load!(gen_seed) }.to raise_error(ArgumentError)
+
     # load concrete plugin
     EvilEvents::Plugins.load!(:redis_adapter)
 
