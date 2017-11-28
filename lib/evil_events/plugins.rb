@@ -4,29 +4,31 @@ module EvilEvents
   # @api public
   # @since 0.2.0
   class Plugins
-    # @since 0.2.0
-    extend Shared::DependencyContainer::Mixin
+    # @since 0.3.0
+    extend Shared::ExtensionsMixin
 
-    # @since 0.2.0
-    register(:rails, 'plugins/rails')
-    # @since 0.2.0
-    register(:elastic_search, 'plugins/elastic_search')
+    # @since 0.3.0
+    register_extension(:redis_adapter) { require_relative 'plugins/redis_adapter' }
+    # @since 0.3.0
+    register_extension(:sidekiq_adapter) { require_relative 'plugins/sidekiq_adapter' }
 
     class << self
-      # @return [Array<String>]
-      #
-      # @since 0.2.0
-      def names
-        keys
-      end
-
-      # @param *plugins [String,Symbol]
+      # @param plugins [Symbol,Symbol,Symbol,...]
+      # @raise ArgumentError When required plugin is not registered
       # @return void
       #
       # @api public
       # @since 0.2.0
       def load!(*plugins)
-        (plugins.empty? ? names : plugins).each { |plugin| require_relative resolve(plugin) }
+        load_extensions(*(plugins.empty? ? names : plugins))
+      end
+
+      # @return [Array<Symbol>]
+      #
+      # @api public
+      # @since 0.2.0
+      def names
+        @__available_extensions__.keys
       end
     end
   end

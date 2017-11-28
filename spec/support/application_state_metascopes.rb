@@ -2,14 +2,12 @@
 
 RSpec.configure do |config|
   config.before(:example) do
-    EvilEvents::Plugins.enable_stubs!
     EvilEvents::Core::Bootstrap.enable_stubs!
     EvilEvents::Core::Events::Serializers.enable_stubs!
     EvilEvents::Core::Bootstrap.stub(:config, EvilEvents::Core::Config.build_stub)
   end
 
   config.after(:example) do
-    EvilEvents::Plugins.unstub
     EvilEvents::Core::Bootstrap.unstub
     EvilEvents::Core::Events::Serializers.unstub
   end
