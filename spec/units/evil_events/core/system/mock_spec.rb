@@ -25,9 +25,7 @@ describe EvilEvents::Core::System::Mock do
         mocked_method_params = mocked_method_object.parameters
 
         # 2. mocked method signature equals to original method signature
-        method_params.each do |param_definitions|
-          expect(mocked_method_params).to include(param_definitions)
-        end
+        expect(method_params).to match(method_params)
       end
     end
   end
