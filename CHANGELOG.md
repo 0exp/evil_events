@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Added
+- Support for Ruby 2.5.0
+
 ## [0.2.0] - 2017-11-19
 ### Added
 - Support for custom coercive types:
