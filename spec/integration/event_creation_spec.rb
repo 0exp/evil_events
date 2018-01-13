@@ -74,6 +74,11 @@ describe 'Event Creation', :stub_event_system do
           # method that will be invoked on observers by default (delegator: option)
           default_delegator :process_event
 
+          # emition hooks
+          before_emit -> {}
+          after_emit -> {}
+          on_error -> {}
+
           # payload keys
           payload :user_id,  EvilEvents::Types::Strict::Int
           payload :utm_link, EvilEvents::Types::Strict::String
@@ -117,6 +122,11 @@ describe 'Event Creation', :stub_event_system do
         class UserRegistered < EvilEvents::Event['user_registered']
           # method that will be invoked on observers by default (delegator: option)
           default_delegator :process_event
+
+          # emition hooks
+          before_emit -> {}
+          after_emit -> {}
+          on_error -> {}
 
           # payload keys
           payload :user_id,  EvilEvents::Types::Strict::Int

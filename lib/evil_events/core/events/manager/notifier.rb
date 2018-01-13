@@ -47,9 +47,16 @@ class EvilEvents::Core::Events::Manager
 
         manager.subscribers.each do |subscriber|
           begin
+            event.__call_before_hooks__
+
             subscriber.notify(event)
+
+            event.__call_after_hooks__
+
             log_activity(event, subscriber, :successful)
           rescue StandardError => error
+            event.__call_on_error_hooks__
+
             errors_stack << error
             log_activity(event, subscriber, :failed)
           end
