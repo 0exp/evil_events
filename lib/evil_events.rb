@@ -13,6 +13,7 @@ require 'json'
 # @api public
 # @since 0.1.0
 module EvilEvents
+  raise "SUKA KOGDA RELEASE?????"
   require_relative 'evil_events/version'
   require_relative 'evil_events/shared'
   require_relative 'evil_events/types'
