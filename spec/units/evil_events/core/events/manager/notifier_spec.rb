@@ -74,6 +74,45 @@ describe EvilEvents::Core::Events::Manager::Notifier, :stub_event_system do
         end
       end
 
+      describe 'event collbacks' do
+        it 'invokes callbaks in order: before -> after || on_error)' do
+          before_emit_hook_buffer = []
+          after_emit_hook_buffer  = []
+          on_error_hook_buffer    = []
+
+          hook_results = (1..10).to_a
+
+          event_class.before_emit ->(event) { before_emit_hook_buffer << hook_results.shift }
+          event_class.before_emit ->(event) { before_emit_hook_buffer << hook_results.shift }
+          event_class.after_emit  ->(event) { after_emit_hook_buffer << hook_results.shift }
+          event_class.after_emit  ->(event) { after_emit_hook_buffer << hook_results.shift }
+          event_class.on_error    ->(event, error) { on_error_hook_buffer << error }
+
+          # successful processing
+          succ_subscriber = ->(event) {}
+          manager.observe(succ_subscriber, :call)
+          described_class.run(manager, event)
+
+          # Order:
+          # before (1,2) => after (3,4) => on_error (empty)
+          expect(before_emit_hook_buffer).to contain_exactly(1, 2)
+          expect(after_emit_hook_buffer).to contain_exactly(3, 4)
+          expect(on_error_hook_buffer).to be_empty
+
+          # failing processing
+          fail_subscriber = ->() {}
+          manager.observe(fail_subscriber, :call)
+
+          described_class.run(manager, event) rescue described_class::FailedSubscribersError
+
+          # Order:
+          # before (5,6) => after (7,8) => on_error (argument_error)
+          expect(before_emit_hook_buffer).to contain_exactly(1, 2, 5, 6)
+          expect(after_emit_hook_buffer).to contain_exactly(3, 4, 7, 8)
+          expect(on_error_hook_buffer).to match([be_a(ArgumentError)])
+        end
+      end
+
       describe 'logging' do
         let(:silent_output)   { StringIO.new }
         let(:silent_logger)   { ::Logger.new(silent_output) }

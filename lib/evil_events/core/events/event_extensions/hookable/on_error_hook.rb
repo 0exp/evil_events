@@ -3,5 +3,14 @@
 module EvilEvents::Core::Events::EventExtensions::Hookable
   # @api private
   # @since 0.3.0
-  OnErrorHook = Class.new(AbstractHook)
+  class OnErrorHook < AbstractHook
+    # @param event [EvilEvents::Core::Events::AbstractEvent]
+    # @param error [Error]
+    # @return void
+    #
+    # @since 0.3.0
+    def call(event, error)
+      callable.call(event, error)
+    end
+  end
 end

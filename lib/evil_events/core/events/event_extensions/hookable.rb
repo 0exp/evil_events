@@ -15,16 +15,16 @@ module EvilEvents::Core::Events::EventExtensions
 
     # @api private
     # @since 0.3.0
-    def __call_on_error_hooks__
+    def __call_on_error_hooks__(error)
       self.class.__on_error_hooks__.each do |hook|
-        hook.call(self)
+        hook.call(self, error)
       end
     end
 
     # @api private
     # @since 0.3.0
     def __call_before_hooks__
-      self.class.__before_hooks__.each do |hook|
+      self.class.__before_emit_hooks__.each do |hook|
         hook.call(self)
       end
     end
@@ -32,7 +32,7 @@ module EvilEvents::Core::Events::EventExtensions
     # @api private
     # @since 0.3.0
     def __call_after_hooks__
-      self.class.__after_hooks__.each do |hook|
+      self.class.__after_emit_hooks__.each do |hook|
         hook.call(self)
       end
     end
@@ -44,7 +44,7 @@ module EvilEvents::Core::Events::EventExtensions
       # @api public
       # @since 0.3.0
       def before_emit(hook)
-        __before_hooks__ << BeforeHook.new(hook)
+        __before_emit_hooks__ << BeforeEmitHook.new(hook)
       end
 
       # @param hook [#call]
@@ -52,7 +52,7 @@ module EvilEvents::Core::Events::EventExtensions
       # @api public
       # @since 0.3.0
       def after_emit(hook)
-        __after_hooks__ << AfterHook.new(hook)
+        __after_emit_hooks__ << AfterEmitHook.new(hook)
       end
 
       # @param hook [#call]
@@ -67,16 +67,16 @@ module EvilEvents::Core::Events::EventExtensions
       #
       # @api private
       # @since 0.3.0
-      def __before_hooks__
-        @__before_hooks__ ||= Concurrent::Array.new
+      def __before_emit_hooks__
+        @__before_emit_hooks__ ||= Concurrent::Array.new
       end
 
       # @return [Concurrent::Array<AfterHook>]
       #
       # @api private
       # @since 0.3.0
-      def __after_hooks__
-        @__after_hooks__ ||= Concurrent::Array.new
+      def __after_emit_hooks__
+        @__after_emit_hooks__ ||= Concurrent::Array.new
       end
 
       # @return [Concurrent::Array<OnErrorHook>]

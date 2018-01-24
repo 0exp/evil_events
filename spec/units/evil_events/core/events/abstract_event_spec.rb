@@ -37,6 +37,10 @@ describe EvilEvents::Core::Events::AbstractEvent do
     let(:event_class) { described_class }
   end
 
+  it_behaves_like 'hookable interface' do
+    let(:hookable) { Class.new(described_class) }
+  end
+
   it_behaves_like 'type aliasing interface' do
     let(:pseudo_identifiable) { Class.new(described_class) }
 

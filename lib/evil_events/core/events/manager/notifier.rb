@@ -42,26 +42,19 @@ class EvilEvents::Core::Events::Manager
       # @since 0.1.0
       def run(manager, event)
         raise InconsistentEventClassError unless event.is_a?(manager.event_class)
-
         errors_stack = FailedSubscribersError.new
-
+        event.__call_before_hooks__
         manager.subscribers.each do |subscriber|
           begin
-            event.__call_before_hooks__
-
             subscriber.notify(event)
-
-            event.__call_after_hooks__
-
             log_activity(event, subscriber, :successful)
           rescue StandardError => error
-            event.__call_on_error_hooks__
-
+            event.__call_on_error_hooks__(error)
             errors_stack << error
             log_activity(event, subscriber, :failed)
           end
         end
-
+        event.__call_after_hooks__
         raise errors_stack unless errors_stack.empty?
       end
 

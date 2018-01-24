@@ -16,12 +16,12 @@ module EvilEvents::Core::Events::EventExtensions::Hookable
       @callable = callable
     end
 
-    # @param event [EvilEvents::Core::Events::AbstractEvent]
+    # @param source [Object]
     # @return void
     #
     # @since 0.3.0
-    def call(event)
-      callable.call(event)
+    def call(source)
+      callable.call(source)
     end
   end
 end
