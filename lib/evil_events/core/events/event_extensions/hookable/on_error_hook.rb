@@ -5,7 +5,7 @@ module EvilEvents::Core::Events::EventExtensions::Hookable
   # @since 0.3.0
   class OnErrorHook < AbstractHook
     # @param event [EvilEvents::Core::Events::AbstractEvent]
-    # @param error [Error]
+    # @param error [StandardError]
     # @return void
     #
     # @since 0.3.0

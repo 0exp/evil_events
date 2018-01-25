@@ -13,6 +13,8 @@ module EvilEvents::Core::Events::EventExtensions
       end
     end
 
+    # @param error [StandardError]
+    #
     # @api private
     # @since 0.3.0
     def __call_on_error_hooks__(error)
