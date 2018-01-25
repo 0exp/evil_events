@@ -75,9 +75,9 @@ describe 'Event Creation', :stub_event_system do
           default_delegator :process_event
 
           # emition hooks
-          before_emit -> {}
-          after_emit -> {}
-          on_error -> {}
+          before_emit ->(event) {}
+          after_emit  ->(event) {}
+          on_error    ->(event, error) {}
 
           # payload keys
           payload :user_id,  EvilEvents::Types::Strict::Int
@@ -124,9 +124,9 @@ describe 'Event Creation', :stub_event_system do
           default_delegator :process_event
 
           # emition hooks
-          before_emit -> {}
-          after_emit -> {}
-          on_error -> {}
+          before_emit ->(event) {}
+          after_emit  ->(event) {}
+          on_error    ->(event, error) {}
 
           # payload keys
           payload :user_id,  EvilEvents::Types::Strict::Int
