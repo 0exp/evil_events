@@ -267,4 +267,76 @@ describe 'Event Broadcasting', :stub_event_system do
       )
     end
   end
+
+  specify 'event callbacks' do
+    # hook invocation results data
+    hook_data = (1..20).to_a
+    # hook invocation results collector
+    hook_results = { after: [], before: [], on_error: [] }
+
+    # create simple event class
+    BonusReached = Class.new(EvilEvents::Event['bonus_reached']) do
+      metadata :timestamp, EvilEvents::Types::Int
+
+      # register corresponding hooks
+      # rubocop:disable Metrics/LineLength
+      before_emit ->(event)        { hook_results[:before]   << { event: event, indx: hook_data.shift } }
+      before_emit ->(event)        { hook_results[:before]   << { event: event, indx: hook_data.shift } }
+      after_emit  ->(event)        { hook_results[:after]    << { event: event, indx: hook_data.shift } }
+      after_emit  ->(event)        { hook_results[:after]    << { event: event, indx: hook_data.shift } }
+      on_error    ->(event, error) { hook_results[:on_error] << { event: event, indx: hook_data.shift, error: error } }
+      # rubocop:enable Metrics/LineLength
+    end
+
+    # emit empty events => hooks working good! in corresponding order!
+    BonusReached.new(metadata: { timestamp: 123_456 }).emit!
+    # expected: 1,2 => before; 3,4 => after
+
+    expect(hook_results).to match(
+      before: [
+        { event: an_instance_of(BonusReached), indx: 1 },
+        { event: an_instance_of(BonusReached), indx: 2 },
+      ],
+      after: [
+        { event: an_instance_of(BonusReached), indx: 3 },
+        { event: an_instance_of(BonusReached), indx: 4 },
+      ],
+      on_error: []
+    )
+
+    failing_subscriber = Class.new do
+      extend EvilEvents::SubscriberMixin
+      def self.call(event); raise ZeroDivisionError; end
+    end
+    failing_subscriber.subscribe_to BonusReached, delegator: :call
+
+    # emit by event object
+    event = BonusReached.new(metadata: { timestamp: 123_456 })
+    # expected: 1,2 => before; 3,4 => after; 5,6 => before; 7 => on_error; 8,9 => after
+
+    begin
+      event.emit!
+    rescue EvilEvents::Core::Events::Manager::Notifier::FailedSubscribersError
+      # do nothing, its a correct behaviour
+    end
+
+    # hooks still working correctly in corresponding order!
+    expect(hook_results).to match(
+      before: [
+        { event: an_instance_of(BonusReached), indx: 1 }, # old
+        { event: an_instance_of(BonusReached), indx: 2 }, # old
+        { event: event, indx: 5 }, # new
+        { event: event, indx: 6 }, # new
+      ],
+      after: [
+        { event: an_instance_of(BonusReached), indx: 3 }, # old
+        { event: an_instance_of(BonusReached), indx: 4 }, # old
+        { event: event, indx: 8 }, # new
+        { event: event, indx: 9 }, # new
+      ],
+      on_error: [
+        { event: event, indx: 7, error: an_instance_of(ZeroDivisionError) }
+      ] # new
+    )
+  end
 end

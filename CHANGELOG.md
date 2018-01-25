@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Added
 - Support for Ruby 2.5.0
+- Introduce Event Emition Hooks API. Supported hooks (are decalred in an event class):
+  - `before_emit -> (event) {} # proc/lambda` - invoked once before an event emition process;
+  - `after_emit -> (event) {} # proc/lambda` - invoked once after an event emition process;
+  - `on_error -> (event, error) {} # proc/lambda` - invoked on each raised error due to emition process
+    (usually these errors are raised by subscribers and their's event processing methods)
 
 ## [0.2.0] - 2017-11-19
 ### Added
