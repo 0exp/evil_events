@@ -22,7 +22,8 @@ module EvilEvents::Core
                    :emit,
                    :raw_emit,
                    :resolve_adapter,
-                   :register_adapter
+                   :register_adapter,
+                   :process_event_notification
 
     # @see EvilEvents::Core::System::EventManager
     # @since 0.1.0

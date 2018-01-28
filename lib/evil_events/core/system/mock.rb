@@ -106,5 +106,9 @@ class EvilEvents::Core::System
     # @see EvilEvents::Core::System
     # @since 0.2.0
     def registered_events; end
+
+    # @see EviLEvents::Core::System
+    # @since 0.3.0
+    def process_event_notification(manager, event); end
   end
 end

@@ -316,7 +316,7 @@ describe 'Event Broadcasting', :stub_event_system do
 
     begin
       event.emit!
-    rescue EvilEvents::Core::Events::Manager::Notifier::FailedSubscribersError
+    rescue EvilEvents::Core::Events::Notifier::FailedSubscribersError
       # do nothing, its a correct behaviour
     end
 

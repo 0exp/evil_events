@@ -14,10 +14,17 @@ class EvilEvents::Core::System
     # @since 0.1.0
     attr_reader :adapters_container
 
+
+    # @return [EvilEvents::Core::Events::Notifier::Abstract]
+    #
+    # @since 0.3.0
+    attr_reader :event_notifier
+
     # @since 0.1.0
     def initialize
-      @event_emitter      = EvilEvents::Core::Broadcasting::Emitter.new
       @adapters_container = EvilEvents::Core::Broadcasting::Adapters.new
+      @event_emitter      = EvilEvents::Core::Broadcasting::Emitter.new
+      @event_notifier     = EvilEvents::Core::Events::Notifier::Builder.build_notifier!
 
       @adapters_container.register_core_adapters!
     end
@@ -54,6 +61,15 @@ class EvilEvents::Core::System
     # @since 0.1.0
     def register_adapter(adapter_name, adapter_object)
       adapters_container.register(adapter_name, adapter_object)
+    end
+
+    # @param manager [EvilEvents::Core::Events::Manager]
+    # @param event [EvilEvents::Core::Events::AbstractEvent]
+    # @return void
+    #
+    # @since 0.3.0
+    def process_event_notification(manager, event)
+      event_notifier.notify(manager, event)
     end
   end
 end

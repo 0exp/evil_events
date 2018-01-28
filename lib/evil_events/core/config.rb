@@ -27,6 +27,21 @@ module EvilEvents::Core
         end
 
         setting :logger, EvilEvents::Shared::Logger.new(STDOUT), reader: true
+
+        setting :notifier, reader: true do
+          setting :type, :sequential
+
+          setting :sequential, reader: true do
+            # NOTE: place future settings here
+          end
+
+          setting :worker, reader: true do
+            setting :min_threads, 0
+            setting :max_threads, 5
+            setting :max_queue, 1000
+            setting :fallback_policy, :main_thread
+          end
+        end
       end
     end
 

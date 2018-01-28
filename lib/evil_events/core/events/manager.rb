@@ -52,7 +52,8 @@ module EvilEvents::Core::Events
     #
     # @since 0.1.0
     def notify(event)
-      Notifier.run(self, event)
+      raise InconsistentEventClassError unless supported_event?(event)
+      EvilEvents::Core::Bootstrap[:event_system].process_event_notification(self, event)
     end
 
     # @return [String, Symbol]
@@ -63,6 +64,13 @@ module EvilEvents::Core::Events
     end
 
     private
+
+    # @return [Boolean]
+    #
+    # @since 0.3.0
+    def supported_event?(event)
+      event.is_a?(event_class)
+    end
 
     # @param raw_subscriber [Object]
     # @param delegator [Symbol, String, NilClass]
