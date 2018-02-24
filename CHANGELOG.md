@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file.
   - `after_emit -> (event) {} # proc/lambda` - invoked once after an event emition process;
   - `on_error -> (event, error) {} # proc/lambda` - invoked on each raised error due to emition process
     (usually these errors are raised by subscribers and their's event processing methods)
+- Full refactoring of the event notification abstraction. New types of notifying processes:
+  - `sequential` (single-threaded): ordered notification logic, subscribers are notified one after the other;
+  - `worker` (multi-threaded): unordered notification logic, each subscriber is notified in own thread (depending on the settings);
+  - Process type should be globally pre-configured before application startup (new configuration options for each type of process);
 
 ## [0.2.0] - 2017-11-19
 ### Added
