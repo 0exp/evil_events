@@ -29,6 +29,7 @@ RSpec.configure do |config|
   config.expect_with(:rspec) { |c| c.syntax = :expect }
 
   config.include SpecSupport::EventFactories
+  config.include SpecSupport::NotifierFactories
   config.include SpecSupport::EventManagerFactories
   config.include SpecSupport::DispatchingAdapterFactories
   config.include SpecSupport::FakeDataGenerator

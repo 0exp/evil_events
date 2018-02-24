@@ -21,12 +21,8 @@ module EvilEvents::Core::Events::Notifier
       # @since 0.3.0
       def build_notifier!
         case EvilEvents::Core::Bootstrap[:config].notifier.type
-        when :sequential
-          options = EvilEvents::Core::Bootstrap[:config].notifier.sequential.to_h
-          build_sequential_notifier!(**options)
-        when :worker
-          options = EvilEvents::Core::Bootstrap[:config].notifier.worker.to_h
-          build_worker_notifier!(**options)
+        when :sequential then build_sequential_notifier!
+        when :worker     then build_worker_notifier!
         else
           raise UnknownNotifierTypeError
         end
@@ -39,7 +35,8 @@ module EvilEvents::Core::Events::Notifier
       #
       # @api private
       # @since 0.3.0
-      def build_sequential_notifier!(**options)
+      def build_sequential_notifier!
+        options = EvilEvents::Core::Bootstrap[:config].notifier.sequential.to_h
         Sequential.new(**options)
       end
 
@@ -49,6 +46,7 @@ module EvilEvents::Core::Events::Notifier
       # @api private
       # @since 0.3.0
       def build_worker_notifier!(**options)
+        options = EvilEvents::Core::Bootstrap[:config].notifier.worker.to_h
         Worker.new(**options)
       end
     end

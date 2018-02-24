@@ -9,10 +9,10 @@ class EvilEvents::Core::Events::Notifier::Abstract
   # @since 0.3.0
   def initialize(**options); end
 
+  # @param manager [EvilEvents::Core::Events::Manager]
   # @param event [EvilEvents::Core::Events::AbstractEvent]
-  # @param subscriber [EvilEvents::Core::Events::Subscriber]
   #
   # @api private
   # @since 0.3.0
-  def notify!(event, subscriber); end
+  def notify(manager, event); end
 end

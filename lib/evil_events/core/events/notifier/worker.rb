@@ -4,7 +4,19 @@ module EvilEvents::Core::Events::Notifier
   # @api private
   # @since 0.3.0
   class Worker < Abstract
-    # @return [EvilEvents::Core::Events::Notifier::Worker]
+    # @api public
+    # @since 0.3.0
+    MAIN_THREAD_POLICY = :main_thread
+
+    # @api public
+    # @since 0.3.0
+    IGNORANCE_POLICY = :ignorance
+
+    # @api public
+    # @since 0.3.0
+    EXCEPTION_POLICY = :exception
+
+    # @return [EvilEvents::Core::Events::Notifier::Worker::Executor]
     #
     # @api private
     # @since 0.3.0
@@ -19,7 +31,7 @@ module EvilEvents::Core::Events::Notifier
     #
     # @api private
     # @since 0.3.0
-    def initialize(min_threads:, max_threads:, max_queue:, fallback_policy:)
+    def initialize(min_threads:, max_threads:, max_queue:, fallback_policy: MAIN_THREAD_POLICY)
       @executor = Executor.new(
         min_threads:     min_threads,
         max_threads:     max_threads,
@@ -35,7 +47,7 @@ module EvilEvents::Core::Events::Notifier
     # @since 0.3.0
     def notify(manager, event)
       event.__call_before_hooks__
-      manager.subscribers.each { |subscriber| perform_job(event, subscriber) }
+      manager.subscribers.each { |subscriber| schedule_job(event, subscriber) }
       event.__call_after_hooks__
     end
 
@@ -46,7 +58,7 @@ module EvilEvents::Core::Events::Notifier
     #
     # @api private
     # @since 0.3.0
-    def perform_job(event, subscriber)
+    def schedule_job(event, subscriber)
       executor.execute(Job.new(event, subscriber))
     end
   end

@@ -16,6 +16,10 @@ class EvilEvents::Core::Events::Notifier::Worker::Executor
 
   # @api public
   # @since 0.3.0
+  WorkerDisabledError = Class.new(WorkerError)
+
+  # @api public
+  # @since 0.3.0
   FALLBACK_POLICIES = {
     exception:   :abort,
     ignorance:   :discard,
@@ -27,39 +31,79 @@ class EvilEvents::Core::Events::Notifier::Worker::Executor
   #
   # @api private
   # @since 0.3.0
-  attr_reader :executor
+  attr_reader :raw_executor
+
+  # @api private
+  # @since 0.3.0
+  attr_reader :options
 
   # @option min_threads [Integer]
   # @option max_threads [Integer]
   # @option max_queue [Integer]
-  # @option fallback [Symbol]
+  # @option fallback_policy [Symbol]
   #
   # @api private
   # @since 0.3.0
   def initialize(min_threads:, max_threads:, max_queue:, fallback_policy:)
     raise IncorrectFallbackPolicyError unless FALLBACK_POLICIES[fallback_policy]
 
-    @executor = Concurrent::ThreadPoolExecutor.new(
+    @options = {
       min_threads:     min_threads,
       max_threads:     max_threads,
       max_queue:       max_queue,
       fallback_policy: FALLBACK_POLICIES[fallback_policy]
-    )
+    }.freeze
+
+    initialize_raw_executor!(**@options)
   end
 
   # @param job [EvilEvents::Core::Events::Notifier::Job]
-  # @return void
+  # @return [Concurrent::Promise]
   #
   # @api private
   # @sicne 0.3.0
   def execute(job)
-    Concurrent::Promise.new(executor: executor) do
+    Concurrent::Promise.new(executor: raw_executor) do
       job.perform
     end.on_success do
       log_success(job.event, job.subscriber)
     end.on_error do |error|
-      event.__call_on_error_hooks__(error)
+      job.event.__call_on_error_hooks__(error)
       log_failure(job.event, job.subscriber)
     end.execute
+  rescue Concurrent::RejectedExecutionError
+    raise WorkerDisabledError
+  end
+
+  # @return void
+  #
+  # @api private
+  # @since 0.3.0
+  def shutdown!
+    raw_executor.shutdown
+    raw_executor.wait_for_termination
+  end
+
+  # @return void
+  #
+  # @api private
+  # @since 0.3.0
+  def restart!
+    shutdown!
+    initialize_raw_executor!(**options)
+  end
+
+  private
+
+  # @option min_threads [Integer]
+  # @option max_threads [Integer]
+  # @option max_queue [Integer]
+  # @option fallback_policy [Symbol]
+  # @return [Concurrent::ThreadPoolExecutor]
+  #
+  # @api private
+  # @since 0.3.0
+  def initialize_raw_executor!(**options)
+    @raw_executor = Concurrent::ThreadPoolExecutor.new(**options)
   end
 end

@@ -65,6 +65,7 @@ describe 'Event Broadcasting', :stub_event_system do
 
     EvilEvents::Config.configure do |config|
       config.logger = silent_logger
+      config.notifier.type = :sequential
     end
 
     EvilEvents::Config.setup_adapters do |adapters|

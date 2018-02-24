@@ -133,4 +133,39 @@ describe 'Configuration', :stub_config do
       end
     end.not_to raise_error
   end
+
+  specify 'event notifier configuration' do
+    # sequential (single threaded) notifier is a default option
+    expect(EvilEvents::Config.options.notifier.type).to eq(:sequential)
+
+    # use worker (multithreaded) notifier
+    EvilEvents::Config.configure do |config|
+      config.notifier.type = :worker
+    end
+
+    expect(EvilEvents::Config.options.notifier.type).to eq(:worker)
+
+    # default worker notifier settings
+    EvilEvents::Config.options.notifier.worker.tap do |options|
+      expect(options.min_threads).to     eq(0)
+      expect(options.max_threads).to     eq(5)
+      expect(options.max_queue).to       eq(1000)
+      expect(options.fallback_policy).to eq(:main_thread)
+    end
+
+    # configure worker notifier
+    EvilEvents::Config.configure do |config|
+      config.notifier.worker.min_threads     = 1
+      config.notifier.worker.max_threads     = 15
+      config.notifier.worker.max_queue       = 20
+      config.notifier.worker.fallback_policy = :exception
+    end
+
+    EvilEvents::Config.options.notifier.worker.tap do |options|
+      expect(options.min_threads).to     eq(1)
+      expect(options.max_threads).to     eq(15)
+      expect(options.max_queue).to       eq(20)
+      expect(options.fallback_policy).to eq(:exception)
+    end
+  end
 end
