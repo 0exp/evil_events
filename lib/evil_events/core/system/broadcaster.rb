@@ -71,5 +71,12 @@ class EvilEvents::Core::System
     def process_event_notification(manager, event)
       event_notifier.notify(manager, event)
     end
+
+    # @return void
+    #
+    # @since 0.3.0
+    def restart_event_notifier
+      event_notifier.restart!
+    end
   end
 end

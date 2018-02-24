@@ -45,7 +45,7 @@ module EvilEvents::Core::Events
     end
 
     # @param event [EvilEvents::Core::Events::AbstractEvent]
-    # @raise [Notifier::InconsistentEventClassError]
+    # @raise [InconsistentEventClassError]
     # @raise [Notifier::FailedSubscribersError]
     #
     # @return void
@@ -65,6 +65,7 @@ module EvilEvents::Core::Events
 
     private
 
+    # @param event [EvilEvents::Core::Events::AbstractEvent]
     # @return [Boolean]
     #
     # @since 0.3.0

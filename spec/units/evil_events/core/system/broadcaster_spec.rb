@@ -11,6 +11,36 @@ describe EvilEvents::Core::System::Broadcaster, :stub_event_system, :null_logger
         end
       end
 
+      describe '#event_notifier' do
+        context 'configured as single-threaded' do
+          before do
+            EvilEvents::Core::Bootstrap[:config].configure do |config|
+              config.notifier.type = :sequential
+            end
+          end
+
+          specify do
+            expect(broadcaster.event_notifier).to be_a(
+              EvilEvents::Core::Events::Notifier::Sequential
+            )
+          end
+        end
+
+        context 'configured as multi-threaded' do
+          before do
+            EvilEvents::Core::Bootstrap[:config].configure do |config|
+              config.notifier.type = :worker
+            end
+          end
+
+          specify do
+            expect(broadcaster.event_notifier).to be_a(
+              EvilEvents::Core::Events::Notifier::Worker
+            )
+          end
+        end
+      end
+
       describe '#adapters_container' do
         specify 'adapters container instance with pre-registered core adapters' do
           expect(broadcaster.adapters_container).to be_a(EvilEvents::Core::Broadcasting::Adapters)
@@ -60,6 +90,28 @@ describe EvilEvents::Core::System::Broadcaster, :stub_event_system, :null_logger
 
           expect { broadcaster.resolve_adapter(:keki_peki) }.to raise_error(Dry::Container::Error)
         end
+      end
+    end
+  end
+
+  describe 'notification behavior' do
+    let(:broadcaster) { described_class.new }
+
+    describe '#process_event_notification' do
+      let(:event_class) { build_event_class }
+      let(:event)       { event_class.new }
+      let(:manager)     { build_event_manager(event_class) }
+
+      it 'delegates notification process to the internal notifier service' do
+        expect(broadcaster.event_notifier).to receive(:notify).with(manager, event)
+        broadcaster.process_event_notification(manager, event)
+      end
+    end
+
+    describe '#restart_event_notifier' do
+      it 'delegates the restarting process to the internal notifier service' do
+        expect(broadcaster.event_notifier).to receive(:restart!)
+        broadcaster.restart_event_notifier
       end
     end
   end

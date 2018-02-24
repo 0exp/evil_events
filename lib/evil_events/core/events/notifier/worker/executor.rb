@@ -16,7 +16,7 @@ class EvilEvents::Core::Events::Notifier::Worker::Executor
 
   # @api public
   # @since 0.3.0
-  WorkerDisabledError = Class.new(WorkerError)
+  WorkerDisabledOrBusyError = Class.new(WorkerError)
 
   # @api public
   # @since 0.3.0
@@ -27,12 +27,13 @@ class EvilEvents::Core::Events::Notifier::Worker::Executor
   }.freeze
 
   # @return [Concurrent::ThreadPoolExecutor]
-  # @raise IncorrectFallbackPolicyError
   #
   # @api private
   # @since 0.3.0
   attr_reader :raw_executor
 
+  # @return [Hash]
+  #
   # @api private
   # @since 0.3.0
   attr_reader :options
@@ -58,6 +59,7 @@ class EvilEvents::Core::Events::Notifier::Worker::Executor
   end
 
   # @param job [EvilEvents::Core::Events::Notifier::Job]
+  # @raise WorkerDisabledOrBusyError
   # @return [Concurrent::Promise]
   #
   # @api private
@@ -72,7 +74,7 @@ class EvilEvents::Core::Events::Notifier::Worker::Executor
       log_failure(job.event, job.subscriber)
     end.execute
   rescue Concurrent::RejectedExecutionError
-    raise WorkerDisabledError
+    raise WorkerDisabledOrBusyError
   end
 
   # @return void

@@ -27,7 +27,7 @@ module EvilEvents::Core::Events::Notifier::Logging
 
   # @param event [EvilEvents::Core::Events::AbstractEvent]
   # @param subscriber [EvilEvents::Core::Events::Subscriber]
-  # @param status [String,Symbol]
+  # @param status [String, Symbol]
   # @return void
   #
   # @api private

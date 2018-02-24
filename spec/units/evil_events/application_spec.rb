@@ -20,26 +20,26 @@ describe EvilEvents::Application, :stub_event_system do
         event_type       => event_class
       )
     end
-  end
 
-  it 'exceptional event initialization code doesnt affect event class list' do
-    EvilEvents::Event.define(gen_str) { raise } rescue nil
+    it 'exceptional event initialization code doesnt affect event class list' do
+      EvilEvents::Event.define(gen_str) { raise } rescue nil
 
-    expect(described_class.registered_events).to eq({})
+      expect(described_class.registered_events).to eq({})
 
-    event_class = EvilEvents::Event.define(gen_str)
-    EvilEvents::Event.define(gen_str) { raise } rescue nil
+      event_class = EvilEvents::Event.define(gen_str)
+      EvilEvents::Event.define(gen_str) { raise } rescue nil
 
-    expect(described_class.registered_events).to match(
-      event_class.type => event_class
-    )
+      expect(described_class.registered_events).to match(
+        event_class.type => event_class
+      )
 
-    another_event_class = EvilEvents::Event.define(gen_str)
-    EvilEvents::Event.define(gen_str) { raise } rescue nil
+      another_event_class = EvilEvents::Event.define(gen_str)
+      EvilEvents::Event.define(gen_str) { raise } rescue nil
 
-    expect(described_class.registered_events).to match(
-      event_class.type => event_class,
-      another_event_class.type => another_event_class
-    )
+      expect(described_class.registered_events).to match(
+        event_class.type => event_class,
+        another_event_class.type => another_event_class
+      )
+    end
   end
 end

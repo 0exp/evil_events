@@ -23,7 +23,8 @@ module EvilEvents::Core
                    :raw_emit,
                    :resolve_adapter,
                    :register_adapter,
-                   :process_event_notification
+                   :process_event_notification,
+                   :restart_event_notifier
 
     # @see EvilEvents::Core::System::EventManager
     # @since 0.1.0

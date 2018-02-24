@@ -15,4 +15,12 @@ class EvilEvents::Core::Events::Notifier::Abstract
   # @api private
   # @since 0.3.0
   def notify(manager, event); end
+
+  # @api private
+  # @since 0.3.0
+  def restart!; end
+
+  # @api private
+  # @since 0.3.0
+  def shutdown!; end
 end

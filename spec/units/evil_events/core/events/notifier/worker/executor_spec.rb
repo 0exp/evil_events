@@ -80,7 +80,7 @@ describe EvilEvents::Core::Events::Notifier::Worker::Executor, :stub_event_syste
 
         expect do
           executor.execute(successful_job)
-        end.to raise_error(described_class::WorkerDisabledError)
+        end.to raise_error(described_class::WorkerDisabledOrBusyError)
 
         expect(silent_output.string).to be_empty
       end

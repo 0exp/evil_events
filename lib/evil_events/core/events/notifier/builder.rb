@@ -13,9 +13,8 @@ module EvilEvents::Core::Events::Notifier
     UnknownNotifierTypeError = Class.new(BuilderError)
 
     class << self
-      # @param type [Symbol]
-      # @param options [Hash]
       # @raise UnknownNotifierTypeError
+      # @return [Notifier::Abstract, Notifier::Sequential, Notifier::Worker]
       #
       # @api private
       # @since 0.3.0
@@ -30,8 +29,7 @@ module EvilEvents::Core::Events::Notifier
 
       private
 
-      # @param type [Symbol]
-      # @param options [Hash]
+      # @return [Notifier::Sequential]
       #
       # @api private
       # @since 0.3.0
@@ -40,12 +38,11 @@ module EvilEvents::Core::Events::Notifier
         Sequential.new(**options)
       end
 
-      # @param type [Symbol]
-      # @param options [Hash]
+      # @return [Notifier::Worker]
       #
       # @api private
       # @since 0.3.0
-      def build_worker_notifier!(**options)
+      def build_worker_notifier!
         options = EvilEvents::Core::Bootstrap[:config].notifier.worker.to_h
         Worker.new(**options)
       end
