@@ -65,9 +65,7 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
       let(:serialization) { described_class.serialize(double) }
 
       it 'fails with appropriate serialization exception' do
-        expect { serialization }.to(
-          raise_error(EvilEvents::Core::Events::Serializers::SerializationError)
-        )
+        expect { serialization }.to raise_error(EvilEvents::SerializationError)
       end
     end
   end
@@ -190,7 +188,7 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
 
           it 'fails with non-managed-event-class error' do
             expect { described_class.deserialize(incompatible_hash) }.to(
-              raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+              raise_error(EvilEvents::NonManagedEventClassError)
             )
           end
         end
@@ -218,7 +216,7 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
             { id: gen_str }
           ].each do |serialized_event|
             expect { described_class.deserialize(serialized_event) }.to(
-              raise_error(EvilEvents::Core::Events::Serializers::DeserializationError)
+              raise_error(EvilEvents::DeserializationError)
             )
           end
         end
@@ -230,7 +228,7 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
 
       it 'fails with appropriate deserialization error' do
         expect { deserialization }.to(
-          raise_error(EvilEvents::Core::Events::Serializers::DeserializationError)
+          raise_error(EvilEvents::DeserializationError)
         )
       end
     end

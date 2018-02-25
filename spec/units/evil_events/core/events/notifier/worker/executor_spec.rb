@@ -54,7 +54,7 @@ describe EvilEvents::Core::Events::Notifier::Worker::Executor, :stub_event_syste
           max_queue:       gen_int(1..5),
           fallback_policy: gen_symb(only_letters: true)
         )
-      end.to raise_error(described_class::IncorrectFallbackPolicyError)
+      end.to raise_error(EvilEvents::IncorrectFallbackPolicyError)
     end
   end
 
@@ -79,7 +79,7 @@ describe EvilEvents::Core::Events::Notifier::Worker::Executor, :stub_event_syste
 
         expect do
           executor.execute(successful_job)
-        end.to raise_error(described_class::WorkerDisabledOrBusyError)
+        end.to raise_error(EvilEvents::WorkerDisabledOrBusyError)
 
         expect(silent_output.string).to be_empty
       end

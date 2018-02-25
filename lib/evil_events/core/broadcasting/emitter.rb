@@ -4,18 +4,16 @@ module EvilEvents::Core::Broadcasting
   # @api private
   # @since 0.1.0
   class Emitter
-    # @since 0.1.0
-    EmitterError = Class.new(EvilEvents::Core::Error)
-    # @since 0.1.0
-    IncorrectEventError = Class.new(EmitterError)
-
     # @param event [EvilEvents::Core::Events::AbstractEvent]
-    # @raise [IncorrectEventError]
+    # @raise [EvilEvents::IncorrectEventForEmitError]
     # @return void
     #
     # @since 0.1.0
     def emit(event)
-      raise IncorrectEventError unless event.is_a?(EvilEvents::Core::Events::AbstractEvent)
+      unless event.is_a?(EvilEvents::Core::Events::AbstractEvent)
+        raise EvilEvents::IncorrectEventForEmitError
+      end
+
       log_activity(event)
       event.adapter.call(event)
     end

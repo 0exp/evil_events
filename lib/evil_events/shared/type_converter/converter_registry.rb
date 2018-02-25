@@ -23,7 +23,7 @@ class EvilEvents::Shared::TypeConverter
 
     # @param type_name [Symbol]
     # @param coercer [Proc]
-    # @raise ArgumentError
+    # @raise [ArgumentError]
     # @return [Converter]
     #
     # @api public
@@ -38,7 +38,7 @@ class EvilEvents::Shared::TypeConverter
     end
 
     # @param type [Mixed]
-    # @raise ConverterNotRegisteredError
+    # @raise [ConverterNotRegisteredError]
     # @return [Mixed]
     #
     # @api public

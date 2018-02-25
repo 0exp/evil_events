@@ -14,7 +14,7 @@ module EvilEvents
 
     class << self
       # @param plugins [Symbol,Symbol,Symbol,...]
-      # @raise ArgumentError When required plugin is not registered
+      # @raise [ArgumentError] When required plugin is not registered
       # @return void
       #
       # @api public

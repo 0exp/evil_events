@@ -77,7 +77,7 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
 
       it 'fails with appropriate serialization exception' do
         expect { serialization }.to(
-          raise_error(EvilEvents::Core::Events::Serializers::SerializationError)
+          raise_error(EvilEvents::SerializationError)
         )
       end
     end
@@ -162,7 +162,7 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
 
         it 'fails with non-managed-event-class error' do
           expect { described_class.deserialize(incompatible_json) }.to(
-            raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+            raise_error(EvilEvents::NonManagedEventClassError)
           )
         end
       end
@@ -187,7 +187,7 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
             { id: gen_str }
           ].each do |serialized_event|
             expect { described_class.deserialize(serialized_event) }.to(
-              raise_error(EvilEvents::Core::Events::Serializers::DeserializationError)
+              raise_error(EvilEvents::DeserializationError)
             )
           end
         end
@@ -198,7 +198,7 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
       it 'fails with appropriate deserialization error' do
         [double, 'kek', '{}test{}', 'las_-vegas metadata: {}'].each do |serialized_event|
           expect { described_class.deserialize(serialized_event) }.to(
-            raise_error(EvilEvents::Core::Events::Serializers::DeserializationError)
+            raise_error(EvilEvents::DeserializationError)
           )
         end
       end

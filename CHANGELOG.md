@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
   - `sequential` (single-threaded): ordered notification logic, subscribers are notified one after the other;
   - `worker` (multi-threaded): unordered notification logic, each subscriber is notified in own thread (depending on the settings);
   - Process type should be globally pre-configured before application startup (new configuration options for each type of process);
-
+- New more convenient exception hierarchy: now all exceptions live under `EvilEvents` namespace.
 ## [0.2.0] - 2017-11-19
 ### Added
 - Support for custom coercive types:

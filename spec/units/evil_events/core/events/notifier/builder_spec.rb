@@ -12,9 +12,9 @@ describe EvilEvents::Core::Events::Notifier::Builder, :stub_event_system do
       end
 
       specify 'unregistered notifier type' do
-        expect { described_class.build_notifier! }.to raise_error(
-          EvilEvents::Core::Events::Notifier::Builder::UnknownNotifierTypeError
-        )
+        expect do
+          described_class.build_notifier!
+        end.to raise_error(EvilEvents::UnknownNotifierTypeError)
       end
     end
 
