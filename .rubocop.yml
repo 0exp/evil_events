@@ -53,6 +53,9 @@ Style/ParallelAssignment:
 Style/CommentedKeyword:
   Enabled: false
 
+Style/EvalWithLocation:
+  Enabled: false
+
 Lint/AmbiguousRegexpLiteral:
   Enabled: false
 
@@ -109,4 +112,7 @@ RSpec/LetSetup:
   Enabled: false
 
 RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/ExpectChange:
   Enabled: false

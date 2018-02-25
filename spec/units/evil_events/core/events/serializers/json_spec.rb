@@ -180,11 +180,11 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
       context 'when josn structure hasnt all required fields: -type-/-payload-/-metadata-' do
         it 'fails with appropriate deserialization result' do
           [
-            {},
-            { type: 'keks_won' },
-            { payload: {} },
-            { metadata: {} },
-            { id: gen_str }
+            {}.to_json,
+            { type: 'keks_won' }.to_json,
+            { payload: {} }.to_json,
+            { metadata: {} }.to_json,
+            { id: gen_str }.to_json
           ].each do |serialized_event|
             expect { described_class.deserialize(serialized_event) }.to(
               raise_error(EvilEvents::DeserializationError)
