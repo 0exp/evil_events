@@ -22,9 +22,9 @@ module EvilEvents::Core::Events::EventExtensions
 
     module ClassMethods
       # @param type_alias [String, NilClass]
-      # @raise EvilEvents::IncopatibleEventTypeError
-      # @raise EvilEvents::EventTypeNotDefinedError
-      # @raise EvilEvents::EventTypeAlreadyDefinedError
+      # @raise [EvilEvents::IncopatibleEventTypeError]
+      # @raise [EvilEvents::EventTypeNotDefinedError]
+      # @raise [EvilEvents::EventTypeAlreadyDefinedError]
       # @return [String]
       #
       # @since 0.1.0
