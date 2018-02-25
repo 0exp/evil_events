@@ -65,6 +65,7 @@ describe 'Event Broadcasting', :stub_event_system do
 
     EvilEvents::Config.configure do |config|
       config.logger = silent_logger
+      config.notifier.type = :sequential
     end
 
     EvilEvents::Config.setup_adapters do |adapters|
@@ -108,17 +109,17 @@ describe 'Event Broadcasting', :stub_event_system do
     # fails: unexistent event type alias
     expect do
       ElasticSearchStub.subscribe_to 'withdraw_processed', delegator: :complete
-    end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+    end.to raise_error(EvilEvents::NonManagedEventClassError)
 
     # fails: unexistent event  class
     expect do
       EventStoreStub.subscribe_to Object
-    end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+    end.to raise_error(EvilEvents::NonManagedEventClassError)
 
     # fails: unsupported attribute type
-    expect { EventStoreStub.subscribe_to 123 }.to    raise_error(EvilEvents::Core::ArgumentError)
-    expect { ElasticSearchStub.subscribe_to 1.0 }.to raise_error(EvilEvents::Core::ArgumentError)
-    expect { EventCounter.subscribe_to :none }.to    raise_error(EvilEvents::Core::ArgumentError)
+    expect { EventStoreStub.subscribe_to 123 }.to    raise_error(EvilEvents::ArgumentError)
+    expect { ElasticSearchStub.subscribe_to 1.0 }.to raise_error(EvilEvents::ArgumentError)
+    expect { EventCounter.subscribe_to :none }.to    raise_error(EvilEvents::ArgumentError)
 
     # check the first approach: event objects
     # create event objects
@@ -266,5 +267,181 @@ describe 'Event Broadcasting', :stub_event_system do
         )
       )
     end
+
+    # BROADCASTING: Class method approach
+    # check the third approach: class method approach
+    # prepare event attributes for testability
+    class_method_match_lost_attrs = {
+      id:       SecureRandom.hex,
+      payload:  { score: SecureRandom.hex },
+      metadata: { host: SecureRandom.hex }
+    }
+    class_method_overwatch_released_attrs = {
+      id:       SecureRandom.hex,
+      payload:  { date: Time.now, price: Random.rand(100.0) },
+      metadata: { timestamp: Random.rand(100) }
+    }
+
+    OverwatchReleased.emit!(**class_method_overwatch_released_attrs)
+    MatchLost.emit!(**class_method_match_lost_attrs)
+
+    # check state of subscriber
+    expect(EventCounter.count).to eq(6)
+
+    # check state of subscriber
+    # check consistency
+    expect(ElasticSearchStub.event_store).to contain_exactly(
+      a_kind_of(OverwatchReleased),
+      a_kind_of(MatchLost),
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      overwatch_event, # old event
+      match_event # old event
+    )
+
+    # check attributes
+    expect(ElasticSearchStub.event_store).to contain_exactly(
+      have_attributes(type: 'overwatch_released', **class_method_overwatch_released_attrs),
+      have_attributes(type: 'match_lost', **class_method_match_lost_attrs),
+      have_attributes(type: 'overwatch_released', **overwatch_released_attrs), # old event
+      have_attributes(type: 'match_lost', **match_lost_attrs), # old event
+      overwatch_event, # old event
+      match_event # old event
+    )
+
+    # check state of subscriber
+    # check consistency
+    expect(EventStoreStub.events).to contain_exactly(
+      a_kind_of(OverwatchReleased),
+      a_kind_of(MatchLost),
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      overwatch_event, # old event
+      match_event # old event
+    )
+
+    # check attributes
+    expect(EventStoreStub.events).to contain_exactly(
+      have_attributes(type: 'overwatch_released', **class_method_overwatch_released_attrs),
+      have_attributes(type: 'match_lost', **class_method_match_lost_attrs),
+      have_attributes(type: 'overwatch_released', **overwatch_released_attrs), # new event
+      have_attributes(type: 'match_lost', **match_lost_attrs), # new event
+      overwatch_event, # old event
+      match_event # old event
+    )
+
+    # check log output of the first event data
+    expect(silent_output.string).to match(
+      Regexp.union(
+        /\[EvilEvents:EventEmitted\(memory_sync\)\]\s/,
+        /ID:\s#{class_method_match_lost_attrs[:id]}\s::\s/,
+        /TYPE:\smatch_lost\s::\s/,
+        /PAYLOAD:\s#{class_method_match_lost_attrs[:payload]}\s::\s/,
+        /METADATA:\s#{class_method_match_lost_attrs[:metadata]}/
+      )
+    )
+
+    # check log output for the second event data
+    expect(silent_output.string).to match(
+      Regexp.union(
+        /\[EvilEvents:EventEmitted\(sidekiq\)\]\s/,
+        /ID:\s#{class_method_overwatch_released_attrs[:id]}\s::\s/,
+        /TYPE:\soverwatch_released\s::\s/,
+        /PAYLOAD:\s#{class_method_overwatch_released_attrs[:payload]}\s::\s/,
+        /METADATA:\s#{class_method_overwatch_released_attrs[:metadata]}/
+      )
+    )
+
+    # check log output for the notifier activity
+    [ElasticSearchStub, EventStoreStub, EventCounter].each do |subscriber|
+      expect(silent_output.string).to match(
+        Regexp.union(
+          /\[EvilEvents:EventProcessed\(match_lost\)\s/,
+          /EVENT_ID:\s#{class_method_match_lost_attrs[:id]}\s::\s/,
+          /STATUS:\ssuccessful\s::\s/,
+          /SUBSCRIBER:\s#{subscriber.to_s}/
+        )
+      )
+      expect(silent_output.string).to match(
+        Regexp.union(
+          /\[EvilEvents:EventProcessed\(overwatch_released\)\s/,
+          /EVENT_ID:\s#{class_method_overwatch_released_attrs[:id]}\s::\s/,
+          /STATUS:\ssuccessful\s::\s/,
+          /SUBSCRIBER:\s#{subscriber.to_s}/
+        )
+      )
+    end
+  end
+
+  specify 'event callbacks' do
+    # hook invocation results data
+    hook_data = (1..20).to_a
+    # hook invocation results collector
+    hook_results = { after: [], before: [], on_error: [] }
+
+    # create simple event class
+    BonusReached = Class.new(EvilEvents::Event['bonus_reached']) do
+      metadata :timestamp, EvilEvents::Types::Int
+
+      # register corresponding hooks
+      # rubocop:disable Metrics/LineLength
+      before_emit ->(event)        { hook_results[:before]   << { event: event, indx: hook_data.shift } }
+      before_emit ->(event)        { hook_results[:before]   << { event: event, indx: hook_data.shift } }
+      after_emit  ->(event)        { hook_results[:after]    << { event: event, indx: hook_data.shift } }
+      after_emit  ->(event)        { hook_results[:after]    << { event: event, indx: hook_data.shift } }
+      on_error    ->(event, error) { hook_results[:on_error] << { event: event, indx: hook_data.shift, error: error } }
+      # rubocop:enable Metrics/LineLength
+    end
+
+    # emit empty events => hooks working good! in corresponding order!
+    BonusReached.new(metadata: { timestamp: 123_456 }).emit!
+    # expected: 1,2 => before; 3,4 => after
+
+    expect(hook_results).to match(
+      before: [
+        { event: an_instance_of(BonusReached), indx: 1 },
+        { event: an_instance_of(BonusReached), indx: 2 }
+      ],
+      after: [
+        { event: an_instance_of(BonusReached), indx: 3 },
+        { event: an_instance_of(BonusReached), indx: 4 }
+      ],
+      on_error: []
+    )
+
+    failing_subscriber = Class.new do
+      extend EvilEvents::SubscriberMixin
+      def self.call(_event); raise ZeroDivisionError; end
+    end
+    failing_subscriber.subscribe_to BonusReached, delegator: :call
+
+    # emit by event object
+    event = BonusReached.new(metadata: { timestamp: 123_456 })
+    # expected: 1,2 => before; 3,4 => after; 5,6 => before; 7 => on_error; 8,9 => after
+
+    begin
+      event.emit!
+    rescue EvilEvents::FailedNotifiedSubscribersError
+      # do nothing, its a correct behaviour
+    end
+
+    # hooks still working correctly in corresponding order!
+    expect(hook_results).to match(
+      before: [
+        { event: an_instance_of(BonusReached), indx: 1 }, # old
+        { event: an_instance_of(BonusReached), indx: 2 }, # old
+        { event: event, indx: 5 }, # new
+        { event: event, indx: 6 }, # new
+      ],
+      after: [
+        { event: an_instance_of(BonusReached), indx: 3 }, # old
+        { event: an_instance_of(BonusReached), indx: 4 }, # old
+        { event: event, indx: 8 }, # new
+        { event: event, indx: 9 }, # new
+      ],
+      on_error: [
+        { event: event, indx: 7, error: an_instance_of(ZeroDivisionError) }
+      ] # new
+    )
   end
 end

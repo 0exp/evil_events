@@ -102,10 +102,10 @@ describe EvilEvents::Core::Events::Manager, :stub_event_system, :null_logger do
           expect { manager.observe(double)         }.not_to raise_exception
 
           expect { manager.observe(double, 123) }.to(
-            raise_error(described_class::InvalidDelegatorTypeError)
+            raise_error(EvilEvents::InvalidDelegatorTypeError)
           )
           expect { manager.observe(double, Object.new) }.to(
-            raise_error(described_class::InvalidDelegatorTypeError)
+            raise_error(EvilEvents::InvalidDelegatorTypeError)
           )
         end
 
@@ -168,7 +168,7 @@ describe EvilEvents::Core::Events::Manager, :stub_event_system, :null_logger do
             expect(second_subscriber).not_to receive(:call)
             expect(third_subscriber).not_to  receive(:process_event)
 
-            expect { notify }.to raise_error(described_class::Notifier::InconsistentEventClassError)
+            expect { notify }.to raise_error(EvilEvents::InconsistentEventClassError)
           end
         end
       end

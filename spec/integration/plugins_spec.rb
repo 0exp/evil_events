@@ -2,23 +2,28 @@
 
 describe 'plugins ecosystem' do
   specify 'registered plugins' do
-    expect(EvilEvents::Plugins.names).to contain_exactly('rails', 'elastic_search')
+    expect(EvilEvents::Plugins.names).to contain_exactly(
+      :redis_adapter, :sidekiq_adapter
+    )
   end
 
   specify 'plugins installation' do
-    expect { EvilEvents::Rails }.to raise_error(NameError)
-    expect { EvilEvents::ElasticSearch }.to raise_error(NameError)
+    expect { EvilEvents::RedisAdapter }.to raise_error(NameError)
+    expect { EvilEvents::SidekiqAdapter }.to raise_error(NameError)
+
+    # try to load non-registered plugin
+    expect { EvilEvents::Plugins.load!(gen_seed) }.to raise_error(ArgumentError)
 
     # load concrete plugin
-    EvilEvents::Plugins.load!(:rails)
+    EvilEvents::Plugins.load!(:redis_adapter)
 
-    expect { EvilEvents::Rails }.not_to raise_error
-    expect { EvilEvents::ElasticSearch }.to raise_error(NameError)
+    expect { EvilEvents::RedisAdapter }.not_to raise_error
+    expect { EvilEvents::SidekiqAdapter }.to raise_error(NameError)
 
     # load all plugins
     EvilEvents::Plugins.load!
 
-    expect { EvilEvents::Rails }.not_to raise_error
-    expect { EvilEvents::ElasticSearch }.not_to raise_error
+    expect { EvilEvents::RedisAdapter }.not_to raise_error
+    expect { EvilEvents::SidekiqAdapter }.not_to raise_error
   end
 end

@@ -23,6 +23,8 @@ module EvilEvents::Core::Events
     include EventExtensions::MetadataExtendable
     # @sicne 0.2.0
     include EventExtensions::ClassSignature
+    # @since 0.3.0
+    include EventExtensions::Hookable
     # @since 0.1.0
     extend EvilEvents::Shared::CombinedContext::Mixin
 

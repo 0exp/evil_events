@@ -16,6 +16,7 @@ module EvilEvents
   require_relative 'evil_events/version'
   require_relative 'evil_events/shared'
   require_relative 'evil_events/types'
+  require_relative 'evil_events/error'
   require_relative 'evil_events/core'
   require_relative 'evil_events/config'
   require_relative 'evil_events/event'

@@ -74,6 +74,11 @@ describe 'Event Creation', :stub_event_system do
           # method that will be invoked on observers by default (delegator: option)
           default_delegator :process_event
 
+          # emition hooks
+          before_emit ->(event) {}
+          after_emit  ->(event) {}
+          on_error    ->(event, error) {}
+
           # payload keys
           payload :user_id,  EvilEvents::Types::Strict::Int
           payload :utm_link, EvilEvents::Types::Strict::String
@@ -118,6 +123,11 @@ describe 'Event Creation', :stub_event_system do
           # method that will be invoked on observers by default (delegator: option)
           default_delegator :process_event
 
+          # emition hooks
+          before_emit ->(event) {}
+          after_emit  ->(event) {}
+          on_error    ->(event, error) {}
+
           # payload keys
           payload :user_id,  EvilEvents::Types::Strict::Int
           payload :utm_link, EvilEvents::Types::Strict::String
@@ -160,19 +170,19 @@ describe 'Event Creation', :stub_event_system do
     specify 'fails when event type is already in use' do
       EvilEvents::Event.define('mission_lost')
       expect { EvilEvents::Event.define('mission_lost') }.to raise_error(
-        EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError
+        EvilEvents::AlreadyManagedEventClassError
       )
 
       Class.new(EvilEvents::Event['user_registered'])
       expect { Class.new(EvilEvents::Event['user_registered']) }.to raise_error(
-        EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError
+        EvilEvents::AlreadyManagedEventClassError
       )
 
       expect { EvilEvents::Event.define('user_registered') }.to raise_error(
-        EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError
+        EvilEvents::AlreadyManagedEventClassError
       )
       expect { Class.new(EvilEvents::Event['mission_lost']) }.to raise_error(
-        EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError
+        EvilEvents::AlreadyManagedEventClassError
       )
     end
 

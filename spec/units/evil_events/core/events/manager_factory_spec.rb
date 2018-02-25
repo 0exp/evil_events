@@ -20,15 +20,15 @@ describe EvilEvents::Core::Events::ManagerFactory do
       )
 
       expect { described_class.create(Object) }.to(
-        raise_error(described_class::IncorrectEventClassError)
+        raise_error(EvilEvents::IncorrectEventClassError)
       )
 
       expect { described_class.create(Class) }.to(
-        raise_error(described_class::IncorrectEventClassError)
+        raise_error(EvilEvents::IncorrectEventClassError)
       )
 
       expect { described_class.create(double) }.to(
-        raise_error(described_class::IncorrectEventClassError)
+        raise_error(EvilEvents::IncorrectEventClassError)
       )
     end
   end

@@ -53,7 +53,16 @@ Style/ParallelAssignment:
 Style/CommentedKeyword:
   Enabled: false
 
+Style/EvalWithLocation:
+  Enabled: false
+
 Lint/AmbiguousRegexpLiteral:
+  Enabled: false
+
+Lint/HandleExceptions:
+  Enabled: false
+
+Lint/UnusedBlockArgument:
   Enabled: false
 
 Naming/FileName:
@@ -103,4 +112,7 @@ RSpec/LetSetup:
   Enabled: false
 
 RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/ExpectChange:
   Enabled: false
