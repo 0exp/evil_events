@@ -14,7 +14,7 @@ module EvilEvents::Core
 
     # @api private
     # @since 0.1.0
-    def initialize
+    def initialize # rubocop:disable Metrics/AbcSize
       @config = Module.new do
         extend EvilEvents::Shared::Configurable
 

@@ -14,7 +14,6 @@ class EvilEvents::Core::System
     # @since 0.1.0
     attr_reader :adapters_container
 
-
     # @return [EvilEvents::Core::Events::Notifier::Abstract]
     #
     # @since 0.3.0

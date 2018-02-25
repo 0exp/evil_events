@@ -16,8 +16,7 @@ describe EvilEvents::Core::Events::Notifier::Worker::Executor, :stub_event_syste
 
       { exception: :abort,
         ignorance: :discard,
-        main_thread: :caller_runs
-      }.each_pair do |policy, concurrent_policy|
+        main_thread: :caller_runs }.each_pair do |policy, concurrent_policy|
         expect do
           min_threads = gen_int(1..10)
           max_threads = gen_int(10..20)
@@ -30,12 +29,12 @@ describe EvilEvents::Core::Events::Notifier::Worker::Executor, :stub_event_syste
             fallback_policy: policy
           )
 
-          expect(executor.raw_executor).to have_attributes({
+          expect(executor.raw_executor).to have_attributes(
             min_length:      min_threads,
             max_length:      max_threads,
             max_queue:       max_queue,
             fallback_policy: concurrent_policy
-          })
+          )
 
           expect(executor.options).to match(
             min_threads:     min_threads,
@@ -121,10 +120,10 @@ describe EvilEvents::Core::Events::Notifier::Worker::Executor, :stub_event_syste
       specify 'failing execution' do
         error_callback_hook = { event: nil, error: nil }
 
-        event_class.on_error(->(event, error) {
+        event_class.on_error(lambda do |event, error|
           error_callback_hook[:event] = event
           error_callback_hook[:error] = error
-        })
+        end)
 
         promise = executor.execute(failing_job)
         loop { break if promise.complete? }

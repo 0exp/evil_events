@@ -57,7 +57,6 @@ describe EvilEvents::Application, :stub_event_system do
       it_behaves_like 'restart of a notifier', EvilEvents::Core::Events::Notifier::Sequential
     end
 
-
     context 'worker notifier' do
       before { EvilEvents::Config.configure { |config| config.notifier.type = :worker } }
 

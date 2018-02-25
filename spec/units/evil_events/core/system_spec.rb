@@ -18,8 +18,10 @@ describe EvilEvents::Core::System, :stub_event_system do
       type_manager_module  = event_system.type_manager
       event_builder_module = EvilEvents::Core::System::EventBuilder
 
-      %i[emit raw_emit resolve_adapter register_adapter
-        process_event_notification restart_event_notifier].each do |method_name|
+      %i[
+        emit raw_emit resolve_adapter register_adapter
+        process_event_notification restart_event_notifier
+      ].each do |method_name|
         expect(broadcaster_module).to receive(method_name)
         event_system.public_send(method_name)
       end

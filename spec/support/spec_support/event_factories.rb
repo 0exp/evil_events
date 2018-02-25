@@ -22,10 +22,10 @@ module SpecSupport::EventFactories
     EvilEvents::Core::Events::EventFactory.create_class(type_alias, &definitions)
   end
 
-  def build_event_subscriber(failing: false, &subscriber_logic)
+  def build_event_subscriber(failing: false)
     source_subscriber = lambda do |event|
       raise EventSubscriberError if failing
-      subscriber_logic.call if subscriber_logic
+      yield if block_given?
     end
 
     delegator = -> { :call }
