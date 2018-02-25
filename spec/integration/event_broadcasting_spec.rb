@@ -267,6 +267,110 @@ describe 'Event Broadcasting', :stub_event_system do
         )
       )
     end
+
+    # BROADCASTING: Class method approach
+    # check the third approach: class method approach
+    # prepare event attributes for testability
+    class_method_match_lost_attrs = {
+      id:       SecureRandom.hex,
+      payload:  { score: SecureRandom.hex },
+      metadata: { host: SecureRandom.hex }
+    }
+    class_method_overwatch_released_attrs = {
+      id:       SecureRandom.hex,
+      payload:  { date: Time.now, price: Random.rand(100.0) },
+      metadata: { timestamp: Random.rand(100) }
+    }
+
+    OverwatchReleased.emit!(**class_method_overwatch_released_attrs)
+    MatchLost.emit!(**class_method_match_lost_attrs)
+
+    # check state of subscriber
+    expect(EventCounter.count).to eq(6)
+
+    # check state of subscriber
+    # check consistency
+    expect(ElasticSearchStub.event_store).to contain_exactly(
+      a_kind_of(OverwatchReleased),
+      a_kind_of(MatchLost),
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      overwatch_event, # old event
+      match_event # old event
+    )
+
+    # check attributes
+    expect(ElasticSearchStub.event_store).to contain_exactly(
+      have_attributes(type: 'overwatch_released', **class_method_overwatch_released_attrs),
+      have_attributes(type: 'match_lost', **class_method_match_lost_attrs),
+      have_attributes(type: 'overwatch_released', **overwatch_released_attrs), # old event
+      have_attributes(type: 'match_lost', **match_lost_attrs), # old event
+      overwatch_event, # old event
+      match_event # old event
+    )
+
+    # check state of subscriber
+    # check consistency
+    expect(EventStoreStub.events).to contain_exactly(
+      a_kind_of(OverwatchReleased),
+      a_kind_of(MatchLost),
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      overwatch_event, # old event
+      match_event # old event
+    )
+
+    # check attributes
+    expect(EventStoreStub.events).to contain_exactly(
+      have_attributes(type: 'overwatch_released', **class_method_overwatch_released_attrs),
+      have_attributes(type: 'match_lost', **class_method_match_lost_attrs),
+      have_attributes(type: 'overwatch_released', **overwatch_released_attrs), # new event
+      have_attributes(type: 'match_lost', **match_lost_attrs), # new event
+      overwatch_event, # old event
+      match_event # old event
+    )
+
+    # check log output of the first event data
+    expect(silent_output.string).to match(
+      Regexp.union(
+        /\[EvilEvents:EventEmitted\(memory_sync\)\]\s/,
+        /ID:\s#{class_method_match_lost_attrs[:id]}\s::\s/,
+        /TYPE:\smatch_lost\s::\s/,
+        /PAYLOAD:\s#{class_method_match_lost_attrs[:payload]}\s::\s/,
+        /METADATA:\s#{class_method_match_lost_attrs[:metadata]}/
+      )
+    )
+
+    # check log output for the second event data
+    expect(silent_output.string).to match(
+      Regexp.union(
+        /\[EvilEvents:EventEmitted\(sidekiq\)\]\s/,
+        /ID:\s#{class_method_overwatch_released_attrs[:id]}\s::\s/,
+        /TYPE:\soverwatch_released\s::\s/,
+        /PAYLOAD:\s#{class_method_overwatch_released_attrs[:payload]}\s::\s/,
+        /METADATA:\s#{class_method_overwatch_released_attrs[:metadata]}/
+      )
+    )
+
+    # check log output for the notifier activity
+    [ElasticSearchStub, EventStoreStub, EventCounter].each do |subscriber|
+      expect(silent_output.string).to match(
+        Regexp.union(
+          /\[EvilEvents:EventProcessed\(match_lost\)\s/,
+          /EVENT_ID:\s#{class_method_match_lost_attrs[:id]}\s::\s/,
+          /STATUS:\ssuccessful\s::\s/,
+          /SUBSCRIBER:\s#{subscriber.to_s}/
+        )
+      )
+      expect(silent_output.string).to match(
+        Regexp.union(
+          /\[EvilEvents:EventProcessed\(overwatch_released\)\s/,
+          /EVENT_ID:\s#{class_method_overwatch_released_attrs[:id]}\s::\s/,
+          /STATUS:\ssuccessful\s::\s/,
+          /SUBSCRIBER:\s#{subscriber.to_s}/
+        )
+      )
+    end
   end
 
   specify 'event callbacks' do
