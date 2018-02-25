@@ -33,7 +33,7 @@ describe EvilEvents::Core::System::Mock do
   # rubocop:disable Layout/AlignParameters
   it_behaves_like 'mocked dependency', EvilEvents::Core::System::EventBuilder.singleton_class
   it_behaves_like 'mocked dependency', EvilEvents::Core::System::Broadcaster,
-                                       excluded: %i[event_emitter adapters_container]
+                                       excluded: %i[event_emitter adapters_container event_notifier]
   it_behaves_like 'mocked dependency', EvilEvents::Core::System::EventManager,
                                        excluded: [:manager_registry]
   it_behaves_like 'mocked dependency', EvilEvents::Core::System::TypeManager,

@@ -65,6 +65,7 @@ describe 'Event Broadcasting', :stub_event_system do
 
     EvilEvents::Config.configure do |config|
       config.logger = silent_logger
+      config.notifier.type = :sequential
     end
 
     EvilEvents::Config.setup_adapters do |adapters|
@@ -295,18 +296,18 @@ describe 'Event Broadcasting', :stub_event_system do
     expect(hook_results).to match(
       before: [
         { event: an_instance_of(BonusReached), indx: 1 },
-        { event: an_instance_of(BonusReached), indx: 2 },
+        { event: an_instance_of(BonusReached), indx: 2 }
       ],
       after: [
         { event: an_instance_of(BonusReached), indx: 3 },
-        { event: an_instance_of(BonusReached), indx: 4 },
+        { event: an_instance_of(BonusReached), indx: 4 }
       ],
       on_error: []
     )
 
     failing_subscriber = Class.new do
       extend EvilEvents::SubscriberMixin
-      def self.call(event); raise ZeroDivisionError; end
+      def self.call(_event); raise ZeroDivisionError; end
     end
     failing_subscriber.subscribe_to BonusReached, delegator: :call
 
@@ -316,7 +317,7 @@ describe 'Event Broadcasting', :stub_event_system do
 
     begin
       event.emit!
-    rescue EvilEvents::Core::Events::Manager::Notifier::FailedSubscribersError
+    rescue EvilEvents::Core::Events::Notifier::FailedSubscribersError
       # do nothing, its a correct behaviour
     end
 

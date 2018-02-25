@@ -2,14 +2,14 @@
 
 shared_examples 'class signature interface' do
   describe 'class signature proxy interface' do
-    describe '__creation_strategy' do
-      specify '.__creation_strategy accessor' do
-        expect(event_class.__creation_strategy).to eq(nil)
+    describe '__creation_strategy__' do
+      specify '.__creation_strategy__ accessor' do
+        expect(event_class.__creation_strategy__).to eq(nil)
 
         strategy = gen_symb
-        event_class.__creation_strategy = strategy
+        event_class.__creation_strategy__ = strategy
 
-        expect(event_class.__creation_strategy).to eq(strategy)
+        expect(event_class.__creation_strategy__).to eq(strategy)
       end
     end
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-shared_context 'event subscriber component' do
+shared_examples 'event subscriber component' do
   describe 'subscriber component behavior' do
     let!(:event_class) { build_event_class('test_event') }
     let!(:another_event_class) { build_event_class('another_test_event') }
