@@ -27,7 +27,7 @@ describe EvilEvents::Core::Events::ManagerRegistry do
         context 'when passed manager isnt Manager object' do
           it 'fails with appropriate error' do
             expect { registry.register(double) }.to(
-              raise_error(described_class::IncorrectManagerObjectError)
+              raise_error(EvilEvents::IncorrectManagerObjectError)
             )
 
             expect { registry.register(first_manager) }.not_to raise_error
@@ -73,7 +73,7 @@ describe EvilEvents::Core::Events::ManagerRegistry do
 
           it 'fails with appropriate error' do
             expect { registry.register(duplicated_manager) }.to(
-              raise_error(described_class::AlreadyManagedEventClassError)
+              raise_error(EvilEvents::AlreadyManagedEventClassError)
             )
 
             expect(registry).not_to include(duplicated_manager)
@@ -115,7 +115,7 @@ describe EvilEvents::Core::Events::ManagerRegistry do
 
           it 'fails with appropriate error' do
             expect { registry.register_with(duplicated_first_event_class) }.to(
-              raise_error(described_class::AlreadyManagedEventClassError)
+              raise_error(EvilEvents::AlreadyManagedEventClassError)
             )
 
             expect(registry).to include(first_manager)
@@ -282,7 +282,7 @@ describe EvilEvents::Core::Events::ManagerRegistry do
           describe '#manager_of_event' do
             it 'fails with appropriate error' do
               expect { registry.manager_of_event(first_event_class) }.to(
-                raise_error(described_class::NonManagedEventClassError)
+                raise_error(EvilEvents::NonManagedEventClassError)
               )
             end
           end
@@ -290,7 +290,7 @@ describe EvilEvents::Core::Events::ManagerRegistry do
           describe '#manager_of_event_type' do
             it 'fails with appropirated error' do
               expect { registry.manager_of_event_type('test_event') }.to(
-                raise_error(described_class::NonManagedEventClassError)
+                raise_error(EvilEvents::NonManagedEventClassError)
               )
             end
           end

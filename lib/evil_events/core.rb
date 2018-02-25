@@ -4,7 +4,6 @@ module EvilEvents
   # @api private
   # @since 0.1.0
   module Core
-    require_relative 'core/error'
     require_relative 'core/activity_logger'
     require_relative 'core/broadcasting'
     require_relative 'core/events'

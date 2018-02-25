@@ -8,15 +8,6 @@ module EvilEvents::Core::Events
     extend Forwardable
 
     # @since 0.1.0
-    ManagerRegistryError = Class.new(EvilEvents::Core::Error)
-    # @since 0.1.0
-    IncorrectManagerObjectError = Class.new(ManagerRegistryError)
-    # @since 0.1.0
-    NonManagedEventClassError = Class.new(ManagerRegistryError)
-    # @since 0.1.0
-    AlreadyManagedEventClassError = Class.new(ManagerRegistryError)
-
-    # @since 0.1.0
     def_delegators :managers, :empty?, :size
 
     # @return [Concurrent::Map]
@@ -30,13 +21,13 @@ module EvilEvents::Core::Events
     end
 
     # @param event_class [Class{EvilEvents::Core::Events::AbstractEvent}]
-    # @raise [NonManagedEventClassError]
+    # @raise [EvilEvents::NonManagedEventClassError]
     # @return [EvilEvents::Core::Events::Manager]
     #
     # @since 0.1.0
     def manager_of_event(event_class)
       # NOTE: raise exceptions to simplify runtime problems
-      managers[event_class] || (raise NonManagedEventClassError)
+      managers[event_class] || (raise EvilEvents::NonManagedEventClassError)
     end
 
     # @param event_type [String]
@@ -77,18 +68,20 @@ module EvilEvents::Core::Events
     end
 
     # @param manager [EvilEvents::Core::Events::Manager]
-    # @raise [IncorrectManagerObjectError]
-    # @raise [AlreadyManagedEventClassError]
+    # @raise [EvilEvents::IncorrectManagerObjectError]
+    # @raise [EvilEvents::AlreadyManagedEventClassError]
     # @return void
     #
     # @since 0.1.0
     def register(manager)
-      raise IncorrectManagerObjectError unless manager.is_a?(EvilEvents::Core::Events::Manager)
+      unless manager.is_a?(EvilEvents::Core::Events::Manager)
+        raise EvilEvents::IncorrectManagerObjectError
+      end
 
       if potential_manager_duplicate?(manager) || !managed_event_type?(manager.event_type)
         managers[manager.event_class] = manager
       else
-        raise AlreadyManagedEventClassError
+        raise EvilEvents::AlreadyManagedEventClassError
       end
     end
 

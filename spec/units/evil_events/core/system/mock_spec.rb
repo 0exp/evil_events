@@ -25,9 +25,7 @@ describe EvilEvents::Core::System::Mock do
         mocked_method_params = mocked_method_object.parameters
 
         # 2. mocked method signature equals to original method signature
-        method_params.each do |param_definitions|
-          expect(mocked_method_params).to include(param_definitions)
-        end
+        expect(mocked_method_params).to match(method_params)
       end
     end
   end
@@ -35,7 +33,7 @@ describe EvilEvents::Core::System::Mock do
   # rubocop:disable Layout/AlignParameters
   it_behaves_like 'mocked dependency', EvilEvents::Core::System::EventBuilder.singleton_class
   it_behaves_like 'mocked dependency', EvilEvents::Core::System::Broadcaster,
-                                       excluded: %i[event_emitter adapters_container]
+                                       excluded: %i[event_emitter adapters_container event_notifier]
   it_behaves_like 'mocked dependency', EvilEvents::Core::System::EventManager,
                                        excluded: [:manager_registry]
   it_behaves_like 'mocked dependency', EvilEvents::Core::System::TypeManager,

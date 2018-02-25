@@ -30,9 +30,7 @@ shared_examples 'event dispatching interface' do
         subject(:dispatch) { dispatcher.dispatch double }
 
         it 'fails with non-managed event class error' do
-          expect { dispatch }.to raise_error(
-            EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError
-          )
+          expect { dispatch }.to raise_error(EvilEvents::NonManagedEventClassError)
         end
       end
     end

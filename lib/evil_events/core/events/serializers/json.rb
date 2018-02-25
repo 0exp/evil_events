@@ -9,12 +9,14 @@ class EvilEvents::Core::Events::Serializers
 
     class << self
       # @param event [EvilEvents::Core::Events::AbstractEvent]
-      # @raise [SerializationError]
+      # @raise [EvilEvents::SerializationError]
       # @return [::Hash]
       #
       # @since 0.1.0
       def serialize(event)
-        raise SerializationError unless event.is_a?(EvilEvents::Core::Events::AbstractEvent)
+        unless event.is_a?(EvilEvents::Core::Events::AbstractEvent)
+          raise EvilEvents::SerializationError
+        end
 
         ::JSON.generate(
           id:       event.id,
@@ -25,12 +27,12 @@ class EvilEvents::Core::Events::Serializers
       end
 
       # @param json [String]
-      # @raise [DeserializationError]
+      # @raise [EvilEvents::DeserializationError]
       # @return [EvilEvents::Core::Events::AbstractEvent]
       #
       # @since 0.1.0
       def deserialize(json)
-        raise DeserializationError unless json.is_a?(String)
+        raise EvilEvents::DeserializationError unless json.is_a?(String)
 
         begin
           json_hash      = ::JSON.parse(json, symbolize_names: true)
@@ -38,9 +40,12 @@ class EvilEvents::Core::Events::Serializers
           event_type     = json_hash[:type]
           event_payload  = json_hash[:payload]
           event_metadata = json_hash[:metadata]
-          raise DeserializationError unless event_type && event_payload && event_metadata
+
+          unless event_type && event_payload && event_metadata
+            raise EvilEvents::DeserializationError
+          end
         rescue ::JSON::ParserError
-          raise DeserializationError
+          raise EvilEvents::DeserializationError
         end
 
         restore_event_instance(

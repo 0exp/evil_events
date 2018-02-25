@@ -1,6 +1,24 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2018-02-25
+### Added
+- Support for Ruby 2.5.0
+- Introduce Event Emition Hooks API. Supported hooks (are decalred in an event class):
+  - `before_emit -> (event) {} # proc/lambda` - invoked once before an event emition process;
+  - `after_emit -> (event) {} # proc/lambda` - invoked once after an event emition process;
+  - `on_error -> (event, error) {} # proc/lambda` - invoked on each raised error due to emition process
+    (usually these errors are raised by subscribers and their's event processing methods)
+- Added `AbstractEvent.emit!(**event_attributes)` method to provide an ability to emit events via event class constant.
+
+### Changed
+- New more convenient exception hierarchy: now all exceptions live under `EvilEvents` namespace.
+- Full refactoring of the event notification abstraction. New types of notifying processes:
+  - `sequential` (single-threaded): ordered notification logic, subscribers are notified one after the other;
+  - `worker` (multi-threaded): unordered notification logic, each subscriber is notified in own thread (depending on the settings);
+  - Process type should be globally pre-configured before application startup (new configuration options for each type of process);
+  - Notifier can be restarted via `EvilEvents::Application.restart_event_notifier` (it would be convenient to have an ability to reload/restart notifier object in development mode interactively).
+
 ## [0.2.0] - 2017-11-19
 ### Added
 - Support for custom coercive types:

@@ -36,11 +36,11 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
         )
 
         expect { described_class.create_abstract_class(double) }.to(
-          raise_error(extensions_namespace::TypeAliasing::IncopatibleEventTypeError)
+          raise_error(EvilEvents::IncopatibleEventTypeError)
         )
 
         expect { described_class.create_abstract_class(nil) }.to(
-          raise_error(extensions_namespace::TypeAliasing::EventTypeNotDefinedError)
+          raise_error(EvilEvents::EventTypeNotDefinedError)
         )
       end
 
@@ -64,7 +64,7 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
 
       specify 'sets class creation strategy flag to :class_inheritance strategy' do
         abstract_event_class = described_class.create_abstract_class(gen_str)
-        expect(abstract_event_class.__creation_strategy).to eq(:class_inheritance)
+        expect(abstract_event_class.__creation_strategy__).to eq(:class_inheritance)
       end
 
       specify 'descendant of created class automatically registers in manager registry' do
@@ -93,11 +93,11 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
 
         # try to duplicate: run registration hooks again
         expect { Class.new(abstract_event_class) }.to(
-          raise_error(events_namespace::ManagerRegistry::AlreadyManagedEventClassError)
+          raise_error(EvilEvents::AlreadyManagedEventClassError)
         )
         # try again
         expect { Class.new(abstract_event_class) }.to(
-          raise_error(events_namespace::ManagerRegistry::AlreadyManagedEventClassError)
+          raise_error(EvilEvents::AlreadyManagedEventClassError)
         )
 
         expect(manager_registry.managed_event?(concrete_event_class)).to eq(true)
@@ -153,7 +153,7 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
 
       specify 'sets class creation strategy flag to :proc_eval strategy' do
         event_class = described_class.create_class(gen_str)
-        expect(event_class.__creation_strategy).to eq(:proc_eval)
+        expect(event_class.__creation_strategy__).to eq(:proc_eval)
       end
 
       specify 'duplication doesnt affect manager registry and fails with registry error' do
@@ -163,11 +163,11 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
 
         # try to duplicate: run registration hooks again
         expect { described_class.create_class(concrete_event_type) }.to(
-          raise_error(events_namespace::ManagerRegistry::AlreadyManagedEventClassError)
+          raise_error(EvilEvents::AlreadyManagedEventClassError)
         )
         # try again
         expect { described_class.create_class(concrete_event_type) }.to(
-          raise_error(events_namespace::ManagerRegistry::AlreadyManagedEventClassError)
+          raise_error(EvilEvents::AlreadyManagedEventClassError)
         )
 
         expect(manager_registry.managed_event?(concrete_event_class)).to eq(true)

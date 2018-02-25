@@ -20,26 +20,47 @@ describe EvilEvents::Application, :stub_event_system do
         event_type       => event_class
       )
     end
+
+    it 'exceptional event initialization code doesnt affect event class list' do
+      EvilEvents::Event.define(gen_str) { raise } rescue nil
+
+      expect(described_class.registered_events).to eq({})
+
+      event_class = EvilEvents::Event.define(gen_str)
+      EvilEvents::Event.define(gen_str) { raise } rescue nil
+
+      expect(described_class.registered_events).to match(
+        event_class.type => event_class
+      )
+
+      another_event_class = EvilEvents::Event.define(gen_str)
+      EvilEvents::Event.define(gen_str) { raise } rescue nil
+
+      expect(described_class.registered_events).to match(
+        event_class.type => event_class,
+        another_event_class.type => another_event_class
+      )
+    end
   end
 
-  it 'exceptional event initialization code doesnt affect event class list' do
-    EvilEvents::Event.define(gen_str) { raise } rescue nil
+  describe '.restart_event_notifier' do
+    shared_examples 'restart of a notifier' do |notifier_type|
+      specify "#{notifier_type} restarting" do
+        expect_any_instance_of(notifier_type).to receive(:restart!)
+        EvilEvents::Application.restart_event_notifier
+      end
+    end
 
-    expect(described_class.registered_events).to eq({})
+    context 'sequential notifier' do
+      before { EvilEvents::Config.configure { |config| config.notifier.type = :sequential } }
 
-    event_class = EvilEvents::Event.define(gen_str)
-    EvilEvents::Event.define(gen_str) { raise } rescue nil
+      it_behaves_like 'restart of a notifier', EvilEvents::Core::Events::Notifier::Sequential
+    end
 
-    expect(described_class.registered_events).to match(
-      event_class.type => event_class
-    )
+    context 'worker notifier' do
+      before { EvilEvents::Config.configure { |config| config.notifier.type = :worker } }
 
-    another_event_class = EvilEvents::Event.define(gen_str)
-    EvilEvents::Event.define(gen_str) { raise } rescue nil
-
-    expect(described_class.registered_events).to match(
-      event_class.type => event_class,
-      another_event_class.type => another_event_class
-    )
+      it_behaves_like 'restart of a notifier', EvilEvents::Core::Events::Notifier::Worker
+    end
   end
 end

@@ -5,15 +5,15 @@ shared_examples 'type aliasing interface' do
     describe '.type' do
       it 'fails when a function argument (type_name) has incopatible type (non-nil/non-string)' do
         expect { pseudo_identifiable.type(gen_symb) }.to raise_error(
-          described_class::IncopatibleEventTypeError
+          EvilEvents::IncopatibleEventTypeError
         )
 
         expect { pseudo_identifiable.type(gen_class) }.to raise_error(
-          described_class::IncopatibleEventTypeError
+          EvilEvents::IncopatibleEventTypeError
         )
 
         expect { pseudo_identifiable.type(gen_int) }.to raise_error(
-          described_class::IncopatibleEventTypeError
+          EvilEvents::IncopatibleEventTypeError
         )
 
         expect { pseudo_identifiable.type(gen_str) }.not_to raise_error
@@ -23,13 +23,13 @@ shared_examples 'type aliasing interface' do
       it 'fails when we tries to redefine the already defined type name' do
         pseudo_identifiable.type gen_str
         expect { pseudo_identifiable.type gen_str }.to raise_error(
-          described_class::EventTypeAlreadyDefinedError
+          EvilEvents::EventTypeAlreadyDefinedError
         )
       end
 
       it 'fails when we tries to get the non-defined type name' do
         expect { pseudo_identifiable.type }.to raise_error(
-          described_class::EventTypeNotDefinedError
+          EvilEvents::EventTypeNotDefinedError
         )
       end
 
