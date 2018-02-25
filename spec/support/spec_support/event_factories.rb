@@ -6,9 +6,39 @@ module SpecSupport::EventFactories
   EventFactoriesError  = Class.new(StandardError)
   EventSubscriberError = Class.new(EventFactoriesError)
 
+  def build_event_class_mock
+    Class.new do
+      class << self
+        def payload(*); end
+
+        def metadata(*); end
+      end
+
+      attr_reader :id
+      attr_reader :payload
+      attr_reader :metadata
+
+      def initialize(id: nil, payload: {}, metadata: {})
+        @id       = id
+        @payload  = payload
+        @metadata = metadata
+      end
+
+      yield(self) if block_given?
+    end
+  end
+
   def build_event_class_stub
     Class.new do
-      def initialize(id: nil, payload: {}, metadata: {}); end
+      attr_reader :id
+      attr_reader :payload
+      attr_reader :metadata
+
+      def initialize(id: nil, payload: {}, metadata: {})
+        @id       = id
+        @payload  = payload
+        @metadata = metadata
+      end
 
       yield(self) if block_given?
     end
