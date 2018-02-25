@@ -8,18 +8,6 @@ class EvilEvents::Core::Events::Notifier::Worker::Executor
 
   # @api public
   # @since 0.3.0
-  WorkerError = Class.new(EvilEvents::Core::Error)
-
-  # @api public
-  # @since 0.3.0
-  IncorrectFallbackPolicyError = Class.new(WorkerError)
-
-  # @api public
-  # @since 0.3.0
-  WorkerDisabledOrBusyError = Class.new(WorkerError)
-
-  # @api public
-  # @since 0.3.0
   FALLBACK_POLICIES = {
     exception:   :abort,
     ignorance:   :discard,
@@ -42,11 +30,12 @@ class EvilEvents::Core::Events::Notifier::Worker::Executor
   # @option max_threads [Integer]
   # @option max_queue [Integer]
   # @option fallback_policy [Symbol]
+  # @raise [EvilEvents::IncorrectFallbackPolicyError]
   #
   # @api private
   # @since 0.3.0
   def initialize(min_threads:, max_threads:, max_queue:, fallback_policy:)
-    raise IncorrectFallbackPolicyError unless FALLBACK_POLICIES[fallback_policy]
+    raise EvilEvents::IncorrectFallbackPolicyError unless FALLBACK_POLICIES[fallback_policy]
 
     @options = {
       min_threads:     min_threads,
@@ -59,7 +48,7 @@ class EvilEvents::Core::Events::Notifier::Worker::Executor
   end
 
   # @param job [EvilEvents::Core::Events::Notifier::Job]
-  # @raise WorkerDisabledOrBusyError
+  # @raise [EvilEvents::WorkerDisabledOrBusyError]
   # @return [Concurrent::Promise]
   #
   # @api private
@@ -75,7 +64,7 @@ class EvilEvents::Core::Events::Notifier::Worker::Executor
       log_failure(job.event, job.subscriber)
     end.execute
   rescue Concurrent::RejectedExecutionError
-    raise WorkerDisabledOrBusyError
+    raise EvilEvents::WorkerDisabledOrBusyError
   end
   # rubocop:enable Metrics/AbcSize, Style/MultilineBlockChain
 

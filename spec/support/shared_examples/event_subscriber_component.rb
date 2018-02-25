@@ -28,7 +28,7 @@ shared_examples 'event subscriber component' do
         # subscribe to non-event class
         expect do
           subscribeable.subscribe_to gen_class, delegator: :uber_call
-        end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+        end.to raise_error(EvilEvents::NonManagedEventClassError)
       end
 
       it 'can subscribe an object to an event by event type field (by String object)' do
@@ -53,7 +53,7 @@ shared_examples 'event subscriber component' do
         # subscribe to unexistent event
         expect do
           subscribeable.subscribe_to gen_str, delegator: gen_symb
-        end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+        end.to raise_error(EvilEvents::NonManagedEventClassError)
       end
 
       it 'can subscribe to the list of events by event type alias pattern (by Regexp object)' do
@@ -168,7 +168,7 @@ shared_examples 'event subscriber component' do
       it 'raises ArgumentError for non-string/non-class event type argument' do
         expect do
           subscribeable.subscribe_to event_class.new
-        end.to raise_error(EvilEvents::Core::ArgumentError)
+        end.to raise_error(EvilEvents::ArgumentError)
 
         expect(event_class.observers).to be_empty
       end
@@ -176,7 +176,7 @@ shared_examples 'event subscriber component' do
       it 'raises non-managed-error when the event class is not registered without side effects' do
         expect do
           subscribeable.subscribe_to BasicObject
-        end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+        end.to raise_error(EvilEvents::NonManagedEventClassError)
         expect(event_class.observers).to be_empty
       end
     end

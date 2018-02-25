@@ -104,7 +104,7 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
       end
 
       it 'fails when event object is incorrect' do
-        expect { emitter.emit(double) }.to raise_error(described_class::IncorrectEventError)
+        expect { emitter.emit(double) }.to raise_error(EvilEvents::IncorrectEventForEmitError)
         expect { emitter.emit build_event_class('test_event').new }.not_to raise_error
       end
     end

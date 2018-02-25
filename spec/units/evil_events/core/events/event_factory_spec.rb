@@ -36,11 +36,11 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
         )
 
         expect { described_class.create_abstract_class(double) }.to(
-          raise_error(extensions_namespace::TypeAliasing::IncopatibleEventTypeError)
+          raise_error(EvilEvents::IncopatibleEventTypeError)
         )
 
         expect { described_class.create_abstract_class(nil) }.to(
-          raise_error(extensions_namespace::TypeAliasing::EventTypeNotDefinedError)
+          raise_error(EvilEvents::EventTypeNotDefinedError)
         )
       end
 
@@ -93,11 +93,11 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
 
         # try to duplicate: run registration hooks again
         expect { Class.new(abstract_event_class) }.to(
-          raise_error(events_namespace::ManagerRegistry::AlreadyManagedEventClassError)
+          raise_error(EvilEvents::AlreadyManagedEventClassError)
         )
         # try again
         expect { Class.new(abstract_event_class) }.to(
-          raise_error(events_namespace::ManagerRegistry::AlreadyManagedEventClassError)
+          raise_error(EvilEvents::AlreadyManagedEventClassError)
         )
 
         expect(manager_registry.managed_event?(concrete_event_class)).to eq(true)
@@ -163,11 +163,11 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
 
         # try to duplicate: run registration hooks again
         expect { described_class.create_class(concrete_event_type) }.to(
-          raise_error(events_namespace::ManagerRegistry::AlreadyManagedEventClassError)
+          raise_error(EvilEvents::AlreadyManagedEventClassError)
         )
         # try again
         expect { described_class.create_class(concrete_event_type) }.to(
-          raise_error(events_namespace::ManagerRegistry::AlreadyManagedEventClassError)
+          raise_error(EvilEvents::AlreadyManagedEventClassError)
         )
 
         expect(manager_registry.managed_event?(concrete_event_class)).to eq(true)

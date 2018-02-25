@@ -4,13 +4,6 @@ module EvilEvents::Core::Events
   # @api private
   # @since 0.1.0
   class Manager
-    # @since 0.1.0
-    ManagerError = Class.new(EvilEvents::Core::Error)
-    # @since 0.1.0
-    InconsistentEventClassError = Class.new(ManagerError)
-    # @since 0.1.0
-    InvalidDelegatorTypeError = Class.new(ManagerError)
-
     # @return [EvilEvents::Core::Events::AbstractEvent]
     #
     # @since 0.1.0
@@ -31,7 +24,7 @@ module EvilEvents::Core::Events
 
     # @param raw_subscriber [Object]
     # @param delegator [Symbol, String, NilClass]
-    # @raise [InvalidDelegatorTypeError]
+    # @raise [EvilEvents::InvalidDelegatorTypeError]
     # @return void
     #
     # @since 0.1.0
@@ -40,19 +33,19 @@ module EvilEvents::Core::Events
       when NilClass, Symbol, String
         subscribers.push(create_event_subscriber(raw_subscriber, delegator))
       else
-        raise InvalidDelegatorTypeError
+        raise EvilEvents::InvalidDelegatorTypeError
       end
     end
 
     # @param event [EvilEvents::Core::Events::AbstractEvent]
-    # @raise [InconsistentEventClassError]
-    # @raise [Notifier::FailedSubscribersError]
+    # @raise [EvilEvents::InconsistentEventClassError]
+    # @raise [EvilEvents::FailedNotifiedSubscribersError]
     #
     # @return void
     #
     # @since 0.1.0
     def notify(event)
-      raise InconsistentEventClassError unless supported_event?(event)
+      raise EvilEvents::InconsistentEventClassError unless supported_event?(event)
       EvilEvents::Core::Bootstrap[:event_system].process_event_notification(self, event)
     end
 

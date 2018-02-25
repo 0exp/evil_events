@@ -33,7 +33,7 @@ describe EvilEvents::Core::System::EventBuilder, :stub_event_system do
       expect(event_system.managed_event?(event_class)).to eq(true)
 
       expect { described_class.define_event_class(event_type, &event_definitions) }.to(
-        raise_error(EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError)
+        raise_error(EvilEvents::AlreadyManagedEventClassError)
       )
     end
 

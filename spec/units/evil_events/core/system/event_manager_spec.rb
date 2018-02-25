@@ -145,7 +145,7 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
               payload: { kek: 'test', pek: nil },
               metadata: { lel: 'bah' }
             )
-          end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+          end.to raise_error(EvilEvents::NonManagedEventClassError)
         end
       end
     end
@@ -166,7 +166,7 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
         it 'fails with corresponding error' do
           expect do
             event_manager.manager_of_event(event)
-          end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+          end.to raise_error(EvilEvents::NonManagedEventClassError)
         end
       end
     end
@@ -185,7 +185,7 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
         it 'fails with corresponding error' do
           expect do
             event_manager.manager_of_event_type(event_class.type)
-          end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+          end.to raise_error(EvilEvents::NonManagedEventClassError)
         end
       end
     end
@@ -226,7 +226,7 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
           it 'fails with corresponding error' do
             expect do
               event_manager.observe(event_class, double, :call)
-            end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+            end.to raise_error(EvilEvents::NonManagedEventClassError)
           end
         end
       end
@@ -250,7 +250,7 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
           it 'fails with corresponding error' do
             expect do
               event_manager.raw_observe(event_class.type, double, :call)
-            end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+            end.to raise_error(EvilEvents::NonManagedEventClassError)
           end
         end
       end
@@ -370,7 +370,7 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
         it 'fails with corresponding error' do
           expect do
             event_manager.observers(event_class)
-          end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+          end.to raise_error(EvilEvents::NonManagedEventClassError)
         end
       end
     end

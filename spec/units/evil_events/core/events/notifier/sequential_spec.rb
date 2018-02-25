@@ -50,7 +50,7 @@ describe EvilEvents::Core::Events::Notifier::Sequential, :stub_event_system do
         expect(storage_subscriber).to receive(:push).with(event)
 
         expect { notifier.notify(event_manager, event) }.to raise_error(
-          EvilEvents::Core::Events::Notifier::FailedSubscribersError
+          EvilEvents::FailedNotifiedSubscribersError
         )
       end
 
@@ -70,7 +70,7 @@ describe EvilEvents::Core::Events::Notifier::Sequential, :stub_event_system do
         event_manager.observe(second_failing_subscriber, :invoke)
 
         expect { notifier.notify(event_manager, event) }.to raise_error(
-          EvilEvents::Core::Events::Notifier::FailedSubscribersError
+          EvilEvents::FailedNotifiedSubscribersError
         )
 
         begin

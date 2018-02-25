@@ -109,17 +109,17 @@ describe 'Event Broadcasting', :stub_event_system do
     # fails: unexistent event type alias
     expect do
       ElasticSearchStub.subscribe_to 'withdraw_processed', delegator: :complete
-    end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+    end.to raise_error(EvilEvents::NonManagedEventClassError)
 
     # fails: unexistent event  class
     expect do
       EventStoreStub.subscribe_to Object
-    end.to raise_error(EvilEvents::Core::Events::ManagerRegistry::NonManagedEventClassError)
+    end.to raise_error(EvilEvents::NonManagedEventClassError)
 
     # fails: unsupported attribute type
-    expect { EventStoreStub.subscribe_to 123 }.to    raise_error(EvilEvents::Core::ArgumentError)
-    expect { ElasticSearchStub.subscribe_to 1.0 }.to raise_error(EvilEvents::Core::ArgumentError)
-    expect { EventCounter.subscribe_to :none }.to    raise_error(EvilEvents::Core::ArgumentError)
+    expect { EventStoreStub.subscribe_to 123 }.to    raise_error(EvilEvents::ArgumentError)
+    expect { ElasticSearchStub.subscribe_to 1.0 }.to raise_error(EvilEvents::ArgumentError)
+    expect { EventCounter.subscribe_to :none }.to    raise_error(EvilEvents::ArgumentError)
 
     # check the first approach: event objects
     # create event objects
@@ -317,7 +317,7 @@ describe 'Event Broadcasting', :stub_event_system do
 
     begin
       event.emit!
-    rescue EvilEvents::Core::Events::Notifier::FailedSubscribersError
+    rescue EvilEvents::FailedNotifiedSubscribersError
       # do nothing, its a correct behaviour
     end
 

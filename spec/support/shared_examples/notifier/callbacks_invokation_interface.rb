@@ -32,7 +32,7 @@ shared_examples 'notifier callbacks invokation interface' do
 
       begin
         notifier.notify(event_manager, event)
-      rescue EvilEvents::Core::Events::Notifier::FailedSubscribersError
+      rescue EvilEvents::FailedNotifiedSubscribersError
       end
 
       expect(before_emit_hook_buffer).to contain_exactly(1, 2, 5, 6)

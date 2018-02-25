@@ -26,7 +26,7 @@ module EvilEvents::Core::Events
             child_class.type(type)
             child_class.__creation_strategy__ = CLASS_INHERITANCE_STRATEGY
             child_class.manage!
-          rescue EvilEvents::Core::Events::ManagerRegistry::AlreadyManagedEventClassError
+          rescue EvilEvents::AlreadyManagedEventClassError
             EvilEvents::Core::Bootstrap[:event_system].unregister_event_class(child_class)
             raise
           end
