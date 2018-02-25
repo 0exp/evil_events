@@ -12,7 +12,7 @@ module EvilEvents::Core::Events::EventExtensions
         base_class.extend(ClassMethods)
 
         base_class.singleton_class.class_eval do
-          attr_accessor :__creation_strategy
+          attr_accessor :__creation_strategy__
         end
       end
     end

@@ -34,6 +34,7 @@ module EvilEvents::Core
     require_relative 'events/notifier/worker/executor'
     require_relative 'events/notifier/worker/job'
     require_relative 'events/notifier/builder'
+    require_relative 'events/notifier/proxy'
     require_relative 'events/abstract_event'
     require_relative 'events/manager'
     require_relative 'events/manager/subscriber_list'

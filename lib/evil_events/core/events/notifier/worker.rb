@@ -4,6 +4,9 @@ module EvilEvents::Core::Events::Notifier
   # @api private
   # @since 0.3.0
   class Worker < Abstract
+    # @since 0.3.0
+    extend Forwardable
+
     # @api public
     # @since 0.3.0
     MAIN_THREAD_POLICY = :main_thread
@@ -15,6 +18,9 @@ module EvilEvents::Core::Events::Notifier
     # @api public
     # @since 0.3.0
     EXCEPTION_POLICY = :exception
+
+    # @since 0.3.0
+    def_delegators :executor, :shutdown!, :restart!
 
     # @return [EvilEvents::Core::Events::Notifier::Worker::Executor]
     #

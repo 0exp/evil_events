@@ -42,4 +42,26 @@ describe EvilEvents::Application, :stub_event_system do
       )
     end
   end
+
+  describe '.restart_event_notifier' do
+    shared_examples 'restart of a notifier' do |notifier_type|
+      specify "#{notifier_type} restarting" do
+        expect_any_instance_of(notifier_type).to receive(:restart!)
+        EvilEvents::Application.restart_event_notifier
+      end
+    end
+
+    context 'sequential notifier' do
+      before { EvilEvents::Config.configure { |config| config.notifier.type = :sequential } }
+
+      it_behaves_like 'restart of a notifier', EvilEvents::Core::Events::Notifier::Sequential
+    end
+
+
+    context 'worker notifier' do
+      before { EvilEvents::Config.configure { |config| config.notifier.type = :worker } }
+
+      it_behaves_like 'restart of a notifier', EvilEvents::Core::Events::Notifier::Worker
+    end
+  end
 end

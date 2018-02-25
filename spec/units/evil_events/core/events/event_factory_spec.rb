@@ -64,7 +64,7 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
 
       specify 'sets class creation strategy flag to :class_inheritance strategy' do
         abstract_event_class = described_class.create_abstract_class(gen_str)
-        expect(abstract_event_class.__creation_strategy).to eq(:class_inheritance)
+        expect(abstract_event_class.__creation_strategy__).to eq(:class_inheritance)
       end
 
       specify 'descendant of created class automatically registers in manager registry' do
@@ -153,7 +153,7 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
 
       specify 'sets class creation strategy flag to :proc_eval strategy' do
         event_class = described_class.create_class(gen_str)
-        expect(event_class.__creation_strategy).to eq(:proc_eval)
+        expect(event_class.__creation_strategy__).to eq(:proc_eval)
       end
 
       specify 'duplication doesnt affect manager registry and fails with registry error' do

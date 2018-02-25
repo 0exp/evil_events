@@ -24,7 +24,7 @@ class EvilEvents::Core::System
     def initialize
       @adapters_container = EvilEvents::Core::Broadcasting::Adapters.new
       @event_emitter      = EvilEvents::Core::Broadcasting::Emitter.new
-      @event_notifier     = EvilEvents::Core::Events::Notifier::Builder.build_notifier!
+      @event_notifier     = EvilEvents::Core::Events::Notifier::Proxy.new
 
       @adapters_container.register_core_adapters!
     end

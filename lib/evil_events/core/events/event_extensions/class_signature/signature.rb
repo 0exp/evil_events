@@ -34,7 +34,7 @@ module EvilEvents::Core::Events::EventExtensions::ClassSignature
     #
     # @since 0.2.0
     def class_stamp
-      { name: event_class.name, creation_strategy: event_class.__creation_strategy }
+      { name: event_class.name, creation_strategy: event_class.__creation_strategy__ }
     end
 
     # @return [String]

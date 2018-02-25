@@ -20,7 +20,9 @@ describe EvilEvents::Core::System::Broadcaster, :stub_event_system, :null_logger
           end
 
           specify do
-            expect(broadcaster.event_notifier).to be_a(
+            expect(broadcaster.event_notifier).to be_a(EvilEvents::Core::Events::Notifier::Proxy)
+
+            expect(broadcaster.event_notifier.notifier).to be_a(
               EvilEvents::Core::Events::Notifier::Sequential
             )
           end
@@ -34,7 +36,9 @@ describe EvilEvents::Core::System::Broadcaster, :stub_event_system, :null_logger
           end
 
           specify do
-            expect(broadcaster.event_notifier).to be_a(
+            expect(broadcaster.event_notifier).to be_a(EvilEvents::Core::Events::Notifier::Proxy)
+
+            expect(broadcaster.event_notifier.notifier).to be_a(
               EvilEvents::Core::Events::Notifier::Worker
             )
           end
