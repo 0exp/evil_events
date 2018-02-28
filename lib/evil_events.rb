@@ -7,6 +7,7 @@ require 'dry-types'
 require 'concurrent/array'
 require 'concurrent/map'
 require 'securerandom'
+require 'forwardable'
 require 'logger'
 require 'json'
 
