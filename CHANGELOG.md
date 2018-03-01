@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.3.1] - 2018-03-01
+### Fixed
+- A problem with Forwardable constant resolution when it cant be resolved due to dynamic definition in error classes (NameError fix).
+
 ## [0.3.0] - 2018-02-25
 ### Added
 - Support for Ruby 2.5.0
