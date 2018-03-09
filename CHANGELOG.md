@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Changed
+- Removed EvilEvents::CombinedContext class and submodules => Symbiont is used instead (symbiont-ruby).
+
 ## [0.3.1] - 2018-03-01
 ### Fixed
 - A problem with Forwardable constant resolution when it cant be resolved due to dynamic definition in error classes (NameError fix).

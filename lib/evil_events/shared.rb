@@ -9,8 +9,6 @@ module EvilEvents
     require_relative 'shared/crypto'
     require_relative 'shared/structure'
     require_relative 'shared/configurable'
-    require_relative 'shared/combined_context'
-    require_relative 'shared/combined_context/mixin'
     require_relative 'shared/delegator_resolver'
     require_relative 'shared/dependency_container'
     require_relative 'shared/extensions_mixin'
