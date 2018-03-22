@@ -71,6 +71,9 @@ Naming/FileName:
 Naming/VariableNumber:
   EnforcedStyle: snake_case
 
+Naming/UncommunicativeMethodParamName:
+  Enabled: false
+
 Metrics/LineLength:
   Max: 100
 
