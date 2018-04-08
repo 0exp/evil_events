@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 describe EvilEvents::Core::Events::AbstractEvent do
-  it_behaves_like 'adapter customizable interface' do
-    let(:customizable) { Class.new(described_class) }
+  it_behaves_like 'dispatchable interface' do
+    let(:dispatchable) { Class.new(described_class) }
   end
 
   it_behaves_like 'manageable interface' do
@@ -27,10 +27,6 @@ describe EvilEvents::Core::Events::AbstractEvent do
 
   it_behaves_like 'metadata extendable interface' do
     let(:metadata_extendable_abstraction) { described_class }
-  end
-
-  it_behaves_like 'emittable interface' do
-    let(:emittable) { Class.new(described_class).new }
   end
 
   it_behaves_like 'class signature interface' do

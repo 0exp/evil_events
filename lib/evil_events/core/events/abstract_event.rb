@@ -14,17 +14,15 @@ module EvilEvents::Core::Events
     # @since 0.1.0
     include EventExtensions::Observable
     # @since 0.1.0
-    include EventExtensions::AdapterCustomizable
-    # @since 0.1.0
     include EventExtensions::Serializable
-    # @since 0.1.0
-    include EventExtensions::Emittable
     # @since 0.1.0
     include EventExtensions::MetadataExtendable
     # @sicne 0.2.0
     include EventExtensions::ClassSignature
     # @since 0.3.0
     include EventExtensions::Hookable
+    # @since 0.4.0
+    include EventExtensions::Dispatchable
     # @since 0.4.0
     extend Symbiont::Context
 

@@ -2,12 +2,13 @@
 
 module EvilEvents::Core::Events::EventExtensions
   # @api private
-  # @since 0.1.0
-  module AdapterCustomizable
+  # @since 0.4.0
+  module Dispatchable
     class << self
-      # @param base_class [Class]
+      # @param base_class [Class{AbstractEvent}]
       #
-      # @since 0.1.0
+      # @api private
+      # @since 0.4.0
       def included(base_class)
         base_class.extend(ClassMethods)
       end
@@ -15,24 +16,32 @@ module EvilEvents::Core::Events::EventExtensions
 
     # @return [EvilEvents::Core::Broadcasting::Dispatcher::Dispatchable]
     #
-    # @since 0.1.0
+    # @since 0.4.0
     def adapter
       self.class.adapter
     end
 
     # @return [EvilEvents::Core::Broadcasting::Dispatcher::Dispatchable]
     #
-    # @since 0.1.0
+    # @since 0.4.0
     def adapter_name
       self.class.adapter_name
     end
 
-    # @since 0.1.0
+    # @return void
+    #
+    # @api public
+    # @since 0.4.0
+    def emit!
+      EvilEvents::Core::Bootstrap[:event_system].emit(self)
+    end
+
+    # @since 0.4.0
     module ClassMethods
       # @param identifier [Symbol, String]
       # @return [EvilEvents::Core::Broadcasting::Dispatcher::Dispatchable]
       #
-      # @since 0.1.0
+      # @since 0.4.0
       def adapter(identifier = nil)
         @adapter_identifier = identifier if identifier
         EvilEvents::Core::Bootstrap[:event_system].resolve_adapter(adapter_name)
@@ -40,9 +49,23 @@ module EvilEvents::Core::Events::EventExtensions
 
       # @return [Symbol, String]
       #
-      # @since 0.1.0
+      # @since 0.4.0
       def adapter_name
         @adapter_identifier || EvilEvents::Core::Bootstrap[:config].adapter.default
+      end
+
+      # @option id [NilClass, Object]
+      # @option payload [Hash]
+      # @option metadata [Hash]
+      # @return void
+      #
+      # @see EvilEvents::Core::Events::AbstractEvent#initialize
+      # @see EvilEvents::Core::Events::EventExtensions::Emittable#emit!
+      #
+      # @api public
+      # @since 0.4.0
+      def emit!(**event_attributes)
+        new(**event_attributes).emit!
       end
     end
   end
