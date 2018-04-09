@@ -154,52 +154,88 @@ shared_examples 'dispatchable interface' do
       it 'delegates event handling process to the event system' do
         event_object = dispatchable.new
 
+        # default explicit adapter identifier
+        default_adapter_identifier = nil
         expect(EvilEvents::Core::Bootstrap[:event_system]).to(
-          receive(:emit).with(event_object).once
+          receive(:emit).with(event_object, adapter: default_adapter_identifier).once
         )
-
         event_object.emit!
+
+        # custom explicit adapter identifier
+        custom_adapter_identifier = gen_symb
+        expect(EvilEvents::Core::Bootstrap[:event_system]).to(
+          receive(:emit).with(event_object, adapter: custom_adapter_identifier).once
+        )
+        event_object.emit!(adapter: custom_adapter_identifier)
       end
     end
 
     describe '.emit!' do
-      it 'creates new event invokes emition process on the new created event' do
+      it 'creates new event and invokes emition process for the new created event' do
         expected_id = gen_int
 
+        # generate payload keys
         expected_payload = {
           gen_symb(only_letters: true) => gen_int,
           gen_symb(only_letters: true) => gen_str
         }
 
+        # generate metadata keys
         expected_metadata = {
           gen_symb(only_letters: true) => gen_str,
           gen_symb(only_letters: true) => gen_int
         }
 
+        default_adapter_identifier = nil
+        custom_adapter_identifier = gen_symb
+
         dispatchable.instance_eval do |klass|
           expected_payload.each_key do |payload_key|
+            # describe payload attributes
             klass.payload payload_key
           end
 
           expected_metadata.each_key do |metadata_key|
+            # describe metadata attributes
             klass.metadata metadata_key
           end
         end
 
+        # with default adapter identifier
         expect(EvilEvents::Core::Bootstrap[:event_system]).to(
           receive(:emit).with(
             have_attributes(
               id:       expected_id,
               payload:  expected_payload,
-              metadata: expected_metadata
-            )
+              metadata: expected_metadata,
+            ),
+            adapter: default_adapter_identifier
           ).once
         )
 
         dispatchable.emit!(
-          id:       expected_id,
-          payload:  expected_payload,
+          id: expected_id,
+          payload: expected_payload,
           metadata: expected_metadata
+        )
+
+        # with castom adapter identifier
+        expect(EvilEvents::Core::Bootstrap[:event_system]).to(
+          receive(:emit).with(
+            have_attributes(
+              id:       expected_id,
+              payload:  expected_payload,
+              metadata: expected_metadata,
+            ),
+            adapter: custom_adapter_identifier
+          ).once
+        )
+
+        dispatchable.emit!(
+          id: expected_id,
+          payload: expected_payload,
+          metadata: expected_metadata,
+          adapter: custom_adapter_identifier
         )
       end
     end

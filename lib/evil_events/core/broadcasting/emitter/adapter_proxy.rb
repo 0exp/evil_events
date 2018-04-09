@@ -3,7 +3,7 @@
 class EvilEvents::Core::Broadcasting::Emitter
   # @api private
   # @since 0.4.0
-  class AdapterWrapper
+  class AdapterProxy
     # @param event [EvilEvents::Core::Events::AbstractEvent]
     # @param explicit_adapter_identifier [Symbol,NilClass]
     #

@@ -14,10 +14,10 @@ module EvilEvents::Core::Broadcasting
         raise EvilEvents::IncorrectEventForEmitError
       end
 
-      adapter_wrapper = AdapterWrapper.new(event, adapter)
+      adapter_proxy = AdapterProxy.new(event, adapter)
 
-      log_activity(event, adapter_wrapper)
-      adapter_wrapper.broadcast!
+      log_activity(event, adapter_proxy)
+      adapter_proxy.broadcast!
     end
 
     # @param event_type [String]
@@ -36,11 +36,12 @@ module EvilEvents::Core::Broadcasting
     private
 
     # @param event [EvilEvents::Core::Events::AbstractEvent]
+    # @param adapter_proxy [EvilEvents::Core::Broadcasting::Emitter::AdapterProxy]
     # @return void
     #
     # @since 0.1.0
-    def log_activity(event, adapter_wrapper)
-      activity = "EventEmitted(#{adapter_wrapper.identifier})"
+    def log_activity(event, adapter_proxy)
+      activity = "EventEmitted(#{adapter_proxy.identifier})"
       message  = "ID: #{event.id} :: " \
                  "TYPE: #{event.type} :: " \
                  "PAYLOAD: #{event.payload} :: " \
