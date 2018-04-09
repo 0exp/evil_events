@@ -32,8 +32,8 @@ module EvilEvents::Core::Events::EventExtensions
     #
     # @api public
     # @since 0.4.0
-    def emit!
-      EvilEvents::Core::Bootstrap[:event_system].emit(self)
+    def emit!(adapter: nil)
+      EvilEvents::Core::Bootstrap[:event_system].emit(self, adapter: adapter)
     end
 
     # @since 0.4.0
@@ -64,8 +64,8 @@ module EvilEvents::Core::Events::EventExtensions
       #
       # @api public
       # @since 0.4.0
-      def emit!(**event_attributes)
-        new(**event_attributes).emit!
+      def emit!(id: nil, payload: {}, metadata: {}, adapter: nil)
+        new(id: id, payload: payload, metadata: metadata).emit!(adapter: adapter)
       end
     end
   end

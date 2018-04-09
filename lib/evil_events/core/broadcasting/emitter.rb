@@ -9,13 +9,15 @@ module EvilEvents::Core::Broadcasting
     # @return void
     #
     # @since 0.1.0
-    def emit(event)
+    def emit(event, adapter: nil)
       unless event.is_a?(EvilEvents::Core::Events::AbstractEvent)
         raise EvilEvents::IncorrectEventForEmitError
       end
 
-      log_activity(event)
-      event.adapter.call(event)
+      adapter_wrapper = AdapterWrapper.new(event, adapter)
+
+      log_activity(event, adapter_wrapper)
+      adapter_wrapper.broadcast!
     end
 
     # @param event_type [String]
@@ -23,13 +25,12 @@ module EvilEvents::Core::Broadcasting
     # @return void
     #
     # @since 0.1.0
-    def raw_emit(event_type, **event_attributes)
+    def raw_emit(event_type, id: nil, payload: {}, metadata: {}, adapter: nil)
       event_object = EvilEvents::Core::Bootstrap[:event_system].resolve_event_object(
-        event_type,
-        **event_attributes
+        event_type, id: id, payload: payload, metadata: metadata
       )
 
-      emit(event_object)
+      emit(event_object, adapter: adapter)
     end
 
     private
@@ -38,8 +39,8 @@ module EvilEvents::Core::Broadcasting
     # @return void
     #
     # @since 0.1.0
-    def log_activity(event)
-      activity = "EventEmitted(#{event.adapter_name})"
+    def log_activity(event, adapter_wrapper)
+      activity = "EventEmitted(#{adapter_wrapper.identifier})"
       message  = "ID: #{event.id} :: " \
                  "TYPE: #{event.type} :: " \
                  "PAYLOAD: #{event.payload} :: " \

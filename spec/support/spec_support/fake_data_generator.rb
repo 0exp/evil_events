@@ -101,6 +101,8 @@ module SpecSupport::FakeDataGenerator
     -> {}
   end
 
+  # TODO: .gen_hash() method
+
   def gen_event_attr_type(constraint = :primitive)
     type_name       = EVENT_ATTR_TYPES[constraint].sample
     type_constraint = EVENT_ATTR_CONSTRAINTS[constraint]

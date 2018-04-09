@@ -135,7 +135,7 @@ describe EvilEvents::Core::System::Broadcaster, :stub_event_system, :null_logger
       describe '#raw_emit' do
         it 'delegates a raw broadcasting logic to the internal event emitter' do
           event_type  = double
-          event_attrs = { payload: {}, metadata: {} }
+          event_attrs = { id: nil, payload: {}, metadata: {}, adapter: nil }
 
           expect(broadcaster.event_emitter).to(
             receive(:raw_emit).with(event_type, **event_attrs).once

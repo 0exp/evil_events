@@ -32,8 +32,8 @@ class EvilEvents::Core::System
     # @return void
     #
     # @since 0.1.0
-    def emit(event)
-      event_emitter.emit(event)
+    def emit(event, adapter: nil)
+      event_emitter.emit(event, adapter: adapter)
     end
 
     # @param event_type [String]
@@ -41,8 +41,10 @@ class EvilEvents::Core::System
     # @return void
     #
     # @since 0.1.0
-    def raw_emit(event_type, **event_attributes)
-      event_emitter.raw_emit(event_type, **event_attributes)
+    def raw_emit(event_type, id: nil, payload: {}, metadata: {}, adapter: nil)
+      event_emitter.raw_emit(
+        event_type, id: id, payload: payload, metadata: metadata, adapter: adapter
+      )
     end
 
     # @param adapter_name [Symbol, String]
