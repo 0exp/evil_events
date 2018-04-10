@@ -207,7 +207,7 @@ shared_examples 'dispatchable interface' do
             have_attributes(
               id:       expected_id,
               payload:  expected_payload,
-              metadata: expected_metadata,
+              metadata: expected_metadata
             ),
             adapter: default_adapter_identifier
           ).once
@@ -225,7 +225,7 @@ shared_examples 'dispatchable interface' do
             have_attributes(
               id:       expected_id,
               payload:  expected_payload,
-              metadata: expected_metadata,
+              metadata: expected_metadata
             ),
             adapter: custom_adapter_identifier
           ).once

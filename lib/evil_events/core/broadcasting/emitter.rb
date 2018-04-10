@@ -14,7 +14,7 @@ module EvilEvents::Core::Broadcasting
         raise EvilEvents::IncorrectEventForEmitError
       end
 
-      adapter_proxy = AdapterProxy.new(event, adapter)
+      adapter_proxy = AdapterProxy.new(event, explicit_identifier: adapter)
 
       log_activity(event, adapter_proxy)
       adapter_proxy.broadcast!

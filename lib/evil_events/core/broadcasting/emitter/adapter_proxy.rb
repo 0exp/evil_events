@@ -4,22 +4,21 @@ class EvilEvents::Core::Broadcasting::Emitter
   # @api private
   # @since 0.4.0
   class AdapterProxy
-    # @param event [EvilEvents::Core::Events::AbstractEvent]
-    # @param explicit_adapter_identifier [Symbol,NilClass]
-    #
-    # @api private
-    # @since 0.4.0
-    def initialize(event, explicit_adapter_identifier = nil)
-      @event = event
-      @explicit_adapter_identifier = explicit_adapter_identifier
-    end
-
     # @return [Symbol]
     #
     # @api private
     # @since 0.4.0
-    def identifier
-      explicit_adapter_identifier ? explicit_adapter_identifier : event.adapter_name
+    attr_reader :identifier
+
+    # @param event [EvilEvents::Core::Events::AbstractEvent]
+    # @param explicit_identifier [Symbol,NilClass]
+    #
+    # @api private
+    # @since 0.4.0
+    def initialize(event, explicit_identifier: nil)
+      @event      = event
+      @identifier = explicit_identifier || event.adapter_name
+      @adapter    = EvilEvents::Core::Bootstrap[:event_system].resolve_adapter(@identifier)
     end
 
     # @return [void]
@@ -27,7 +26,7 @@ class EvilEvents::Core::Broadcasting::Emitter
     # @api private
     # @since 0.4.0
     def broadcast!
-      resolve_adapter.call(event)
+      adapter.call(event)
     end
 
     private
@@ -38,18 +37,10 @@ class EvilEvents::Core::Broadcasting::Emitter
     # @since 0.4.0
     attr_reader :event
 
-    # @return [NilClass,Symbol]
+    # @return [EvilEvents::Core::Broadcasting::Dispatcher::Mixin]
     #
     # @api private
     # @since 0.4.0
-    attr_reader :explicit_adapter_identifier
-
-    # @return [EvilEvents::Core::Broadcasting::Dispatcher]
-    #
-    # @api private
-    # @since 0.4.0
-    def resolve_adapter
-      EvilEvents::Core::Bootstrap[:event_system].resolve_adapter(identifier)
-    end
+    attr_reader :adapter
   end
 end
