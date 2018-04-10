@@ -10,11 +10,12 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
   #   !!dont forget about activity logging!!
 
   describe 'event handling logic' do
-    let(:silent_output)   { StringIO.new }
-    let(:silent_logger)   { ::Logger.new(silent_output) }
-    let(:sidekiq_adapter) { build_adapter_class.new }
-    let(:rabbit_adapter)  { build_adapter_class.new }
-    let(:redis_adapter)   { build_adapter_class.new }
+    let(:silent_output)      { StringIO.new }
+    let(:silent_logger)      { ::Logger.new(silent_output) }
+    let(:sidekiq_adapter)    { build_adapter_class.new }
+    let(:rabbit_adapter)     { build_adapter_class.new }
+    let(:redis_adapter)      { build_adapter_class.new }
+    let(:background_adapter) { build_adapter_class.new }
 
     before do
       system_config.configure do |config|
@@ -22,8 +23,9 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
       end
 
       event_system.register_adapter(:sidekiq, sidekiq_adapter)
-      event_system.register_adapter(:redis,   redis_adapter)
-      event_system.register_adapter(:rabbit,  rabbit_adapter)
+      event_system.register_adapter(:redis, redis_adapter)
+      event_system.register_adapter(:rabbit, rabbit_adapter)
+      event_system.register_adapter(:background, background_adapter)
     end
 
     describe '#emit' do
@@ -65,45 +67,86 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
             metadata: { uuid: 712 }
           )
 
-          # four different adapters
+          # four different adapters (emit via pre-configured adapters)
           [redis_event, rabbit_event, sidekiq_event].each do |event|
             # expected messages which should be processed by logger
-            expected_message = Regexp.union(
-              /\[EvilEvents::EventEmitted\(#{event.adapter_name}\)\]\s/,
-              /ID:\s#{event.id}\s::\s/,
-              /TYPE:\s#{event.type}\s::\s/,
-              /PAYLOAD:\s#{event.payload}\s::\s/,
-              /METADATA:\s#{event.metadata}/
-            )
+            expected_message =
+              "[EvilEvents:EventEmitted(#{event.adapter_name})]: " \
+              "ID: #{event.id} :: " \
+              "TYPE: #{event.type} :: " \
+              "PAYLOAD: #{event.payload} :: " \
+              "METADATA: #{event.metadata}"
 
             # expects that logger output hasnt expected messages
-            expect(silent_output.string).not_to match(expected_message)
+            expect(silent_output.string).not_to include(expected_message)
 
             # emit event (and log :))
             emitter.emit(event)
 
             # epxects that logger output has expectedd messages
-            expect(silent_output.string).to match(expected_message)
+            expect(silent_output.string).to include(expected_message)
+          end
+
+          # four different adapters (emit via explicit :background adapter)
+          [redis_event, rabbit_event, sidekiq_event].each do |event|
+            # expected messages which should be processed by logger
+            expected_message =
+              "[EvilEvents:EventEmitted(background)]: " \
+              "ID: #{event.id} :: " \
+              "TYPE: #{event.type} :: " \
+              "PAYLOAD: #{event.payload} :: " \
+              "METADATA: #{event.metadata}"
+
+            # expects that logger output hasnt expected messages
+            expect(silent_output.string).not_to include(expected_message)
+
+            # emit event (and log :))
+            emitter.emit(event, adapter: :background)
+
+            # epxects that logger output has expectedd messages
+            expect(silent_output.string).to include(expected_message)
           end
         end
       end
 
       describe 'event handling', :null_logger do
-        it 'delegates event handling to appropriate pre-configured adapter' do
-          redis_event   = build_event_class('redis_event')   { adapter :redis }.new
-          sidekiq_event = build_event_class('sidekiq_event') { adapter :sidekiq }.new
-          rabbit_event  = build_event_class('rabbit_event')  { adapter :rabbit }.new
+        context 'dispatch via pre-configured adapter' do
+          it 'delegates event handling to appropriate pre-configured adapter' do
+            redis_event   = build_event_class('redis_event')   { adapter :redis }.new
+            sidekiq_event = build_event_class('sidekiq_event') { adapter :sidekiq }.new
+            rabbit_event  = build_event_class('rabbit_event')  { adapter :rabbit }.new
 
-          expect(redis_adapter).to   receive(:call).with(redis_event).twice
-          expect(sidekiq_adapter).to receive(:call).with(sidekiq_event).twice
-          expect(rabbit_adapter).to  receive(:call).with(rabbit_event).twice
+            expect(redis_adapter).to   receive(:call).with(redis_event).twice
+            expect(sidekiq_adapter).to receive(:call).with(sidekiq_event).twice
+            expect(rabbit_adapter).to  receive(:call).with(rabbit_event).twice
 
-          emitter.emit(redis_event)
-          emitter.emit(redis_event)
-          emitter.emit(rabbit_event)
-          emitter.emit(rabbit_event)
-          emitter.emit(sidekiq_event)
-          emitter.emit(sidekiq_event)
+            # dispatch via pre-configured adapter
+            emitter.emit(redis_event)
+            emitter.emit(redis_event)
+            emitter.emit(rabbit_event)
+            emitter.emit(rabbit_event)
+            emitter.emit(sidekiq_event)
+            emitter.emit(sidekiq_event)
+          end
+        end
+
+        context 'dispatch via explicit adapter' do
+          it 'delegates event handling to appropriate explicitly chosen adapter' do
+            redis_event   = build_event_class('redis_event')   { adapter :redis }.new
+            sidekiq_event = build_event_class('sidekiq_event') { adapter :sidekiq }.new
+            rabbit_event  = build_event_class('rabbit_event')  { adapter :rabbit }.new
+
+            expect(background_adapter).to receive(:call).with(redis_event).twice
+            expect(background_adapter).to receive(:call).with(sidekiq_event).twice
+            expect(background_adapter).to receive(:call).with(rabbit_event).twice
+
+            emitter.emit(redis_event, adapter: :background)
+            emitter.emit(redis_event, adapter: :background)
+            emitter.emit(sidekiq_event, adapter: :background)
+            emitter.emit(sidekiq_event, adapter: :background)
+            emitter.emit(rabbit_event, adapter: :background)
+            emitter.emit(rabbit_event, adapter: :background)
+          end
         end
       end
 
