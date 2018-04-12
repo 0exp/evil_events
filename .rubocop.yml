@@ -56,6 +56,9 @@ Style/CommentedKeyword:
 Style/EvalWithLocation:
   Enabled: false
 
+Style/RegexpLiteral:
+  EnforcedStyle: mixed
+
 Lint/AmbiguousRegexpLiteral:
   Enabled: false
 

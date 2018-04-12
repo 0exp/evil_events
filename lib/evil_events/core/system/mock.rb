@@ -37,11 +37,11 @@ class EvilEvents::Core::System
 
     # @see EvilEvents::Core::System
     # @since 0.1.0
-    def emit(event); end
+    def emit(event, adapter: nil); end
 
     # @see EvilEvents::Core::System
     # @since 0.1.0
-    def raw_emit(event_type, **event_attributes); end
+    def raw_emit(event_type, id: nil, payload: {}, metadata: {}, adapter: nil); end
 
     # @see EvilEvents::Core::System
     # @since 0.1.0

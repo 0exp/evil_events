@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Added
+- Ability to broadcast events via any registered adapter (by explicitly passed `:adapter` attribute
+  in emition methods):
+  - `EvilEvents::Emitter.emit('your_event_type', adapter: :your_adapter_identifier, **event_attrs)`
+  - `YourEventClass.emit!(adapter: :your_adapter_identifier, **event_attrs)`
+  - `your_event.emit!(adapter: :your_adapter_identifier)`
+
 ### Changed
 - Removed EvilEvents::CombinedContext class and submodules => Symbiont is used instead (symbiont-ruby).
 
