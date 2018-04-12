@@ -5,8 +5,9 @@ module EvilEvents::Core::Broadcasting
   # @since 0.1.0
   class Emitter
     # @param event [EvilEvents::Core::Events::AbstractEvent]
+    # @option adapter [Symbol,NilClass]
     # @raise [EvilEvents::IncorrectEventForEmitError]
-    # @return void
+    # @return [void]
     #
     # @since 0.1.0
     def emit(event, adapter: nil)
@@ -21,8 +22,11 @@ module EvilEvents::Core::Broadcasting
     end
 
     # @param event_type [String]
-    # @param event_attributes [Hash]
-    # @return void
+    # @option id [NilClass,String]
+    # @option payload [Hash]
+    # @option metadata [Hash]
+    # @option adapter [Symbol,NilClass]
+    # @return [void]
     #
     # @since 0.1.0
     def raw_emit(event_type, id: nil, payload: {}, metadata: {}, adapter: nil)
@@ -37,7 +41,7 @@ module EvilEvents::Core::Broadcasting
 
     # @param event [EvilEvents::Core::Events::AbstractEvent]
     # @param adapter_proxy [EvilEvents::Core::Broadcasting::Emitter::AdapterProxy]
-    # @return void
+    # @return [void]
     #
     # @since 0.1.0
     def log_activity(event, adapter_proxy)

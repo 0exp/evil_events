@@ -29,6 +29,7 @@ class EvilEvents::Core::System
     end
 
     # @param event [EvilEvents::Core::Events::AbstractEvent]
+    # @option adapter [Symbol,NilClass]
     # @return void
     #
     # @since 0.1.0
@@ -37,7 +38,10 @@ class EvilEvents::Core::System
     end
 
     # @param event_type [String]
-    # @param event_attributes [Hash]
+    # @option id [NilClass,String]
+    # @option payload [Hash]
+    # @option metadata [Hash]
+    # @option adapter [Symbol,NilClass]
     # @return void
     #
     # @since 0.1.0

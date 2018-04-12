@@ -14,21 +14,22 @@ module EvilEvents::Core::Events::EventExtensions
       end
     end
 
-    # @return [EvilEvents::Core::Broadcasting::Dispatcher::Dispatchable]
+    # @return [EvilEvents::Core::Broadcasting::Dispatcher::Mixin]
     #
     # @since 0.4.0
     def adapter
       self.class.adapter
     end
 
-    # @return [EvilEvents::Core::Broadcasting::Dispatcher::Dispatchable]
+    # @return [EvilEvents::Core::Broadcasting::Dispatcher::Mixin]
     #
     # @since 0.4.0
     def adapter_name
       self.class.adapter_name
     end
 
-    # @return void
+    # @option adapter [Symbol,NilClass]
+    # @return [void]
     #
     # @api public
     # @since 0.4.0
@@ -38,7 +39,7 @@ module EvilEvents::Core::Events::EventExtensions
 
     # @since 0.4.0
     module ClassMethods
-      # @param identifier [Symbol, String]
+      # @param identifier [Symbol,String,NilClass]
       # @return [EvilEvents::Core::Broadcasting::Dispatcher::Dispatchable]
       #
       # @since 0.4.0
@@ -54,10 +55,11 @@ module EvilEvents::Core::Events::EventExtensions
         @adapter_identifier || EvilEvents::Core::Bootstrap[:config].adapter.default
       end
 
-      # @option id [NilClass, Object]
+      # @option id [NilClass,Object]
       # @option payload [Hash]
       # @option metadata [Hash]
-      # @return void
+      # @option adapter [Symbol,NilClass]
+      # @return [void]
       #
       # @see EvilEvents::Core::Events::AbstractEvent#initialize
       # @see EvilEvents::Core::Events::EventExtensions::Emittable#emit!

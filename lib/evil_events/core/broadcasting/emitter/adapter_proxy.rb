@@ -11,7 +11,7 @@ class EvilEvents::Core::Broadcasting::Emitter
     attr_reader :identifier
 
     # @param event [EvilEvents::Core::Events::AbstractEvent]
-    # @param explicit_identifier [Symbol,NilClass]
+    # @option explicit_identifier [Symbol,NilClass]
     #
     # @api private
     # @since 0.4.0
