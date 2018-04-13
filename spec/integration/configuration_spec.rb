@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe 'Configuration', :stub_config do
+describe 'Configuration', :stub_event_system do
   specify 'configure common options' do
     null_logger = SpecSupport::NullLogger
     io_logger   = Logger.new(StringIO.new)
