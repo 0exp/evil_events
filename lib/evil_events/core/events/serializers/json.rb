@@ -9,13 +9,13 @@ class EvilEvents::Core::Events::Serializers
 
     class << self
       # @param event [EvilEvents::Core::Events::AbstractEvent]
-      # @raise [EvilEvents::SerializationError]
-      # @return [::Hash]
+      # @raise [EvilEvents::JSONSerializationError]
+      # @return [String]
       #
       # @since 0.1.0
       def serialize(event)
         unless event.is_a?(EvilEvents::Core::Events::AbstractEvent)
-          raise EvilEvents::SerializationError
+          raise EvilEvents::JSONSerializationError
         end
 
         ::JSON.generate(

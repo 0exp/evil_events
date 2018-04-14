@@ -77,7 +77,7 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
 
       it 'fails with appropriate serialization exception' do
         expect { serialization }.to(
-          raise_error(EvilEvents::SerializationError)
+          raise_error(EvilEvents::JSONSerializationError)
         )
       end
     end

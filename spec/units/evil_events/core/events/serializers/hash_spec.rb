@@ -65,7 +65,9 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
       let(:serialization) { described_class.serialize(double) }
 
       it 'fails with appropriate serialization exception' do
-        expect { serialization }.to raise_error(EvilEvents::SerializationError)
+        expect { serialization }.to raise_error(
+          EvilEvents::HashSerializationError
+        )
       end
     end
   end
