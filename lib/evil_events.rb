@@ -11,6 +11,7 @@ require 'securerandom'
 require 'forwardable'
 require 'logger'
 require 'json'
+require 'ox'
 
 # @api public
 # @since 0.1.0

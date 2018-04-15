@@ -9,13 +9,13 @@ class EvilEvents::Core::Events::Serializers
 
     class << self
       # @param event [EvilEvents::Core::Events::AbstractEvent]
-      # @raise [EvilEvents::SerializationError]
+      # @raise [EvilEvents::HashSerializationError]
       # @return [::Hash]
       #
       # @since 0.1.0
       def serialize(event)
         unless event.is_a?(EvilEvents::Core::Events::AbstractEvent)
-          raise EvilEvents::SerializationError
+          raise EvilEvents::HashSerializationError
         end
 
         {
@@ -31,21 +31,24 @@ class EvilEvents::Core::Events::Serializers
       # rubocop:disable Metrics/PerceivedComplexity
 
       # @param hash [::Hash]
-      # @raise [EvilEvents::DeserializationError]
+      # @raise [EvilEvents::HashDeserializationError]
       # @return [EvilEvents::Core::Events::AbstractEvent]
       #
       # @since 0.1.0
       def deserialize(hash)
-        raise EvilEvents::DeserializationError unless hash.is_a?(::Hash)
+        raise EvilEvents::HashDeserializationError unless hash.is_a?(::Hash)
 
         event_id       = hash[:id]       || hash['id']
         event_type     = hash[:type]     || hash['type']
         event_payload  = hash[:payload]  || hash['payload']
         event_metadata = hash[:metadata] || hash['metadata']
 
-        raise EvilEvents::DeserializationError unless event_type && event_payload && event_metadata
-        raise EvilEvents::DeserializationError unless event_payload.is_a?(::Hash)
-        raise EvilEvents::DeserializationError unless event_metadata.is_a?(::Hash)
+        unless event_type && event_payload && event_metadata
+          raise EvilEvents::HashDeserializationError
+        end
+
+        raise EvilEvents::HashDeserializationError unless event_payload.is_a?(::Hash)
+        raise EvilEvents::HashDeserializationError unless event_metadata.is_a?(::Hash)
 
         restore_event_instance(
           type:     event_type,

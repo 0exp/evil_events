@@ -31,4 +31,5 @@ describe EvilEvents::Serializer, :stub_event_system do
 
   it_behaves_like 'deserialization module', :json, :load_from_json, :deserialize_from_json
   it_behaves_like 'deserialization module', :hash, :load_from_hash, :deserialize_from_hash
+  it_behaves_like 'deserialization module', :xml,  :load_from_xml,  :deserialize_from_xml
 end

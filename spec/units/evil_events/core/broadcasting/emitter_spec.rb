@@ -5,10 +5,6 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
 
   let(:emitter) { described_class.new }
 
-  # TODO: add specs for explicit adapter identifier
-  #   (see EvilEvents::Core::Events::Broadcasting::Emitter/AdapterProxy)
-  #   !!dont forget about activity logging!!
-
   describe 'event handling logic' do
     let(:silent_output)      { StringIO.new }
     let(:silent_logger)      { ::Logger.new(silent_output) }

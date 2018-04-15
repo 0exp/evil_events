@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'evil_events/version'
 
 Gem::Specification.new do |spec|
-  spec.required_ruby_version = '>= 2.2.7'
+  spec.required_ruby_version = '>= 2.2.10'
 
   spec.name        = 'evil_events'
   spec.version     = EvilEvents::VERSION
@@ -33,6 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dry-container',    '~> 0.6.0'
   spec.add_dependency 'concurrent-ruby',  '~> 1.0.5'
   spec.add_dependency 'symbiont-ruby',    '~> 0.2.0'
+  spec.add_dependency 'ox',               '~> 2.9.0'
 
   spec.add_development_dependency 'coveralls',      '~> 0.8.21'
   spec.add_development_dependency 'simplecov',      '~> 0.14.1'

@@ -26,5 +26,6 @@ shared_examples 'serializable interface' do
 
     it_behaves_like 'valid serialization logic', :hash, :serialize_to_hash
     it_behaves_like 'valid serialization logic', :json, :serialize_to_json
+    it_behaves_like 'valid serialization logic', :xml,  :serialize_to_xml
   end
 end

@@ -3,14 +3,29 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
+- Support for Ruby `2.2.10`, `2.3.7`, `2.4.4`, `2.5.1`;
 - Ability to broadcast events via any registered adapter (by explicitly passed `:adapter` attribute
   in emition methods):
-  - `EvilEvents::Emitter.emit('your_event_type', adapter: :your_adapter_identifier, **event_attrs)`
-  - `YourEventClass.emit!(adapter: :your_adapter_identifier, **event_attrs)`
-  - `your_event.emit!(adapter: :your_adapter_identifier)`
+  - `EvilEvents::Emitter.emit('your_event_type', adapter: :your_adapter_identifier, **event_attrs)`;
+  - `YourEventClass.emit!(adapter: :your_adapter_identifier, **event_attrs)`;
+  - `your_event.emit!(adapter: :your_adapter_identifier)`;
+- Added XML event serialization format:
+  - `EvilEvents::Serializer.load_from_xml(event)` - returns an event object;
+  - `your_event.serialize_to_xml` - returns xml string;
+  - `your_event.dump_to_xml` - returns xml string (`serialize_to_xml` alias);
+- Added an ability to check an event object similarity:
+  - `your_event.similar_to?(another_event)` - `returns` true if `another_event` has equal id/type/metadata/paylaod
+    attributes (and interface) - otherwise returns `false`.
 
 ### Changed
-- Removed EvilEvents::CombinedContext class and submodules => Symbiont is used instead (symbiont-ruby).
+- Removed `EvilEvents::CombinedContext` class and submodules => `Symbiont` is used instead (gem `symbiont-ruby`);
+- Added specific serialization error classes (inherited from `EvilEvents::SerializationError`:
+  - `EvilEvents::HashSerializationError`;
+  - `EvilEvents::HashDeserializationError`;
+  - `EvilEvents::JSONSerializationError`;
+  - `EvilEvents::JSONSerializationError`;
+  - `EvilEvents::XMLSerializationError`;
+  - `EvilEvents::XMLSerializationError`.
 
 ## [0.3.1] - 2018-03-01
 ### Fixed
