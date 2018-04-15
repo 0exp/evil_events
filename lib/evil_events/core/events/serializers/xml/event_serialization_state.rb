@@ -4,7 +4,7 @@ module EvilEvents::Core::Events::Serializers::XML
   # @api private
   # @since 0.4.0
   class EventSerializationState
-    # @return [Integer]
+    # @return [String,Object]
     #
     # @since 0.4.0
     attr_reader :id
