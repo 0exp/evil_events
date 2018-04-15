@@ -49,7 +49,8 @@ module EvilEvents::Core
                    :define_event_class,
                    :define_abstract_event_class,
                    :deserialize_from_json,
-                   :deserialize_from_hash
+                   :deserialize_from_hash,
+                   :deserialize_from_xml
 
     # @see EvilEvents::Core::System::TypeManager
     # @since 0.2.0

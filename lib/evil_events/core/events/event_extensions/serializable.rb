@@ -19,5 +19,13 @@ module EvilEvents::Core::Events::EventExtensions
       EvilEvents::Core::Events::Serializers[:json].serialize(self)
     end
     alias_method :dump_to_json, :serialize_to_json
+
+    # @return [String]
+    #
+    # @since 0.4.0
+    def serialize_to_xml
+      EvilEvents::Core::Events::Serializers[:xml].serialize(self)
+    end
+    alias_method :dump_to_xml, :serialize_to_xml
   end
 end
