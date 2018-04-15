@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'evil_events/version'
 
 Gem::Specification.new do |spec|
-  spec.required_ruby_version = '>= 2.2.7'
+  spec.required_ruby_version = '>= 2.2.10'
 
   spec.name        = 'evil_events'
   spec.version     = EvilEvents::VERSION
