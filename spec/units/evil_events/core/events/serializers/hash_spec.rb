@@ -196,13 +196,36 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
         end
 
         context 'when passed hash represents existing event but has incompatible payload' do
-          let(:incompatible_hash) do
+          let(:incompatible_ivar_types) do
+            [
+              { type: nil, payload: nil, metadata: nil },
+              { type: nil, payload: nil, metadata: {} },
+              { type: nil, payload: {}, metadata: nil },
+              { type: nil, payload: {}, metadata: {} },
+              { type: 'spec_worked', payload: nil, metadata: {} },
+              { type: 'spec_worked', payload: {}, metadata: double },
+              { type: 'spec_worked', payload: double, metadata: {} },
+              { type: 'spec_worked', payload: {}, metadata: nil },
+              { type: 'spec_worked', payload: nil, metadata: nil },
+              { type: 'spec_worked', payload: double, metadata: double },
+              { type: 'spec_worked', payload: double, metadata: nil },
+              { type: 'spec_worked', payload: nil, metadata: double }
+            ]
+          end
+
+          let(:incompatible_event_attributes) do
             { type: 'spec_worked', payload: {}, metadata: {} }
           end
 
           it 'fails with payload constructor error' do
-            expect { described_class.deserialize(incompatible_hash) }.to(
-              raise_error(Dry::Struct::Error)
+            incompatible_ivar_types.each do |incompatible_hash|
+              expect { described_class.deserialize(incompatible_hash) }.to raise_error(
+                EvilEvents::HashDeserializationError
+              )
+            end
+
+            expect { described_class.deserialize(incompatible_event_attributes) }.to raise_error(
+              Dry::Struct::Error
             )
           end
         end
@@ -218,7 +241,7 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
             { id: gen_str }
           ].each do |serialized_event|
             expect { described_class.deserialize(serialized_event) }.to(
-              raise_error(EvilEvents::DeserializationError)
+              raise_error(EvilEvents::HashDeserializationError)
             )
           end
         end
@@ -230,7 +253,7 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
 
       it 'fails with appropriate deserialization error' do
         expect { deserialization }.to(
-          raise_error(EvilEvents::DeserializationError)
+          raise_error(EvilEvents::HashDeserializationError)
         )
       end
     end

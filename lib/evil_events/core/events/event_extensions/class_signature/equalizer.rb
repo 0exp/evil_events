@@ -69,14 +69,12 @@ module EvilEvents::Core::Events::EventExtensions::ClassSignature
     #
     # @since 0.2.0
     def similar_signatures?
-      # rubocop:disable Layout/MultilineOperationIndentation
       equal_type_alias? &&
       equal_class?      &&
       equal_payload?    &&
       equal_metadata?   &&
       equal_delegator?  &&
       equal_adapter?
-      # rubocop:enable Layout/MultilineOperationIndentation
     end
   end
 end

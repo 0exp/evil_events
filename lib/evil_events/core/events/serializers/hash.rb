@@ -47,13 +47,8 @@ class EvilEvents::Core::Events::Serializers
           raise EvilEvents::HashDeserializationError
         end
 
-        unless event_payload.is_a?(::Hash)
-          raise EvilEvents::HashDeserializationError
-        end
-
-        unless event_metadata.is_a?(::Hash)
-          raise EvilEvents::HashDeserializationError
-        end
+        raise EvilEvents::HashDeserializationError unless event_payload.is_a?(::Hash)
+        raise EvilEvents::HashDeserializationError unless event_metadata.is_a?(::Hash)
 
         restore_event_instance(
           type:     event_type,

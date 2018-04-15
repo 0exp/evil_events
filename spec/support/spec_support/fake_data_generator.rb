@@ -101,7 +101,9 @@ module SpecSupport::FakeDataGenerator
     -> {}
   end
 
-  # TODO: .gen_hash() method
+  def gen_all
+    FACTORY_METHODS.map { |generator| send(generator) }.shuffle!
+  end
 
   def gen_event_attr_type(constraint = :primitive)
     type_name       = EVENT_ATTR_TYPES[constraint].sample

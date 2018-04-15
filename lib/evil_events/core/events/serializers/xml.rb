@@ -19,7 +19,7 @@ class EvilEvents::Core::Events::Serializers
           raise EvilEvents::XMLSerializationError
         end
 
-        Ox.dump(EventSerializationProxy.new(event))
+        Ox.dump(EventSerializationState.new(event))
       end
 
       # @param xml [String]
@@ -31,18 +31,16 @@ class EvilEvents::Core::Events::Serializers
         raise EvilEvents::XMLDeserializationError unless xml.is_a?(String)
 
         begin
-          serialization_proxy = Ox.parse_obj(xml)
-        rescue Ox::Error => error
-          raise EvilEvents::XMLDeserializationError, error.message
-        rescue NoMethodError
+          event_serialization_state = Ox.parse_obj(xml)
+        rescue Ox::Error, NoMethodError, ArgumentError
           raise EvilEvents::XMLDeserializationError
         end
 
         restore_event_instance(
-          id:       serialization_proxy.id,
-          type:     serialization_proxy.type,
-          payload:  serialization_proxy.payload,
-          metadata: serialization_proxy.metadata
+          id:       event_serialization_state.id,
+          type:     event_serialization_state.type,
+          payload:  event_serialization_state.payload,
+          metadata: event_serialization_state.metadata
         )
       end
     end

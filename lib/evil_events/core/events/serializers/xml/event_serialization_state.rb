@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-module EvilEvents::Core::Events::Serializers::Xml
+module EvilEvents::Core::Events::Serializers::XML
   # @api private
   # @since 0.4.0
-  class EventSerializationProxy
+  class EventSerializationState
     # @return [Integer]
     #
     # @since 0.4.0
@@ -23,7 +23,6 @@ module EvilEvents::Core::Events::Serializers::Xml
     #
     # @since 0.4.0
     attr_reader :metadata
-
 
     # @param event [EvilEvents::Core::Events::AbstractEvent]
     #
