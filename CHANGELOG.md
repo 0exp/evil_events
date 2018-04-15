@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
-- Support for Ruby `2.2.10, `2.3.7`, `2.4.4`, `2.5.1`;
+- Support for Ruby `2.2.10`, `2.3.7`, `2.4.4`, `2.5.1`;
 - Ability to broadcast events via any registered adapter (by explicitly passed `:adapter` attribute
   in emition methods):
   - `EvilEvents::Emitter.emit('your_event_type', adapter: :your_adapter_identifier, **event_attrs)`;
