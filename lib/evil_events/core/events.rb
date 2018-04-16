@@ -41,6 +41,7 @@ module EvilEvents::Core
     require_relative 'events/manager/subscriber_list'
     require_relative 'events/manager_factory'
     require_relative 'events/manager_registry'
+    require_relative 'events/manager_registry/scoped_event_type_matcher'
     require_relative 'events/subscriber'
     require_relative 'events/subscriber/mixin'
     require_relative 'events/event_factory'
