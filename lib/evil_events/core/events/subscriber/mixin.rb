@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 class EvilEvents::Core::Events::Subscriber
+  # rubocop:disable Metrics/BlockLength
+
   # @api public
   # @since 0.1.0
   Mixin = EvilEvents::Shared::ClonableModuleBuilder.build do
-    # @param event_type [Array<String, Class{EvilEvents::Core::Events::AbstractEvent}, Regexp>]
+    # @param event_types [Array<String, Class{EvilEvents::Core::Events::AbstractEvent}, Regexp>]
     # @param delegator [String, Symbol, NilClass]
     # @raise [EvilEvents::ArgumentError]
+    # @return [void]
     #
     # @since 0.2.0
     def subscribe_to(*event_types, delegator: nil)
@@ -28,5 +31,25 @@ class EvilEvents::Core::Events::Subscriber
         end
       end
     end
+
+    # @param event_scopes [Array<String>]
+    # @param delegator [String,Symbol,NilClass]
+    # @raise [EvilEvents::ArgumentError]
+    # @return [void]
+    #
+    # @api public
+    # @since 0.4.0
+    def subscribe_to_scope(*event_scopes, delegator: nil)
+      raise EvilEvents::ArgumentError unless event_scopes.all? do |event_scope|
+        event_scope.is_a?(String)
+      end
+
+      event_system = EvilEvents::Core::Bootstrap[:event_system]
+
+      event_scopes.each do |event_scope|
+        event_system.scoped_observe(event_scope, self, delegator)
+      end
+    end
   end
+  # rubocop:enable Metrics/BlockLength
 end

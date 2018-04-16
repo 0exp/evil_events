@@ -56,8 +56,6 @@ module EvilEvents::Core::Events
         scope_matcher.match?(managed_event.type)
       end
 
-      raise EvilEvents::NonManagedEventClassError if event_classes.empty?
-
       event_classes.map { |event_class| manager_of_event(event_class) }
     end
 
