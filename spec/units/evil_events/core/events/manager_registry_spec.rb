@@ -276,6 +276,10 @@ describe EvilEvents::Core::Events::ManagerRegistry do
               )
             end
           end
+
+          describe '#managers_of_scoped_event_type' do
+            pending 'realize!'
+          end
         end
 
         context 'when registry doesnt have manager of required event' do
@@ -307,6 +311,10 @@ describe EvilEvents::Core::Events::ManagerRegistry do
             it 'returns an empty collection' do
               expect(registry.managers_of_event_condition(proc {})).to eq([])
             end
+          end
+
+          describe '#managers_of_scoped_event_type' do
+            pending 'returns an empty collection'
           end
         end
       end
