@@ -4,23 +4,41 @@ class EvilEvents::Core::Events::ManagerRegistry
   # @api private
   # @since 0.4.0
   class ScopedEventTypeMatcher
-    # @return [Regexp]
+    # @return [String]
     #
     # @api private
     # @since 0.4.0
-    attr_reader :pattern_matcher
+    EVENT_SCOPE_SPLITTER = '.'
 
     # @return [String]
     #
     # @api private
     # @since 0.4.0
-    attr_reader :scope_pattern
+    MATCHER_SCOPE_SPLITTER = '\.'
 
-    # @return [Integer,Float::INFINITY]
+    # @return [String]
     #
     # @api private
     # @since 0.4.0
-    attr_reader :scope_pattern_size
+    GENERIC_PART_PATTERN = '*'
+
+    # @return [String]
+    #
+    # @api private
+    # @since 0.4.0
+    GENERIC_REGEXP_PATTERN = '.*\.'
+
+    # @return [String]
+    #
+    # @api private
+    # @since 0.4.0
+    INFINITE_PART_PATTERN = '#'
+
+    # @return [String]
+    #
+    # @api private
+    # @since 0.4.0
+    INFINITE_REGEXP_PATTERN = '\.*.*'
 
     # @param scope_pattern [String]
     # @raise [EvilEvents::ArgimentError]
@@ -41,21 +59,29 @@ class EvilEvents::Core::Events::ManagerRegistry
     # @api private
     # @since 0.4.0
     def match?(event_type)
-      return false unless comparable_event_scope_sizes?(event_type)
+      return false unless comparable_event_scopes?(event_type)
       !!pattern_matcher.match(event_type)
     end
 
     private
 
-    # @param event_type [String]
-    # @return [Boolean]
+    # @return [Regexp]
     #
     # @api private
     # @since 0.4.0
-    def comparable_event_scope_sizes?(event_type)
-      return true unless scope_pattern_size.finite?
-      scope_pattern_size == count_event_type_size(event_type)
-    end
+    attr_reader :pattern_matcher
+
+    # @return [String]
+    #
+    # @api private
+    # @since 0.4.0
+    attr_reader :scope_pattern
+
+    # @return [Integer,Float::INFINITY]
+    #
+    # @api private
+    # @since 0.4.0
+    attr_reader :scope_pattern_size
 
     # @param scope_pattern [String]
     # @return [Integer,Float::INFINITY]
@@ -63,12 +89,12 @@ class EvilEvents::Core::Events::ManagerRegistry
     # @api private
     # @since 0.4.0
     def count_scope_pattern_size(scope_pattern)
-      return Float::INFINITY if scope_pattern == '#'
+      return Float::INFINITY if scope_pattern == INFINITE_PART_PATTERN
       return Float::INFINITY if scope_pattern.include?('.#')
       return Float::INFINITY if scope_pattern.include?('#.')
       return Float::INFINITY if scope_pattern.include?('.#.')
 
-      scope_pattern.split('.').size
+      scope_pattern.split(EVENT_SCOPE_SPLITTER).size
     end
 
     # @param event_type [String]
@@ -77,33 +103,71 @@ class EvilEvents::Core::Events::ManagerRegistry
     # @api private
     # @since 0.4.0
     def count_event_type_size(event_type)
-      event_type.split('.').size
+      event_type.split(EVENT_SCOPE_SPLITTER).size
     end
 
-    def build_pattern_matcher(scope_pattern)
-      routing_parts  = scope_pattern.split('.')
+    # @param event_type [String]
+    # @return [Boolean]
+    #
+    # @api private
+    # @since 0.4.0
+    def comparable_event_scopes?(event_type)
+      return true unless scope_pattern_size.finite?
+      scope_pattern_size == count_event_type_size(event_type)
+    end
 
-      regexp_parts = routing_parts.each_with_object([]) do |routing_part, regexps|
+    # @param pattern [String,NilClass]
+    # @return [Boolean]
+    #
+    # @api private
+    # @since 0.4.0
+    def non_generic_pattern?(pattern = nil)
+      return false unless pattern
+      pattern != GENERIC_REGEXP_PATTERN && pattern != INFINITE_REGEXP_PATTERN
+    end
+
+    # "\.test\.created\.today\." => "test\.created\.today"
+    #
+    # @param regexp_string [String]
+    # @return [String]
+    #
+    # @api private
+    # @since 0.4.0
+    def strip_regexp_string(regexp_string, left: false, right: false)
+      pattern = regexp_string
+      pattern = pattern[2..-1] if left && pattern[0..1] == MATCHER_SCOPE_SPLITTER
+      pattern = pattern[0..-3] if right && pattern[-2..-1] == MATCHER_SCOPE_SPLITTER
+      pattern
+    end
+
+    # @param scope_pattern [String]
+    # @return [Regexp]
+    #
+    # @api private
+    # @since 0.4.0
+    # rubocop:disable Metrics/AbcSize
+    def build_pattern_matcher(scope_pattern)
+      routing_parts = scope_pattern.split(EVENT_SCOPE_SPLITTER)
+
+      regexp_string = routing_parts.each_with_object([]) do |routing_part, regexp_parts|
         case routing_part
-        when '*'
-          regexps << { routing_part: routing_part, pattern: '.*\.' }
-        when '#'
-          if regexps.last && regexps.last[:routing_part] != '#' && regexps.last[:routing_part] != '*'
-            regexps.last[:pattern] = regexps.last[:pattern][0..-3]
+        when GENERIC_PART_PATTERN
+          regexp_parts << GENERIC_REGEXP_PATTERN
+        when INFINITE_PART_PATTERN
+          if non_generic_pattern?(regexp_parts.last)
+            regexp_parts[-1] = strip_regexp_string(regexp_parts.last, right: true)
           end
 
-          regexps << { routing_part: routing_part, pattern: '\.*.*' }
+          regexp_parts << INFINITE_REGEXP_PATTERN
         else
-          regexps << { routing_part: routing_part, pattern: Regexp.escape(routing_part) + '\.' }
+          regexp_parts << (Regexp.escape(routing_part) + MATCHER_SCOPE_SPLITTER)
         end
-      end
+      end.join
 
-      pattern_regexp = regexp_parts.map { |x| x[:pattern] }.join('')
+      regexp_string = strip_regexp_string(regexp_string, left: true, right: true)
 
-      pattern_regexp = pattern_regexp[2..-1] if pattern_regexp[0..1] == '\.'
-      pattern_regexp = pattern_regexp[0..-3] if pattern_regexp[-1] == '.' && pattern_regexp[-2] == "\\"
-
-      Regexp.new('\A' + pattern_regexp + '\z')
+      Regexp.new('\A' + regexp_string + '\z')
     end
+    # rubocop:enable Metrics/AbcSize
   end
 end
