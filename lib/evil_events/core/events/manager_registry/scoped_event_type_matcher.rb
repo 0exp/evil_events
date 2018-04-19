@@ -112,7 +112,7 @@ class EvilEvents::Core::Events::ManagerRegistry
     # @api private
     # @since 0.4.0
     def comparable_event_scopes?(event_type)
-      return true unless scope_pattern_size.finite?
+      return true if scope_pattern_size == Float::INFINITY
       scope_pattern_size == count_event_type_size(event_type)
     end
 
