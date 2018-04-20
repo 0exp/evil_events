@@ -16,10 +16,18 @@ describe EvilEvents::Core::Events::ManagerRegistry do
 
     let(:first_event_class) { build_event_class('first_event') }
     let(:second_event_class) { build_event_class('second_event') }
+    let(:subscoped_first_event_class) { build_event_class('first_event.covered') }
+    let(:superscoped_first_event_class) { build_event_class('first_event.covered.fully') }
+    let(:subscoped_second_event_class) { build_event_class('second_event.uncovered') }
+    let(:superscoped_second_event_class) { build_event_class('second_event.uncovered.fully') }
     let(:duplicated_first_event_class) { build_event_class('first_event') }
 
     let(:first_manager) { build_event_manager(first_event_class) }
     let(:second_manager) { build_event_manager(second_event_class) }
+    let(:subscoped_first_manager) { build_event_manager(subscoped_first_event_class) }
+    let(:superscoped_first_manager) { build_event_manager(superscoped_first_event_class) }
+    let(:subscoped_second_manager) { build_event_manager(subscoped_second_event_class) }
+    let(:superscoped_second_manager) { build_event_manager(superscoped_second_event_class) }
     let(:duplicated_manager) { build_event_manager(duplicated_first_event_class) }
 
     describe 'manager registration interface' do
@@ -209,7 +217,11 @@ describe EvilEvents::Core::Events::ManagerRegistry do
         context 'when registry has manager of required event' do
           before do
             registry.register(first_manager)
+            registry.register(subscoped_first_manager)
+            registry.register(superscoped_first_manager)
             registry.register(second_manager)
+            registry.register(subscoped_second_manager)
+            registry.register(superscoped_second_manager)
           end
 
           describe '#manager_of_event' do
@@ -249,7 +261,11 @@ describe EvilEvents::Core::Events::ManagerRegistry do
 
               expect(registry.managers_of_event_pattern(all_in_pattern)).to contain_exactly(
                 first_manager,
-                second_manager
+                subscoped_first_manager,
+                superscoped_first_manager,
+                second_manager,
+                subscoped_second_manager,
+                superscoped_second_manager
               )
             end
           end
@@ -278,7 +294,35 @@ describe EvilEvents::Core::Events::ManagerRegistry do
           end
 
           describe '#managers_of_scoped_event_type' do
-            pending 'realize!'
+            it 'returns a list of managers which event types covers the passed event scope' do
+              event_scope = '*.covered.#'
+              expect(registry.managers_of_scoped_event_type(event_scope)).to contain_exactly(
+                subscoped_first_manager,
+                superscoped_first_manager
+              )
+
+              event_scope = '#.uncovered.#'
+              expect(registry.managers_of_scoped_event_type(event_scope)).to contain_exactly(
+                subscoped_second_manager,
+                superscoped_second_manager
+              )
+
+              event_scope = '*'
+              expect(registry.managers_of_scoped_event_type(event_scope)).to contain_exactly(
+                first_manager,
+                second_manager
+              )
+
+              event_scope = '#'
+              expect(registry.managers_of_scoped_event_type(event_scope)).to contain_exactly(
+                first_manager,
+                second_manager,
+                subscoped_first_manager,
+                superscoped_first_manager,
+                subscoped_second_manager,
+                superscoped_second_manager
+              )
+            end
           end
         end
 
@@ -314,7 +358,14 @@ describe EvilEvents::Core::Events::ManagerRegistry do
           end
 
           describe '#managers_of_scoped_event_type' do
-            pending 'returns an empty collection'
+            it  'returns an empty collection' do
+              expect(registry.managers_of_scoped_event_type('*.updated.#')).to        eq([])
+              expect(registry.managers_of_scoped_event_type('#.created.*.*')).to      eq([])
+              expect(registry.managers_of_scoped_event_type('first_event.tested')).to eq([])
+              expect(registry.managers_of_scoped_event_type('*.*.*.*.#')).to          eq([])
+              expect(registry.managers_of_scoped_event_type('first_event.*.*')).to    eq([])
+              expect(registry.managers_of_scoped_event_type('second_event.*.*')).to   eq([])
+            end
           end
         end
       end

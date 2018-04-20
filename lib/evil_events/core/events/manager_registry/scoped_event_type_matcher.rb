@@ -112,7 +112,8 @@ class EvilEvents::Core::Events::ManagerRegistry
     # @api private
     # @since 0.4.0
     def comparable_event_scopes?(event_type)
-      # NOTE: finite? / infinite? cant be used (backward compatability with old ruby versions)
+      # NOTE: Integer#finite?, Integer#infinite?, Float#finite?, Float#nfinite?
+      #   Cant be used (backward compatability with old ruby versions)
       return true if scope_pattern_size == Float::INFINITY
       scope_pattern_size == count_event_type_size(event_type)
     end

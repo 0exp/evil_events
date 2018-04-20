@@ -23,6 +23,7 @@ describe EvilEvents::Core::Events::ManagerRegistry::ScopedEventTypeMatcher do
       gift.offer
       gift.offer.bonus
       gift.offer.bonus.wasted
+      gift.offer.bonus.reject
     ]
   end
 
@@ -30,11 +31,13 @@ describe EvilEvents::Core::Events::ManagerRegistry::ScopedEventTypeMatcher do
     matcher = described_class.new(pattern)
 
     event_types.select do |type|
-      matcher.match?(type)
+      matcher.match?(type).tap do |result|
+        expect(result).to eq(true).or(eq(false))
+      end
     end
   end
 
-  specify do
+  specify 'pattern matching' do
     expect(match_with('game')).to contain_exactly('game')
 
     expect(match_with('game.#')).to contain_exactly(
@@ -76,6 +79,8 @@ describe EvilEvents::Core::Events::ManagerRegistry::ScopedEventTypeMatcher do
       'game.created.platform.macos'
     )
 
+    expect(match_with('*.created.*.platform.*.macos')).to be_empty
+
     expect(match_with('#')).to contain_exactly(*event_types)
     expect(match_with('*')).to contain_exactly('game', 'gift', 'user', 'deposit')
 
@@ -84,5 +89,24 @@ describe EvilEvents::Core::Events::ManagerRegistry::ScopedEventTypeMatcher do
       'deposit.created.ecompay',
       'deposit.created.sberbank'
     )
+
+    expect(match_with('#.deposit.#')).to contain_exactly(
+      'user.deposit',
+      'user.deposit.reject',
+      'deposit',
+      'deposit.created',
+      'deposit.created.ecompay',
+      'deposit.created.sberbank'
+    )
+
+    expect(match_with('#.reject')).to contain_exactly(
+      'user.deposit.reject',
+      'gift.offer.bonus.reject'
+    )
+
+    # pass event type exlicitly (not a pattern)
+    event_types.each do |explicit_event_type|
+      expect(match_with(explicit_event_type)).to contain_exactly(explicit_event_type)
+    end
   end
 end

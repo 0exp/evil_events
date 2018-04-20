@@ -2,11 +2,99 @@
 
 shared_examples 'event subscriber component' do
   describe 'subscriber component behavior' do
-    let!(:event_class) { build_event_class('test_event') }
-    let!(:another_event_class) { build_event_class('another_test_event') }
+    describe '#subscribe_to_scope' do
+      let!(:deposit_event) { build_event_class('deposit') }
+      let!(:deposit_created_event) { build_event_class('deposit.created') }
+      let!(:deposit_created_tomorrow_event) { build_event_class('deposit.created.tomorrow') }
+      let!(:user_event) { build_event_class('user') }
+      let!(:user_created_event) { build_event_class('user.created') }
+      let!(:user_created_yesterday_event) { build_event_class('user.created.yesterday') }
+
+      it 'can subscribe an object to a list of events with passed event routing-based pattern' do
+        delegator = gen_symb(only_letters: true)
+        # subscribe to 'user.created' and 'user.created.yesterday' events
+        subscribeable.subscribe_to_scope 'user.created.#', delegator: delegator
+
+        expect(deposit_event.observers).to be_empty
+        expect(deposit_created_event.observers).to be_empty
+        expect(deposit_created_tomorrow_event.observers).to be_empty
+        expect(user_event.observers).to be_empty
+        expect(user_created_yesterday_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(user_created_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+
+        # subscribe to 'desposit', 'deposit.created' and 'deposit.created.tomorrow' events
+        subscribeable.subscribe_to_scope 'deposit.#', delegator: delegator
+
+        expect(user_event.observers).to be_empty
+        expect(deposit_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(deposit_created_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(deposit_created_tomorrow_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(user_created_yesterday_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(user_created_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+
+        # subscribe to 'user' event only
+        subscribeable.subscribe_to_scope 'user', delegator: delegator
+        expect(deposit_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(deposit_created_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(deposit_created_tomorrow_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(user_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(user_created_yesterday_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(user_created_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+
+        # subscribe to nothing
+        subscribeable.subscribe_to_scope gen_str, delegator: delegator
+        expect(deposit_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(deposit_created_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(deposit_created_tomorrow_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(user_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(user_created_yesterday_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+        expect(user_created_event.observers).to contain_exactly(
+          have_attributes(source_object: subscribeable, delegator: delegator)
+        )
+      end
+    end
 
     describe '#subscribe_to' do
-      it 'can subscribe an object to an event by event class (by Class object)' do
+      let!(:event_class) { build_event_class('test_event') }
+      let!(:another_event_class) { build_event_class('another_test_event') }
+
+      it 'can subscribe an object to an event with an event class (by Class object)' do
         # subscribe to Event class
         subscribeable.subscribe_to event_class, delegator: :test_call
 
@@ -31,7 +119,7 @@ shared_examples 'event subscriber component' do
         end.to raise_error(EvilEvents::NonManagedEventClassError)
       end
 
-      it 'can subscribe an object to an event by event type field (by String object)' do
+      it 'can subscribe an object to an event with event type field (by String object)' do
         # subscribe to existing event
         subscribeable.subscribe_to event_class.type, delegator: :invoke
 
@@ -56,7 +144,7 @@ shared_examples 'event subscriber component' do
         end.to raise_error(EvilEvents::NonManagedEventClassError)
       end
 
-      it 'can subscribe to the list of events by event type alias pattern (by Regexp object)' do
+      it 'can subscribe to the list of events with event type alias pattern (by Regexp object)' do
         # subscribe to test_event
         subscribeable.subscribe_to /\Atest_[a-z]+\z/i, delegator: :process
 
@@ -99,7 +187,7 @@ shared_examples 'event subscriber component' do
         )
       end
 
-      it 'can subscribe to the list of events by conditional proc (by Proc object)' do
+      it 'can subscribe to the list of events with conditional proc (by Proc object)' do
         expect(event_class.observers).to be_empty
         expect(another_event_class.observers).to be_empty
 
@@ -173,9 +261,16 @@ shared_examples 'event subscriber component' do
         expect(event_class.observers).to be_empty
       end
 
-      it 'raises non-managed-error when the event class is not registered without side effects' do
+      it 'raises non-managed-error (without side effects) when the event class is not registered' do
         expect do
           subscribeable.subscribe_to BasicObject
+        end.to raise_error(EvilEvents::NonManagedEventClassError)
+        expect(event_class.observers).to be_empty
+      end
+
+      it 'raises non-managed-error (without side effects) when an event with passed type isnt registered' do
+        expect do
+          subscribeable.subscribe_to (gen_str * 2)
         end.to raise_error(EvilEvents::NonManagedEventClassError)
         expect(event_class.observers).to be_empty
       end
