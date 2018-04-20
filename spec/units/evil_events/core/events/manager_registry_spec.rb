@@ -358,7 +358,7 @@ describe EvilEvents::Core::Events::ManagerRegistry do
           end
 
           describe '#managers_of_scoped_event_type' do
-            it  'returns an empty collection' do
+            it 'returns an empty collection' do
               expect(registry.managers_of_scoped_event_type('*.updated.#')).to        eq([])
               expect(registry.managers_of_scoped_event_type('#.created.*.*')).to      eq([])
               expect(registry.managers_of_scoped_event_type('first_event.tested')).to eq([])

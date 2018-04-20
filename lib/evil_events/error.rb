@@ -76,7 +76,7 @@ module EvilEvents
   # @since 0.3.0
   NotifierError = Class.new(Error)
   # @since 0.3.0
-  class FailedNotifiedSubscribersError < NotifierError
+  class FailingSubscribersError < NotifierError
     # @since 0.3.0
     extend Forwardable
 

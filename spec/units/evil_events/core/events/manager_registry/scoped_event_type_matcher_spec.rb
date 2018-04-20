@@ -52,7 +52,7 @@ describe EvilEvents::Core::Events::ManagerRegistry::ScopedEventTypeMatcher do
 
     expect(match_with('game.*')).to contain_exactly(
       'game.created',
-      'game.updated',
+      'game.updated'
     )
 
     expect(match_with('game.*.tomorrow')).to contain_exactly(
@@ -63,7 +63,7 @@ describe EvilEvents::Core::Events::ManagerRegistry::ScopedEventTypeMatcher do
 
     expect(match_with('game.*.platform.*')).to contain_exactly(
       'game.created.platform.macos',
-      'game.updated.platform.windows',
+      'game.updated.platform.windows'
     )
 
     expect(match_with('#.created.#')).to contain_exactly(

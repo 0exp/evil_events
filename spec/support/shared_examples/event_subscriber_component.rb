@@ -268,9 +268,10 @@ shared_examples 'event subscriber component' do
         expect(event_class.observers).to be_empty
       end
 
-      it 'raises non-managed-error (without side effects) when an event with passed type isnt registered' do
+      it 'raises non-managed-error (without side effects) when ' \
+         'an event with passed type isnt registered' do
         expect do
-          subscribeable.subscribe_to (gen_str * 2)
+          subscribeable.subscribe_to gen_str
         end.to raise_error(EvilEvents::NonManagedEventClassError)
         expect(event_class.observers).to be_empty
       end
