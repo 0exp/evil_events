@@ -131,6 +131,8 @@ class EvilEvents::Core::Events::ManagerRegistry
     # "\.test\.created\.today\." => "test\.created\.today"
     #
     # @param regexp_string [String]
+    # @option left [Boolean]
+    # @option right [Boolean]
     # @return [String]
     #
     # @api private

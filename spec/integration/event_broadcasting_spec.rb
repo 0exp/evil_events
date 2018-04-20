@@ -106,7 +106,7 @@ describe 'Event Broadcasting', :stub_event_system do
       adapter :redis
     end
 
-    DepositCanceledImmidietly = Class.new(EvilEvents::Event['deposit.canceled.immidietly']) do
+    DepositCanceledImmediately = Class.new(EvilEvents::Event['deposit.canceled.immediately']) do
       payload :reason, EvilEvents::Types::String
       adapter :redis
     end
@@ -124,10 +124,9 @@ describe 'Event Broadcasting', :stub_event_system do
     # combination
     EventStoreStub.subscribe_to 'match_lost', OverwatchReleased, delegator: :push
 
-    # subscribe to scope: deposit.rejected, deposit.rejected.immidietly
-    EventCounter.subscribe_to_scope '*.canceled.#', delegator: :increase!
-
     # routing-key-based subscribtion
+    # subscribe to scope: deposit.rejected, deposit.rejected.immediately
+    EventCounter.subscribe_to_scope '*.canceled.#', delegator: :increase!
 
     # fails: unexistent event type alias
     expect do
@@ -484,10 +483,10 @@ describe 'Event Broadcasting', :stub_event_system do
     DepositCanceled.emit!(id: 'secure123', payload: { reason: 'low_balance' })
 
     # subscribers: EventCounter
-    DepositCanceledImmidietly.emit!(id: 'id555', payload: { reason: 'banned_user' })
+    DepositCanceledImmediately.emit!(id: 'id555', payload: { reason: 'banned_user' })
 
     # changed
-    # (deposit.rejected + deposit.rejected.immidietly)
+    # (deposit.rejected + deposit.rejected.immediately)
     expect(EventCounter.count).to eq(12)
 
     # not changed
