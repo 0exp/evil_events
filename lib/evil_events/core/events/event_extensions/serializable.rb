@@ -27,5 +27,13 @@ module EvilEvents::Core::Events::EventExtensions
       EvilEvents::Core::Events::Serializers[:xml].serialize(self)
     end
     alias_method :dump_to_xml, :serialize_to_xml
+
+    # @return [String]
+    #
+    # @since 0.4.0
+    def serialize_to_msgpack
+      EvilEvents::Core::Events::Serializers[:msgpack].serialize(self)
+    end
+    alias_method :dump_to_msgpack, :serialize_to_msgpack
   end
 end

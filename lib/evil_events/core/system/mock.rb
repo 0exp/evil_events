@@ -100,6 +100,10 @@ class EvilEvents::Core::System
     def deserialize_from_xml(serialized_event); end
 
     # @see EvilEvents::Core::System
+    # @since 0.4.0
+    def deserialize_from_msgpack(serialized_event); end
+
+    # @see EvilEvents::Core::System
     # @since 0.1.0
     def managed_event?(event_class); end
 

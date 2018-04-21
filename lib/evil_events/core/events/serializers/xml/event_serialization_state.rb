@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module EvilEvents::Core::Events::Serializers::XML
+class EvilEvents::Core::Events::Serializers::XML
   # @api private
   # @since 0.4.0
   class EventSerializationState

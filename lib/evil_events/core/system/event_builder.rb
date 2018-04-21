@@ -45,6 +45,14 @@ class EvilEvents::Core::System
       def deserialize_from_xml(serialized_event)
         EvilEvents::Core::Events::Serializers[:xml].deserialize(serialized_event)
       end
+
+      # @param serialized_event [String]
+      # @return [EvilEvents::Core::Events::AbstractEvent]
+      #
+      # @since 0.4.0
+      def deserialize_from_msgpack(serialized_event)
+        EvilEvents::Core::Events::Serializers[:msgpack].deserialize(serialized_event)
+      end
     end
   end
 end

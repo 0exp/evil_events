@@ -3,6 +3,8 @@
 describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
   include_context 'event system'
 
+  let(:serializer) { described_class.new }
+
   describe '.serialize' do
     context 'when received object is an event instance' do
       it 'returns a hash representation of event object with appropriate format' do
@@ -34,8 +36,8 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
           metadata :timestamp
         end.new(**email_received_event_attrs)
 
-        user_registered_serialiation = described_class.serialize(user_registered_event)
-        email_received_serialization = described_class.serialize(email_received_event)
+        user_registered_serialiation = serializer.serialize(user_registered_event)
+        email_received_serialization = serializer.serialize(email_received_event)
 
         expect(user_registered_serialiation).to match(
           type:     'user_registered',
@@ -54,15 +56,15 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
       it 'each invocation provides a new result object (doesnt remember anything)' do
         test_event = build_event_class('test_event').new
 
-        first_serialization  = described_class.serialize(test_event)
-        second_serialization = described_class.serialize(test_event)
+        first_serialization  = serializer.serialize(test_event)
+        second_serialization = serializer.serialize(test_event)
 
         expect(first_serialization.object_id).not_to eq(second_serialization.object_id)
       end
     end
 
     context 'when recevied object is not an event instance' do
-      let(:serialization) { described_class.serialize(double) }
+      let(:serialization) { serializer.serialize(double) }
 
       it 'fails with appropriate serialization exception' do
         expect { serialization }.to raise_error(
@@ -106,7 +108,7 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
             }
           }
 
-          event = described_class.deserialize(serialized_event)
+          event = serializer.deserialize(serialized_event)
           expect(event).to be_a(spec_worked_event_class)
           expect(event.id).to eq(EvilEvents::Core::Events::EventFactory::UNDEFINED_EVENT_ID)
           expect(event.type).to eq(spec_worked_event_class.type)
@@ -126,7 +128,7 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
             }
           }
 
-          event = described_class.deserialize(serialized_event)
+          event = serializer.deserialize(serialized_event)
           expect(event).to          be_a(limit_reached_event_class)
           expect(event.id).to       eq(serialized_event[:id])
           expect(event.type).to     eq(limit_reached_event_class.type)
@@ -178,8 +180,8 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
           ]
 
           serialized_events.each do |serialized_event|
-            expect { described_class.deserialize(serialized_event) }.not_to raise_error
-            expect(described_class.deserialize(serialized_event)).to be_a(limit_reached_event_class)
+            expect { serializer.deserialize(serialized_event) }.not_to raise_error
+            expect(serializer.deserialize(serialized_event)).to be_a(limit_reached_event_class)
           end
         end
 
@@ -189,7 +191,7 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
           end
 
           it 'fails with non-managed-event-class error' do
-            expect { described_class.deserialize(incompatible_hash) }.to(
+            expect { serializer.deserialize(incompatible_hash) }.to(
               raise_error(EvilEvents::NonManagedEventClassError)
             )
           end
@@ -219,12 +221,12 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
 
           it 'fails with payload constructor error' do
             incompatible_ivar_types.each do |incompatible_hash|
-              expect { described_class.deserialize(incompatible_hash) }.to raise_error(
+              expect { serializer.deserialize(incompatible_hash) }.to raise_error(
                 EvilEvents::HashDeserializationError
               )
             end
 
-            expect { described_class.deserialize(incompatible_event_attributes) }.to raise_error(
+            expect { serializer.deserialize(incompatible_event_attributes) }.to raise_error(
               Dry::Struct::Error
             )
           end
@@ -240,7 +242,7 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
             { metadata: {} },
             { id: gen_str }
           ].each do |serialized_event|
-            expect { described_class.deserialize(serialized_event) }.to(
+            expect { serializer.deserialize(serialized_event) }.to(
               raise_error(EvilEvents::HashDeserializationError)
             )
           end
@@ -249,7 +251,7 @@ describe EvilEvents::Core::Events::Serializers::Hash, :stub_event_system do
     end
 
     context 'when received object isnt a hash' do
-      subject(:deserialization) { described_class.deserialize(double) }
+      subject(:deserialization) { serializer.deserialize(double) }
 
       it 'fails with appropriate deserialization error' do
         expect { deserialization }.to(

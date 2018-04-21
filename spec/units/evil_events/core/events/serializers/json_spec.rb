@@ -3,6 +3,8 @@
 describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
   include_context 'event system'
 
+  let(:serializer) { described_class.new }
+
   describe '.serialize' do
     context 'when received object is an event instance' do
       it 'returns json representation of event object with appropriate format' do
@@ -32,8 +34,8 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
           metadata :timestamp, EvilEvents::Types::Any.default(nil)
         end.new(**keks_signed_out_attrs)
 
-        keks_signed_in_serialization  = described_class.serialize(keks_signed_in_event)
-        keks_signed_out_serialization = described_class.serialize(keks_signed_out_event)
+        keks_signed_in_serialization  = serializer.serialize(keks_signed_in_event)
+        keks_signed_out_serialization = serializer.serialize(keks_signed_out_event)
 
         expect(::JSON.parse(keks_signed_in_serialization)).to match(
           'type' => 'keks_signed_in',
@@ -65,15 +67,15 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
       it 'each invocation provides a new result object (doesnt remember anything)' do
         test_event = build_event_class('test_event').new
 
-        first_serialization  = described_class.serialize(test_event)
-        second_serialization = described_class.serialize(test_event)
+        first_serialization  = serializer.serialize(test_event)
+        second_serialization = serializer.serialize(test_event)
 
         expect(first_serialization.object_id).not_to eq(second_serialization.object_id)
       end
     end
 
     context 'when received object is not an event instance' do
-      let(:serialization) { described_class.serialize(double) }
+      let(:serialization) { serializer.serialize(double) }
 
       it 'fails with appropriate serialization exception' do
         expect { serialization }.to(
@@ -121,7 +123,7 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
             }
           }
 
-          event = described_class.deserialize(::JSON.generate(serialized_event))
+          event = serializer.deserialize(::JSON.generate(serialized_event))
           expect(event).to          be_a(keks_lost_event_klass)
           expect(event.id).to       eq(EvilEvents::Core::Events::EventFactory::UNDEFINED_EVENT_ID)
           expect(event.type).to     eq(keks_lost_event_klass.type)
@@ -141,7 +143,7 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
             }
           }
 
-          event = described_class.deserialize(::JSON.generate(serialized_event))
+          event = serializer.deserialize(::JSON.generate(serialized_event))
           expect(event).to          be_a(keks_won_event_klass)
           expect(event.id).to       eq(serialized_event[:id])
           expect(event.type).to     eq(keks_won_event_klass.type)
@@ -161,7 +163,7 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
         end
 
         it 'fails with non-managed-event-class error' do
-          expect { described_class.deserialize(incompatible_json) }.to raise_error(
+          expect { serializer.deserialize(incompatible_json) }.to raise_error(
             EvilEvents::NonManagedEventClassError
           )
         end
@@ -173,7 +175,7 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
         end
 
         it 'fails with payload constructor error' do
-          expect { described_class.deserialize(incompatible_json) }.to(
+          expect { serializer.deserialize(incompatible_json) }.to(
             raise_error(Dry::Struct::Error)
           )
         end
@@ -188,7 +190,7 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
             { metadata: {} }.to_json,
             { id: gen_str }.to_json
           ].each do |serialized_event|
-            expect { described_class.deserialize(serialized_event) }.to(
+            expect { serializer.deserialize(serialized_event) }.to(
               raise_error(EvilEvents::JSONDeserializationError)
             )
           end
@@ -199,7 +201,7 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
     context 'when received object isnt a parsable json string' do
       it 'fails with appropriate deserialization error' do
         [double, 'kek', '{}test{}', 'las_-vegas metadata: {}'].each do |serialized_event|
-          expect { described_class.deserialize(serialized_event) }.to(
+          expect { serializer.deserialize(serialized_event) }.to(
             raise_error(EvilEvents::JSONDeserializationError)
           )
         end

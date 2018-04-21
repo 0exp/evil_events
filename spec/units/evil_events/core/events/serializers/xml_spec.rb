@@ -3,6 +3,8 @@
 describe EvilEvents::Core::Events::Serializers::XML, :stub_event_system do
   include_context 'event system'
 
+  let(:serializer) { described_class.new }
+
   describe '.serialize' do
     context 'when received object is an event instance' do
       it 'returns a string representation of an event with a corresponding xml format' do
@@ -22,21 +24,21 @@ describe EvilEvents::Core::Events::Serializers::XML, :stub_event_system do
 
         serialization_state = described_class::EventSerializationState.new(event)
 
-        expect(Ox.dump(serialization_state)).to eq(described_class.serialize(event))
+        expect(Ox.dump(serialization_state)).to eq(serializer.serialize(event))
       end
 
       it 'each invokation provides a new xml string object (non-cachable)' do
         test_event = build_event_class('test_event').new
 
-        first_serialization  = described_class.serialize(test_event)
-        second_serialization = described_class.serialize(test_event)
+        first_serialization  = serializer.serialize(test_event)
+        second_serialization = serializer.serialize(test_event)
 
         expect(first_serialization.object_id).not_to eq(second_serialization.object_id)
       end
     end
 
     context 'when received object isnt an event instance' do
-      subject(:serialization) { described_class.serialize(double) }
+      subject(:serialization) { serializer.serialize(double) }
 
       it 'fails with corresponding serialization error' do
         expect { serialization }.to(
@@ -68,10 +70,10 @@ describe EvilEvents::Core::Events::Serializers::XML, :stub_event_system do
 
     context 'when received object is a parsable xml string' do
       context 'when passed xml representation has all required event fields' do
-        let(:xml) { described_class.serialize(iphone_crashed_event) }
+        let(:xml) { serializer.serialize(iphone_crashed_event) }
 
         it 'returns an instance of corresponding event' do
-          event = described_class.deserialize(xml)
+          event = serializer.deserialize(xml)
 
           expect(event).to          be_a(iphone_crashed_event_klass)
           expect(event.id).to       eq(iphone_crashed_event.id)
@@ -83,23 +85,23 @@ describe EvilEvents::Core::Events::Serializers::XML, :stub_event_system do
 
       context 'when passed xml representation represents non-registered event' do
         let(:xml) do
-          described_class
+          serializer
             .serialize(iphone_crashed_event)
             .sub(iphone_crashed_event_klass.type, gen_str)
         end
 
         it 'fails with corresponding error' do
-          expect { described_class.deserialize(xml) }.to raise_error(
+          expect { serializer.deserialize(xml) }.to raise_error(
             EvilEvents::NonManagedEventClassError
           )
         end
       end
 
       context 'when passed xml representation has incompatible event payload/matedata attrs' do
-        let(:xml) { described_class.serialize(iphone_crashed_event_klass.allocate) }
+        let(:xml) { serializer.serialize(iphone_crashed_event_klass.allocate) }
 
         it 'fails with payload/metadata constructor error' do
-          expect { described_class.deserialize(xml) }.to raise_error(Dry::Struct::Error)
+          expect { serializer.deserialize(xml) }.to raise_error(Dry::Struct::Error)
         end
       end
     end
@@ -109,7 +111,7 @@ describe EvilEvents::Core::Events::Serializers::XML, :stub_event_system do
 
       it 'fails with corresponding deserialization error' do
         incored_xml_objects.each do |xml|
-          expect { described_class.deserialize(xml) }.to raise_error(
+          expect { serializer.deserialize(xml) }.to raise_error(
             EvilEvents::XMLDeserializationError
           )
         end

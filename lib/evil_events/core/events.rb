@@ -10,6 +10,7 @@ module EvilEvents::Core
     require_relative 'events/serializers/json'
     require_relative 'events/serializers/xml'
     require_relative 'events/serializers/xml/event_serialization_state'
+    require_relative 'events/serializers/message_pack'
     require_relative 'events/event_extensions/type_aliasing'
     require_relative 'events/event_extensions/payloadable'
     require_relative 'events/event_extensions/payloadable/abstract_payload'

@@ -63,6 +63,8 @@ module EvilEvents
   XMLSerializationError = Class.new(SerializationError)
   # @since 0.4.0
   HashSerializationError = Class.new(SerializationError)
+  # @since 0.4.0
+  MessagePackSerializationError = Class.new(SerializationError)
   # @since 0.3.0
   DeserializationError = Class.new(SerializersError)
   # @since 0.4.0
@@ -71,6 +73,8 @@ module EvilEvents
   XMLDeserializationError = Class.new(DeserializationError)
   # @since 0.4.0
   HashDeserializationError = Class.new(DeserializationError)
+  # @since 0.4.0
+  MessagePackDeserializationError = Class.new(DeserializationError)
 
   # NOTE: see EvilEvents::Core::Events::Notifier
   # @since 0.3.0

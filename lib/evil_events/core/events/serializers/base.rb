@@ -3,7 +3,7 @@
 class EvilEvents::Core::Events::Serializers
   # @api private
   # @since 0.1.1
-  module Base
+  class Base
     # @option type [String]
     # @option id [String, Object]
     # @option payload [Hash]

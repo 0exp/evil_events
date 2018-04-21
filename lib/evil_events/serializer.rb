@@ -25,6 +25,13 @@ module EvilEvents
       def load_from_xml(serialized_event)
         EvilEvents::Core::Bootstrap[:event_system].deserialize_from_xml(serialized_event)
       end
+
+      # @see EvilEvents::Core::System
+      # @api public
+      # @since 0.4.0
+      def load_from_msgpack(serialized_event)
+        EvilEvents::Core::Bootstrap[:event_system].deserialize_from_msgpack(serialized_event)
+      end
     end
   end
 end
