@@ -96,6 +96,21 @@ describe 'Event Broadcasting', :stub_event_system do
       adapter :memory_sync
     end
 
+    DepositAntifrode = Class.new(EvilEvents::Event['deposit.antifrode']) do
+      payload :amount, EvilEvents::Types::Int
+      adapter :redis
+    end
+
+    DepositCanceled = Class.new(EvilEvents::Event['deposit.canceled']) do
+      payload :reason, EvilEvents::Types::String
+      adapter :redis
+    end
+
+    DepositCanceledImmediately = Class.new(EvilEvents::Event['deposit.canceled.immediately']) do
+      payload :reason, EvilEvents::Types::String
+      adapter :redis
+    end
+
     # subscribe to events
 
     # via event type alias
@@ -108,6 +123,10 @@ describe 'Event Broadcasting', :stub_event_system do
     EventCounter.subscribe_to /.*?overwatch.*?/i, delegator: :increase!
     # combination
     EventStoreStub.subscribe_to 'match_lost', OverwatchReleased, delegator: :push
+
+    # routing-key-based subscribtion
+    # subscribe to scope: deposit.rejected, deposit.rejected.immediately
+    EventCounter.subscribe_to_scope '*.canceled.#', delegator: :increase!
 
     # fails: unexistent event type alias
     expect do
@@ -455,6 +474,48 @@ describe 'Event Broadcasting', :stub_event_system do
       "PAYLOAD: #{overwatch_event.payload} :: " \
       "METADATA: #{overwatch_event.metadata}"
     )
+
+    # BROADCASTING: emit scoped events
+    # subscribers: []
+    DepositAntifrode.emit!(id: 100_500, payload: { amount: 5_571 })
+
+    # subscribers: EventCounter
+    DepositCanceled.emit!(id: 'secure123', payload: { reason: 'low_balance' })
+
+    # subscribers: EventCounter
+    DepositCanceledImmediately.emit!(id: 'id555', payload: { reason: 'banned_user' })
+
+    # changed
+    # (deposit.rejected + deposit.rejected.immediately)
+    expect(EventCounter.count).to eq(12)
+
+    # not changed
+    expect(EventStoreStub.events).to contain_exactly(
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      overwatch_event, # old event
+      match_event # old event
+    )
+
+    # not changed
+    expect(ElasticSearchStub.event_store).to contain_exactly(
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      overwatch_event, # old event
+      match_event # old event
+    )
   end
 
   specify 'event callbacks' do
@@ -505,7 +566,7 @@ describe 'Event Broadcasting', :stub_event_system do
 
     begin
       event.emit!
-    rescue EvilEvents::FailedNotifiedSubscribersError
+    rescue EvilEvents::FailingSubscribersError
       # do nothing, its a correct behaviour
     end
 

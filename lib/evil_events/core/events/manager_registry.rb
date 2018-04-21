@@ -43,6 +43,22 @@ module EvilEvents::Core::Events
       manager_of_event(event_class)
     end
 
+    # @param scoped_event_type [String]
+    # @raise [EvilEvents::NonManagedEventClassError]
+    # @return [Array<EvilEvents::Core::Events::Manager>]
+    #
+    # @api private
+    # @since 0.4.0
+    def managers_of_scoped_event_type(scoped_event_type)
+      scope_matcher = ScopedEventTypeMatcher.new(scoped_event_type)
+
+      event_classes = managed_events.select do |managed_event|
+        scope_matcher.match?(managed_event.type)
+      end
+
+      event_classes.map { |event_class| manager_of_event(event_class) }
+    end
+
     # @param event_pattern [Regexp]
     # @return [Array<EvilEvents::Core::Events::Manager>]
     #

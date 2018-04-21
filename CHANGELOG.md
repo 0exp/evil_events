@@ -3,13 +3,28 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
+- **Routing Key Based Event Types**. A new way of subscribing to events and approach to event naming: routing-key-based event naming;
+  - Event names must be named in the routing-key style;
+  - New method for subscription: `EvilEvents::SubscriberMixin#subscribe_to_scope(*event_scopes, delegator: nil)`;
+  - Event subscription follows this pattern:
+    - `*` - manadtory presence of the event scope (this pattern requires an event scope presence);
+    - `#` - any count of event scopes (zero or more) (this pattern doesnt require an event scope presence);
+    - `.` - event scope splitter;
+    - `other symbols` - chars for event scope names;
+  - Example (our events: `user`, `user.created`, `user.created.tomorrow`, `deposit`, `deposit.created`, `created`, `created.today`):
+    - `user.#` - all event types starting with `user` (`user`, `user.created`, `user.created.tomorrow`);
+    - `user.*` - all events with only TWO parts. `user` part is required (`user.created`);
+    - `*.created.#` => `user.created.tomorrow`, `user.created`, `deposit.created`;
+    - `#.created.*` => `user.created.tomorrow`, `user.created`, `created`, `created.today`, `deposit.created`;
+    - `#` => all events;
+    - `*` => events with only one part in name: `user`, `deposit`, `created`;
+    - and etc;
 - Support for Ruby `2.2.10`, `2.3.7`, `2.4.4`, `2.5.1`;
-- Ability to broadcast events via any registered adapter (by explicitly passed `:adapter` attribute
-  in emition methods):
+- Ability to broadcast events via any registered adapter by explicitly passed `:adapter` attribute in emition methods:
   - `EvilEvents::Emitter.emit('your_event_type', adapter: :your_adapter_identifier, **event_attrs)`;
   - `YourEventClass.emit!(adapter: :your_adapter_identifier, **event_attrs)`;
   - `your_event.emit!(adapter: :your_adapter_identifier)`;
-- Added XML event serialization format:
+- Added XML event serialization format (no more JRuby at this moment **:(**):
   - `EvilEvents::Serializer.load_from_xml(event)` - returns an event object;
   - `your_event.serialize_to_xml` - returns xml string;
   - `your_event.dump_to_xml` - returns xml string (`serialize_to_xml` alias);
