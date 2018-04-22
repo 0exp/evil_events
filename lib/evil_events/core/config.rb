@@ -18,8 +18,12 @@ module EvilEvents::Core
       @config = Module.new do
         extend EvilEvents::Shared::Configurable
 
-        settigng :serializers, reader: true do
+        setting :serializers, reader: true do
           setting :json do
+            setting :engine, :native
+          end
+
+          setting :hashing do
             setting :engine, :native
           end
         end

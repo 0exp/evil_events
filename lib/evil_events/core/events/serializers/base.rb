@@ -1,22 +1,65 @@
-# frozen_string_literal: true
+# frozen_string_literal
 
 class EvilEvents::Core::Events::Serializers
   # @api private
-  # @since 0.1.1
+  # @since 0.4.0
   class Base
-    # @option type [String]
-    # @option id [String, Object]
-    # @option payload [Hash]
-    # @option metadata [Hash]
+    # @param engine [Engines::Abstract]
+    # @param config [GenericConfig]
+    # @param packer [DataTransformer]
+    # @param unpacker [DataTransformer]
+    #
+    # @api private
+    # @since 0.4.0
+    def initialize(engine, config, packer, unpacker)
+      @engine   = engine
+      @config   = config
+      @packer   = packer
+      @unpacker = unpacker
+    end
+
+    # @param event [EvilEvents::Core::Events::AbstractEvent]
+    # @return [Object]
+    #
+    # @api private
+    # @since 0.4.0
+    def serialize(event)
+      packer.call(event)
+    end
+
+    # @param data [Object]
     # @return [EvilEvents::Core::Events::AbstractEvent]
     #
-    # @since 0.1.1
-    def restore_event_instance(type:, id:, payload:, metadata:)
-      event_class = EvilEvents::Core::Bootstrap[:event_system].resolve_event_class(type)
-
-      EvilEvents::Core::Events::EventFactory.restore_instance(
-        event_class, id: id, payload: payload, metadata: metadata
-      )
+    # @api private
+    # @since 0.4.0
+    def deserialize(data)
+      unpacker.call(data)
     end
+
+    private
+
+    # @return [DataTransformer]
+    #
+    # @api private
+    # @since 0.4.0
+    attr_reader :packer
+
+    # @return [DataTransformer]
+    #
+    # @api private
+    # @since 0.4.0
+    attr_reader :unpacker
+
+    # @return [Engines::Abstract]
+    #
+    # @api private
+    # @since 0.4.0
+    attr_reader :engine
+
+    # @return [GenericConfig]
+    #
+    # @api private
+    # @since 0.4.0
+    attr_reader :config
   end
 end

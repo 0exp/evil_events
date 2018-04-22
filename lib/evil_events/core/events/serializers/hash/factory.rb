@@ -1,36 +1,34 @@
 # frozen_string_literal: true
 
 class EvilEvents::Core::Events::Serializers
-  class JSON
+  class Hash
     # @api private
     # @since 0.4.0
     class Factory < AbstractFactory
-      # @return [JSON::Config]
+      # @return [Hash::Config]
       #
       # @api private
       # @since 0.4.0
       def build_config
-        settings = EvilEvents::Core::Bootstrap[:config].serializers.json
+        settings = EvilEvents::Core::Bootstrap[:config].serializers.hashing
         Config.new(engine: settings.engine)
       end
 
-      # @param config [JSON::Config]
+      # @param config [Hash::Config]
       # @raise [EvilEvents::UnrecognizedSerializationEngineError]
       # @return [Base::AbstractEngine]
       #
       # @api private
       # @since 0.4.0
       def build_engine(config)
-        case config.engine
-        when :native then Engines::Native.new
-        else
-          raise EvilEvents::UnrecognizedSerializationEngine
-        end
+        Engines.resolve(config.engine).new
+      rescue Dry::Container::Error
+        raise EvilEvents::UnrecognizedSerializationEngine
       end
 
       # @param engine [Base::AbstractEngine]
-      # @param config [JSON::Config]
-      # @return [JSON::Packer]
+      # @param config [Hash::Config]
+      # @return [Hash::Packer]
       #
       # @api private
       # @since 0.4.0
@@ -39,8 +37,8 @@ class EvilEvents::Core::Events::Serializers
       end
 
       # @param engine [Base::AbstractEngine]
-      # @param config [JSON::Config]
-      # @return [JSON::Unpacker]
+      # @param config [Hash::Config]
+      # @return [Hash::Unpacker]
       #
       # @api private
       # @since 0.4.0
@@ -49,7 +47,7 @@ class EvilEvents::Core::Events::Serializers
       end
 
       def create_adapter(engine, config, packer, unpacker)
-        JSON.new(engine, config, packer, unpacker)
+        Hash.new(engine, config, packer, unpacker)
       end
     end
   end

@@ -6,6 +6,7 @@ class EvilEvents::Core::Events::Serializers
     # @since 0.4.0
     class Packer < Base::DataTransformer
       # @param event [EvilEvents::Core::Events::AbstractEvent]
+      # @raise [EvilEvents::JSONSerializationError]
       # @return [String]
       #
       # @see Base::DataTransformer
@@ -17,7 +18,7 @@ class EvilEvents::Core::Events::Serializers
           raise EvilEvents::JSONSerializationError
         end
 
-        serialization_state = build_event_state(event)
+        serialization_state = build_serialization_state(event)
         engine.dump(serialization_state)
       end
     end

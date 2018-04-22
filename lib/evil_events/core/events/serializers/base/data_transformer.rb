@@ -36,19 +36,6 @@ class EvilEvents::Core::Events::Serializers::Base
       EventSerializationState.build_from_event(event)
     end
 
-    # @option id [String,Integer,Object]
-    # @option type [String]
-    # @option payload [::Hash]
-    # @option metadata [::Hash]
-    #
-    # @return [EventSerializationState]
-    #
-    # @api private
-    # @since 0.4.0
-    def generate_serialization_state(**options)
-      EventSerializationState.build_from_options(**options)
-    end
-
     # @param serialization_state [EventSerializationState]
     # @return [EvilEvents::Core::Events::AbstractEvent]
     #
@@ -61,8 +48,8 @@ class EvilEvents::Core::Events::Serializers::Base
 
       EvilEvents::Core::Events::EventFactory.restore_instance(
         event_class,
-        id:       serialization_state.id,
-        payload:  serialization_state.payload,
+        id: serialization_state.id,
+        payload: serialization_state.payload,
         metadata: serialization_state.metadata
       )
     end
