@@ -26,6 +26,10 @@ module EvilEvents::Core
           setting :hashing do
             setting :engine, :native
           end
+
+          setting :xml do
+            setting :engine, :ox
+          end
         end
 
         setting :adapter, reader: true do
