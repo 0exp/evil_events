@@ -75,6 +75,10 @@ module EvilEvents
   HashDeserializationError = Class.new(DeserializationError)
   # @since 0.4.0
   MessagePackDeserializationError = Class.new(DeserializationError)
+  # @since 0.4.0
+  SerializationEngineError = Class.new(SerializersError)
+  # @since 0.4.0
+  UnrecognizedSerializationEngineError = Class.new(SerializationEngineError)
 
   # NOTE: see EvilEvents::Core::Events::Notifier
   # @since 0.3.0

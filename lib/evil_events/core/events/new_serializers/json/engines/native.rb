@@ -1,0 +1,45 @@
+# frozen_string_literal: true
+
+class EvilEvents::Core::Events::Serializers::JSON
+    # @api private
+    # @since 0.4.0
+    module Engines
+      # @api private
+      # @since 0.4.0
+      class Native < EvilEvents::Core::Events::Serializers::Base::AbstractEngine
+        # @param serialization_state [Base::EventSerializationState]
+        # @return [String]
+        #
+        # @since 0.4.0
+        # @api private
+        def dump(serialization_state)
+          ::JSON.generate(
+            id:       serialization_state.id,
+            type:     serialization_state.type,
+            payload:  serialization_state.payload,
+            metadata: serialization_state.metadata
+          )
+        end
+
+        # @param json_string [String]
+        # @raise [EvilEvents::JSONDeserializationError]
+        # @return [::Hash]
+        #
+        # @since 0.4.0
+        # @api private
+        def load(json_string)
+          json = ::JSON.parse(json_string, symbolize_names: true)
+
+          EventSerializationState.build_from_options(
+            id:       json[:id],
+            type:     json[:type],
+            payload:  json[:payload],
+            metadata: json[:metadata]
+          )
+        rescue ::JSON::ParserError
+          raise EvilEvents::SerializationEngineError
+        end
+      end
+    end
+  end
+end
