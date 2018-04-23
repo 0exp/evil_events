@@ -33,6 +33,10 @@ module EvilEvents::Core
           setting :xml do
             setting :engine, :ox
           end
+
+          setting :msgpack do
+            setting :engine, :mpacker
+          end
         end
 
         setting :adapter, reader: true do
