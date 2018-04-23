@@ -36,6 +36,10 @@ module EvilEvents::Core
 
           setting :msgpack do
             setting :engine, :mpacker
+
+            setting :mpacker do
+              setting :configurator, ->(engine) {}
+            end
           end
         end
 

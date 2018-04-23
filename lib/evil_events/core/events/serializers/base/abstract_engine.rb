@@ -4,6 +4,12 @@ class EvilEvents::Core::Events::Serializers::Base
   # @api private
   # @since 0.4.0
   class AbstractEngine
+    # @param config [GenericConfig]
+    #
+    # @api private
+    # @since 0.4.0
+    def initialize(config); end
+
     # @param data [EventSerializationState]
     # @return [Object]
     #

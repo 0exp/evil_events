@@ -15,7 +15,7 @@ class EvilEvents::Core::Events::Serializers
       # @since 0.4.0
       def call(serialized_event)
         unless serialized_event.is_a?(String)
-          raise EvilEvents::MessagePackDeserializationErro
+          raise EvilEvents::MessagePackDeserializationError
         end
 
         serialization_state = engine.load(serialized_event)

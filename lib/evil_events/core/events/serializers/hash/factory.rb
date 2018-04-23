@@ -21,7 +21,7 @@ class EvilEvents::Core::Events::Serializers
       # @api private
       # @since 0.4.0
       def build_engine(config)
-        Engines.resolve(config.engine).new
+        Engines.resolve(config.engine).new(config)
       rescue Dry::Container::Error
         raise EvilEvents::UnrecognizedSerializationEngine
       end

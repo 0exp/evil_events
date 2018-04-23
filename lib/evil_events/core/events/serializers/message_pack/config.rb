@@ -5,9 +5,11 @@ class EvilEvents::Core::Events::Serializers
     # @api private
     # @since 0.4.0
     class Config < Base::GenericConfig
-      # NOTE: name of engine
-      #   Supported: :native
       option :engine
+
+      # @note Mpacker Configuration Proc
+      # @see [EvilEvents::Core::Config]
+      option :mpacker
     end
   end
 end

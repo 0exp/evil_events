@@ -4,12 +4,14 @@ class EvilEvents::Core::Events::Serializers::MessagePack::Engines
   # @api private
   # @since 0.4.0
   class Mpacker < EvilEvents::Core::Events::Serializers::Base::AbstractEngine
+    # @param config [EvilEvents::Core::Events::Serializers::MessagePack::Config]
+    #
     # @api private
     # @since 0.4.0
-    def initialize # TODO: options
-      @factory  = ::MessagePack::Factory.new # TODO: configuration
-      @packer   = @factory.packer
-      @unpacker = @factory.unpacker
+    def initialize(config)
+      configurator = config[:mpacker][:configurator]
+      raise EvilEvents::SerializationEngineError unless configurator.is_a?(Proc)
+      @factory = ::MessagePack::Factory.new.tap { |factory| configurator.call(factory) }
     end
 
     # @param serialization_state [Base::EventSerializationState]
@@ -40,10 +42,10 @@ class EvilEvents::Core::Events::Serializers::MessagePack::Engines
       end
 
       restore_serialization_state(
-        id:       event_data['id'],
-        type:     event_data['type'],
-        payload:  symbolized_hash(event_data['payload']),
-        metadata: symbolized_hash(event_data['metadata'])
+        id:       event_data[:id],
+        type:     event_data[:type],
+        payload:  event_data[:payload],
+        metadata: event_data[:metadata]
       )
     end
 
@@ -59,22 +61,16 @@ class EvilEvents::Core::Events::Serializers::MessagePack::Engines
     #
     # @api private
     # @since 0.4.0
-    attr_reader :packer
+    def packer
+      factory.packer
+    end
 
     # @return [::MessagePack::Unpacker]
     #
     # @api private
     # @since 0.4.0
-    attr_reader :unpacker
-
-    # @param hash [::Hash]
-    # @return [::Hash]
-    #
-    # @since 0.4.0
-    def symbolized_hash(hash)
-      hash.each_pair.each_with_object({}) do |(key, value), result_hash|
-        result_hash[key.to_sym] = value
-      end
+    def unpacker
+      factory.unpacker(symbolize_keys: true)
     end
   end
 
