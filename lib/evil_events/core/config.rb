@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/MethodLength
+# rubocop:disable Metrics/AbcSize
+# rubocop:disable Metrics/BlockLength
 module EvilEvents::Core
   # @api private
   # @since 0.1.0
@@ -14,7 +17,7 @@ module EvilEvents::Core
 
     # @api private
     # @since 0.1.0
-    def initialize # rubocop:disable Metrics/AbcSize
+    def initialize
       @config = Module.new do
         extend EvilEvents::Shared::Configurable
 
@@ -81,3 +84,6 @@ module EvilEvents::Core
     end
   end
 end
+# rubocop:enable Metrics/MethodLength
+# rubocop:enable Metrics/AbcSize
+# rubocop:enable Metrics/BlockLength

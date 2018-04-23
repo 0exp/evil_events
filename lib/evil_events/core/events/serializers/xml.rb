@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # frozen_string_# frozen_string_literal: true
 
 class EvilEvents::Core::Events::Serializers

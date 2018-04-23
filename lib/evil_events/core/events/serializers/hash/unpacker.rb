@@ -14,15 +14,11 @@ class EvilEvents::Core::Events::Serializers
       # @api private
       # @since 0.4.0
       def call(serialized_event)
-        unless serialized_event.is_a?(::Hash)
-          raise EvilEvents::HashDeserializationError
-        end
+        raise EvilEvents::HashDeserializationError unless serialized_event.is_a?(::Hash)
 
         serialization_state = engine.load(serialized_event)
 
-        unless serialization_state.valid?
-          raise EvilEvents::HashDeserializationError
-        end
+        raise EvilEvents::HashDeserializationError unless serialization_state.valid?
 
         restore_event_instance(serialization_state)
       end

@@ -20,11 +20,9 @@ class EvilEvents::Core::Events::Serializers::XML::Engines
     # @since 0.4.0
     # @api private
     def load(xml)
-      begin
-        ::Ox.parse_obj(xml)
-      rescue ::Ox::Error, NoMethodError, ArgumentError
-        raise EvilEvents::XMLDeserializationError
-      end
+      ::Ox.parse_obj(xml)
+    rescue ::Ox::Error, NoMethodError, ArgumentError
+      raise EvilEvents::XMLDeserializationError
     end
   end
 

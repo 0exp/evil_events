@@ -32,7 +32,7 @@ class EvilEvents::Core::Events::Serializers
       #
       # @api private
       # @since 0.4.0
-      def build_packer(engine, config)
+      def build_packer(engine, _config)
         Packer.new(engine)
       end
 
@@ -42,7 +42,7 @@ class EvilEvents::Core::Events::Serializers
       #
       # @api private
       # @since 0.4.0
-      def build_unpacker(engine, config)
+      def build_unpacker(engine, _config)
         Unpacker.new(engine)
       end
 
