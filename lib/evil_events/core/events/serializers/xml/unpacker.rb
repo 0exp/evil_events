@@ -14,16 +14,9 @@ class EvilEvents::Core::Events::Serializers
       # @api private
       # @since 0.4.0
       def call(serialized_event)
-        unless serialized_event.is_a?(String)
-          raise EvilEvents::XMLDeserializationError
-        end
-
+        raise EvilEvents::XMLDeserializationError unless serialized_event.is_a?(String)
         serialization_state = engine.load(serialized_event)
-
-        unless serialization_state.valid?
-          raise EvilEvents::XMLDeserializationError
-        end
-
+        raise EvilEvents::XMLDeserializationError unless serialization_state.valid?
         restore_event_instance(serialization_state)
       end
     end

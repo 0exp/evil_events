@@ -14,7 +14,7 @@ class EvilEvents::Core::Events::Serializers
       # @api private
       # @since 0.4.0
       def call(serialized_event)
-        raise EvilEvents::JSONDeserializationError unless serialized_event.s_a?(String)
+        raise EvilEvents::JSONDeserializationError unless serialized_event.is_a?(String)
 
         begin
           serialization_state = engine.load(serialized_event)

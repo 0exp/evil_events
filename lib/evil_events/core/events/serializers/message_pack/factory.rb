@@ -11,7 +11,11 @@ class EvilEvents::Core::Events::Serializers
       # @since 0.4.0
       def build_config
         settings = EvilEvents::Core::Bootstrap[:config].serializers.msgpack
-        Config.new(engine: lsettings.engine, mpacker: settings.mpacker.to_h)
+
+        Config.new do |config|
+          config.engine = settings.engine
+          config.mpacker.configurator = settings.mpacker.configurator
+        end
       end
 
       # @param config [MessagePack::Config]

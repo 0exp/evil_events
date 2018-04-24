@@ -11,7 +11,10 @@ class EvilEvents::Core::Events::Serializers
       # @since 0.4.0
       def build_config
         settings = EvilEvents::Core::Bootstrap[:config].serializers.hashing
-        Config.new(engine: settings.engine)
+
+        Config.new do |config|
+          config.engine = settings.engine
+        end
       end
 
       # @param config [Hash::Config]

@@ -8,7 +8,6 @@ module EvilEvents
     require_relative 'shared/logger'
     require_relative 'shared/crypto'
     require_relative 'shared/structure'
-    require_relative 'shared/configurable'
     require_relative 'shared/delegator_resolver'
     require_relative 'shared/dependency_container'
     require_relative 'shared/extensions_mixin'
@@ -17,5 +16,6 @@ module EvilEvents
     require_relative 'shared/type_converter/converter'
     require_relative 'shared/type_converter/type_builder'
     require_relative 'shared/type_converter/converter_registry'
+    require_relative 'shared/any_config'
   end
 end

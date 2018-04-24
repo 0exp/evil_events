@@ -5,11 +5,13 @@ class EvilEvents::Core::Events::Serializers
     # @api private
     # @since 0.4.0
     class Config < Base::GenericConfig
-      option :engine
+      configure do
+        setting :engine, reader: true
 
-      # @note Mpacker Configuration Proc
-      # @see [EvilEvents::Core::Config]
-      option :mpacker
+        setting :mpacker, reader: true do
+          setting :configurator, reader: true
+        end
+      end
     end
   end
 end
