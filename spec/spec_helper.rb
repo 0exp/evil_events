@@ -24,7 +24,6 @@ require_relative 'support/shared_contexts'
 require_relative 'support/application_state_metascopes'
 
 RSpec.configure do |config|
-  config.shared_context_metadata_behavior = :apply_to_host_groups
   config.order = :random
   config.expect_with(:rspec) { |c| c.syntax = :expect }
 

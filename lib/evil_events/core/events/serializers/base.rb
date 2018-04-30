@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# frozen_string_literal
-
 class EvilEvents::Core::Events::Serializers
   # @api private
   # @since 0.4.0
