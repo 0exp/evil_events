@@ -23,7 +23,6 @@ describe EvilEvents::Core::Config do
     2.times do
       opts = {
         adapter_default:                  gen_symb,
-        adapter_default:                  gen_symb,
         subscriber_default_delegator:     gen_symb,
         logger:                           gen_symb,
         serializers_json_engine:          gen_symb,

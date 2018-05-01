@@ -12,10 +12,10 @@ describe EvilEvents::Core::Events::Serializers do
     expect(described_class.resolve(:msgpack)).to be_a(described_class::MessagePack)
   end
 
-  specify 'serializers should not be memoized' do
-    expect(described_class.resolve(:json)).not_to    eq(described_class.resolve(:json))
-    expect(described_class.resolve(:hash)).not_to    eq(described_class.resolve(:hash))
-    expect(described_class.resolve(:xml)).not_to     eq(described_class.resolve(:xml))
-    expect(described_class.resolve(:msgpack)).not_to eq(described_class.resolve(:msgpack))
+  specify 'serializers should be memoized' do
+    expect(described_class.resolve(:json)).to    eq(described_class.resolve(:json))
+    expect(described_class.resolve(:hash)).to    eq(described_class.resolve(:hash))
+    expect(described_class.resolve(:xml)).to     eq(described_class.resolve(:xml))
+    expect(described_class.resolve(:msgpack)).to eq(described_class.resolve(:msgpack))
   end
 end

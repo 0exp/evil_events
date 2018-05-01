@@ -50,6 +50,13 @@ class EvilEvents::Core::Events::Serializers
         Unpacker.new(engine)
       end
 
+      # @param engine [Base::AbstractEngine]
+      # @param config [MessagePack::Config]
+      # @param packer [MessagePack::Packer]
+      # @param unpacker [MessagePack::Unpacker]
+      #
+      # @api private
+      # @since 0.4.0
       def create_adapter(engine, config, packer, unpacker)
         MessagePack.new(engine, config, packer, unpacker)
       end

@@ -49,6 +49,14 @@ class EvilEvents::Core::Events::Serializers
         Unpacker.new(engine)
       end
 
+      # @param engine [Base::AbstractEngine]
+      # @param config [Hash::Config]
+      # @param packer [Hash::Packer]
+      # @param unpacker [Hash::Unpacker]
+      # @return [Hash]
+      #
+      # @api private
+      # @since 0.4.0
       def create_adapter(engine, config, packer, unpacker)
         Hash.new(engine, config, packer, unpacker)
       end

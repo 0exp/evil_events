@@ -89,8 +89,8 @@ describe EvilEvents::Core::Events::Serializers::Base::EventSerializationState, :
     end
 
     specify 'false when type isnt a string' do
-      non_hash_values.each do |non_hash|
-        invalid_attributes = valid_attributes.merge(metadata: non_hash)
+      non_string_values.each do |non_string|
+        invalid_attributes = valid_attributes.merge(type: non_string)
         state = described_class.new(**invalid_attributes)
         expect(state.valid?).to eq(false)
       end

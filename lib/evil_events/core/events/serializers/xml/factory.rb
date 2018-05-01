@@ -49,6 +49,14 @@ class EvilEvents::Core::Events::Serializers
         Unpacker.new(engine)
       end
 
+      # @param engine [Base::AbstractEngine]
+      # @param config [XML::Config]
+      # @param packer [XML::Packer]
+      # @param unpacker [XML::Unpacker]
+      # @return [XML]
+      #
+      # @api private
+      # @since 0.4.0
       def create_adapter(engine, config, packer, unpacker)
         XML.new(engine, config, packer, unpacker)
       end
