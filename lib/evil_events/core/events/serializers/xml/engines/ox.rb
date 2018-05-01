@@ -14,15 +14,15 @@ class EvilEvents::Core::Events::Serializers::XML::Engines
     end
 
     # @param xml [String]
-    # @raise [EvilEvents::XMLDeserializationError]
+    # @raise [EvilEvents::SerializationEngineError]
     # @return [EventSerializationState]
     #
     # @since 0.4.0
     # @api private
     def load(xml)
       ::Ox.parse_obj(xml)
-    rescue ::Ox::Error, NoMethodError, ArgumentError
-      raise EvilEvents::XMLDeserializationError
+    rescue ::Ox::Error, NoMethodError, TypeError, ArgumentError
+      raise EvilEvents::SerializationEngineError
     end
   end
 

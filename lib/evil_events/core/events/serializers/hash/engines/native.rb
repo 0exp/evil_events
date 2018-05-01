@@ -25,16 +25,20 @@ class EvilEvents::Core::Events::Serializers::Hash::Engines
     # @since 0.4.0
     # @api private
     def load(hash)
-      event_id       = hash[:id]       || hash['id']
-      event_type     = hash[:type]     || hash['type']
-      event_payload  = hash[:payload]  || hash['payload']
-      event_metadata = hash[:metadata] || hash['metadata']
+      begin
+        event_id       = hash[:id]       || hash['id']
+        event_type     = hash[:type]     || hash['type']
+        event_payload  = hash[:payload]  || hash['payload']
+        event_metadata = hash[:metadata] || hash['metadata']
+      rescue NoMethodError, TypeError, ArgumentError
+        raise EvilEvents::SerializationEngineError
+      end
 
       restore_serialization_state(
         id:       event_id,
         type:     event_type,
-        payload:  symbolized_hash(event_payload),
-        metadata: symbolized_hash(event_metadata)
+        payload:  (symbolized_hash(event_payload)  if event_payload),
+        metadata: (symbolized_hash(event_metadata) if event_metadata)
       )
     end
 

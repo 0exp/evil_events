@@ -33,7 +33,7 @@ class EvilEvents::Core::Events::Serializers::JSON::Engines
         payload:  json[:payload],
         metadata: json[:metadata]
       )
-    rescue ::JSON::ParserError
+    rescue ::JSON::ParserError, TypeError
       raise EvilEvents::SerializationEngineError
     end
   end

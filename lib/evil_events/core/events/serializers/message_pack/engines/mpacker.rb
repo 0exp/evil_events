@@ -29,7 +29,7 @@ class EvilEvents::Core::Events::Serializers::MessagePack::Engines
     end
 
     # @param message [String]
-    # @raise [EvilEvents::MessagePackDeserializationErro]
+    # @raise [EvilEvents::SerializationEngineError]
     # @return [EventSerializationState]
     #
     # @since 0.4.0
@@ -37,8 +37,9 @@ class EvilEvents::Core::Events::Serializers::MessagePack::Engines
     def load(message)
       begin
         event_data = unpacker.feed(message).unpack
-      rescue ::MessagePack::UnpackError
-        raise EvilEvents::MessagePackDeserializationErro
+        raise EvilEvents::SerializationEngineError unless event_data.is_a?(::Hash)
+      rescue ::MessagePack::UnpackError, ArgumentError, TypeError
+        raise EvilEvents::SerializationEngineError
       end
 
       restore_serialization_state(

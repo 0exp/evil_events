@@ -9,7 +9,7 @@ class EvilEvents::Core::Events::Serializers
         setting :engine, reader: true
 
         setting :mpacker, reader: true do
-          setting :configurator, reader: true
+          setting :configurator, ->(engine) {}
         end
       end
     end
