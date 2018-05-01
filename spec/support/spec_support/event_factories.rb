@@ -6,6 +6,12 @@ module SpecSupport::EventFactories
   EventFactoriesError  = Class.new(StandardError)
   EventSubscriberError = Class.new(EventFactoriesError)
 
+  def build_serialization_state(id: gen_str, type: gen_str, payload: {}, metadata: {})
+    EvilEvents::Core::Events::Serializers::Base::EventSerializationState.new(
+      id: id, type: type, payload: payload, metadata: metadata
+    )
+  end
+
   def build_event_class_mock
     Class.new do
       class << self

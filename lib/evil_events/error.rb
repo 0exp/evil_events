@@ -57,14 +57,34 @@ module EvilEvents
   SerializersError = Class.new(Error)
   # @since 0.3.0
   SerializationError = Class.new(SerializersError)
+  # @since 0.4.0
+  JSONSerializationError = Class.new(SerializationError)
+  # @since 0.4.0
+  XMLSerializationError = Class.new(SerializationError)
+  # @since 0.4.0
+  HashSerializationError = Class.new(SerializationError)
+  # @since 0.4.0
+  MessagePackSerializationError = Class.new(SerializationError)
   # @since 0.3.0
   DeserializationError = Class.new(SerializersError)
+  # @since 0.4.0
+  JSONDeserializationError = Class.new(DeserializationError)
+  # @since 0.4.0
+  XMLDeserializationError = Class.new(DeserializationError)
+  # @since 0.4.0
+  HashDeserializationError = Class.new(DeserializationError)
+  # @since 0.4.0
+  MessagePackDeserializationError = Class.new(DeserializationError)
+  # @since 0.4.0
+  SerializationEngineError = Class.new(SerializersError)
+  # @since 0.4.0
+  UnrecognizedSerializationEngineError = Class.new(SerializationEngineError)
 
   # NOTE: see EvilEvents::Core::Events::Notifier
   # @since 0.3.0
   NotifierError = Class.new(Error)
   # @since 0.3.0
-  class FailedNotifiedSubscribersError < NotifierError
+  class FailingSubscribersError < NotifierError
     # @since 0.3.0
     extend Forwardable
 

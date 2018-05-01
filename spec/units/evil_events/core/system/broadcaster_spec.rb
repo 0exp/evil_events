@@ -127,21 +127,42 @@ describe EvilEvents::Core::System::Broadcaster, :stub_event_system, :null_logger
       describe '#emit' do
         it 'delegates a broadcasting logic to the internal event emitter' do
           event = double
-          expect(broadcaster.event_emitter).to receive(:emit).with(event).once
+          default_adapter_identifier = nil
+          custom_adapter_identifier = gen_symb
+
+          # default adapter identifier
+          expect(broadcaster.event_emitter).to receive(:emit).with(
+            event, adapter: default_adapter_identifier
+          ).once
           broadcaster.emit(event)
+
+          # custom adapter identifier
+          expect(broadcaster.event_emitter).to receive(:emit).with(
+            event, adapter: custom_adapter_identifier
+          ).once
+          broadcaster.emit(event, adapter: custom_adapter_identifier)
         end
       end
 
       describe '#raw_emit' do
         it 'delegates a raw broadcasting logic to the internal event emitter' do
           event_type  = double
-          event_attrs = { payload: {}, metadata: {} }
+          event_attrs = { id: nil, payload: {}, metadata: {} }
 
+          attrs_with_default_adapter = event_attrs.merge(adapter: nil)
+          attrs_with_custom_adapter  = event_attrs.merge(adapter: gen_symb)
+
+          # default adapter identifier
           expect(broadcaster.event_emitter).to(
-            receive(:raw_emit).with(event_type, **event_attrs).once
+            receive(:raw_emit).with(event_type, **attrs_with_default_adapter).once
           )
+          broadcaster.raw_emit(event_type, **attrs_with_default_adapter)
 
-          broadcaster.raw_emit(event_type, **event_attrs)
+          # custom adapter identifier
+          expect(broadcaster.event_emitter).to(
+            receive(:raw_emit).with(event_type, **attrs_with_custom_adapter).once
+          )
+          broadcaster.raw_emit(event_type, **attrs_with_custom_adapter)
         end
       end
     end

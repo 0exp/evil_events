@@ -19,6 +19,7 @@ module EvilEvents::Core::Events::EventExtensions
     def observers
       self.class.observers
     end
+    alias_method :subscribers, :observers
 
     # @since 0.1.0
     module ClassMethods
@@ -44,6 +45,7 @@ module EvilEvents::Core::Events::EventExtensions
       def observers
         EvilEvents::Core::Bootstrap[:event_system].observers(self)
       end
+      alias_method :subscribers, :observers
     end
   end
 end

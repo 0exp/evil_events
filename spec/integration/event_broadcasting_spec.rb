@@ -69,7 +69,10 @@ describe 'Event Broadcasting', :stub_event_system do
     end
 
     EvilEvents::Config.setup_adapters do |adapters|
-      adapters.register(:sidekiq, build_adapter_class.new)
+      adapters.register(:sidekiq,    build_adapter_class.new)
+      adapters.register(:redis,      build_adapter_class.new)
+      adapters.register(:rabbit,     build_adapter_class.new)
+      adapters.register(:background, build_adapter_class.new)
     end
   end
 
@@ -93,6 +96,21 @@ describe 'Event Broadcasting', :stub_event_system do
       adapter :memory_sync
     end
 
+    DepositAntifrode = Class.new(EvilEvents::Event['deposit.antifrode']) do
+      payload :amount, EvilEvents::Types::Int
+      adapter :redis
+    end
+
+    DepositCanceled = Class.new(EvilEvents::Event['deposit.canceled']) do
+      payload :reason, EvilEvents::Types::String
+      adapter :redis
+    end
+
+    DepositCanceledImmediately = Class.new(EvilEvents::Event['deposit.canceled.immediately']) do
+      payload :reason, EvilEvents::Types::String
+      adapter :redis
+    end
+
     # subscribe to events
 
     # via event type alias
@@ -105,6 +123,10 @@ describe 'Event Broadcasting', :stub_event_system do
     EventCounter.subscribe_to /.*?overwatch.*?/i, delegator: :increase!
     # combination
     EventStoreStub.subscribe_to 'match_lost', OverwatchReleased, delegator: :push
+
+    # routing-key-based subscribtion
+    # subscribe to scope: deposit.rejected, deposit.rejected.immediately
+    EventCounter.subscribe_to_scope '*.canceled.#', delegator: :increase!
 
     # fails: unexistent event type alias
     expect do
@@ -228,43 +250,43 @@ describe 'Event Broadcasting', :stub_event_system do
 
     # check log output of the first event data
     expect(silent_output.string).to match(
-      Regexp.union(
-        /\[EvilEvents:EventEmitted\(memory_sync\)\]\s/,
-        /ID:\s[a-z0-9\-]\s::\s/,
-        /TYPE:\smatch_lost\s::\s/,
-        /PAYLOAD:\s#{match_lost_attrs[:payload]}\s::\s/,
-        /METADATA:\s#{match_lost_attrs[:metadata]}/
-      )
+      %r{
+        \[EvilEvents:EventEmitted\(memory_sync\)\]:\s
+        ID:\s[a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12}\s::\s
+        TYPE:\smatch_lost\s::\s
+        PAYLOAD:\s#{Regexp.escape(match_lost_attrs[:payload].to_s)}\s::\s
+        METADATA:\s#{Regexp.escape(match_lost_attrs[:metadata].to_s)}
+      }x
     )
 
     # check log output for the second event data
     expect(silent_output.string).to match(
-      Regexp.union(
-        /\[EvilEvents:EventEmitted\(sidekiq\)\]\s/,
-        /ID:\s[a-z0-9\-]\s::\s/,
-        /TYPE:\soverwatch_released\s::\s/,
-        /PAYLOAD:\s#{overwatch_released_attrs[:payload]}\s::\s/,
-        /METADATA:\s#{overwatch_released_attrs[:metadata]}/
-      )
+      %r{
+        \[EvilEvents:EventEmitted\(sidekiq\)\]:\s
+        ID:\s[a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12}\s::\s
+        TYPE:\soverwatch_released\s::\s
+        PAYLOAD:\s#{Regexp.escape(overwatch_released_attrs[:payload].to_s)}\s::\s
+        METADATA:\s#{Regexp.escape(overwatch_released_attrs[:metadata].to_s)}
+      }x
     )
 
     # check log output for the notifier activity
     [ElasticSearchStub, EventStoreStub, EventCounter].each do |subscriber|
       expect(silent_output.string).to match(
-        Regexp.union(
-          /\[EvilEvents:EventProcessed\(match_lost\)\s/,
-          /EVENT_ID:\s[a-z0-9\-]\s::\s/,
-          /STATUS:\ssuccessful\s::\s/,
-          /SUBSCRIBER:\s#{subscriber.to_s}/
-        )
+        %r{
+          \[EvilEvents:EventProcessed\(match_lost\)\]:\s
+          EVENT_ID:\s[a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12}\s::\s
+          STATUS:\ssuccessful\s::\s
+          SUBSCRIBER:\s#{Regexp.escape(subscriber.to_s)}
+        }x
       )
       expect(silent_output.string).to match(
-        Regexp.union(
-          /\[EvilEvents:EventProcessed\(overwatch_released\)\s/,
-          /EVENT_ID:\s[a-z0-9\-]\s::\s/,
-          /STATUS:\ssuccessful\s::\s/,
-          /SUBSCRIBER:\s#{subscriber.to_s}/
-        )
+        %r{
+          \[EvilEvents:EventProcessed\(overwatch_released\)\]:\s
+          EVENT_ID:\s[a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12}\s::\s
+          STATUS:\ssuccessful\s::\s
+          SUBSCRIBER:\s#{Regexp.escape(subscriber.to_s)}
+        }x
       )
     end
 
@@ -332,45 +354,168 @@ describe 'Event Broadcasting', :stub_event_system do
 
     # check log output of the first event data
     expect(silent_output.string).to match(
-      Regexp.union(
-        /\[EvilEvents:EventEmitted\(memory_sync\)\]\s/,
-        /ID:\s#{class_method_match_lost_attrs[:id]}\s::\s/,
-        /TYPE:\smatch_lost\s::\s/,
-        /PAYLOAD:\s#{class_method_match_lost_attrs[:payload]}\s::\s/,
-        /METADATA:\s#{class_method_match_lost_attrs[:metadata]}/
-      )
+      %r{
+        \[EvilEvents:EventEmitted\(memory_sync\)\]:\s
+        ID:\s#{Regexp.escape(class_method_match_lost_attrs[:id].to_s)}\s::\s
+        TYPE:\smatch_lost\s::\s
+        PAYLOAD:\s#{Regexp.escape(class_method_match_lost_attrs[:payload].to_s)}\s::\s
+        METADATA:\s#{Regexp.escape(class_method_match_lost_attrs[:metadata].to_s)}
+      }x
     )
 
     # check log output for the second event data
     expect(silent_output.string).to match(
-      Regexp.union(
-        /\[EvilEvents:EventEmitted\(sidekiq\)\]\s/,
-        /ID:\s#{class_method_overwatch_released_attrs[:id]}\s::\s/,
-        /TYPE:\soverwatch_released\s::\s/,
-        /PAYLOAD:\s#{class_method_overwatch_released_attrs[:payload]}\s::\s/,
-        /METADATA:\s#{class_method_overwatch_released_attrs[:metadata]}/
-      )
+      %r{
+        \[EvilEvents:EventEmitted\(sidekiq\)\]:\s
+        ID:\s#{Regexp.escape(class_method_overwatch_released_attrs[:id].to_s)}\s::\s
+        TYPE:\soverwatch_released\s::\s
+        PAYLOAD:\s#{Regexp.escape(class_method_overwatch_released_attrs[:payload].to_s)}\s::\s
+        METADATA:\s#{Regexp.escape(class_method_overwatch_released_attrs[:metadata].to_s)}
+      }x
     )
 
     # check log output for the notifier activity
     [ElasticSearchStub, EventStoreStub, EventCounter].each do |subscriber|
       expect(silent_output.string).to match(
-        Regexp.union(
-          /\[EvilEvents:EventProcessed\(match_lost\)\s/,
-          /EVENT_ID:\s#{class_method_match_lost_attrs[:id]}\s::\s/,
-          /STATUS:\ssuccessful\s::\s/,
-          /SUBSCRIBER:\s#{subscriber.to_s}/
-        )
+        %r{
+          \[EvilEvents:EventProcessed\(match_lost\)\]:\s
+          EVENT_ID:\s#{Regexp.escape(class_method_match_lost_attrs[:id].to_s)}\s::\s
+          STATUS:\ssuccessful\s::\s
+          SUBSCRIBER:\s#{Regexp.escape(subscriber.to_s)}
+        }x
       )
       expect(silent_output.string).to match(
-        Regexp.union(
-          /\[EvilEvents:EventProcessed\(overwatch_released\)\s/,
-          /EVENT_ID:\s#{class_method_overwatch_released_attrs[:id]}\s::\s/,
-          /STATUS:\ssuccessful\s::\s/,
-          /SUBSCRIBER:\s#{subscriber.to_s}/
-        )
+        %r{
+          \[EvilEvents:EventProcessed\(overwatch_released\)\]:\s
+          EVENT_ID:\s#{Regexp.escape(class_method_overwatch_released_attrs[:id].to_s)}\s::\s
+          STATUS:\ssuccessful\s::\s
+          SUBSCRIBER:\s#{Regexp.escape(subscriber.to_s)}
+        }x
       )
     end
+
+    # BROADCASTING: broadcast via explicitly defined adapter
+    EvilEvents::Emitter.emit(
+      'match_lost', adapter: :background, **class_method_match_lost_attrs
+    )
+    EvilEvents::Emitter.emit(
+      'overwatch_released', adapter: :rabbit, **class_method_overwatch_released_attrs
+    )
+    match_event.emit!(adapter: :rabbit)
+    overwatch_event.emit!(adapter: :background)
+
+    # check state of subscriber
+    expect(EventCounter.count).to eq(10)
+
+    # check state of subscriber
+    # check consistency
+    expect(EventStoreStub.events).to contain_exactly(
+      a_kind_of(OverwatchReleased),
+      a_kind_of(MatchLost),
+      a_kind_of(OverwatchReleased),
+      a_kind_of(MatchLost),
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      overwatch_event, # old event
+      match_event # old event
+    )
+
+    # check state of subscriber
+    # check consistency
+    expect(ElasticSearchStub.event_store).to contain_exactly(
+      a_kind_of(OverwatchReleased),
+      a_kind_of(MatchLost),
+      a_kind_of(OverwatchReleased),
+      a_kind_of(MatchLost),
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      overwatch_event, # old event
+      match_event # old event
+    )
+
+    # match_lost event log with explicitly defined adapter :background
+    expect(silent_output.string).to match(
+      %r{
+        \[EvilEvents:EventEmitted\(background\)\]:\s
+        ID:\s#{Regexp.escape(class_method_match_lost_attrs[:id].to_s)}\s::\s
+        TYPE:\smatch_lost\s::\s
+        PAYLOAD:\s#{Regexp.escape(class_method_match_lost_attrs[:payload].to_s)}\s::\s
+        METADATA:\s#{Regexp.escape(class_method_match_lost_attrs[:metadata].to_s)}
+      }x
+    )
+    # match_lost event log with explicitly defined adapter :rabbit
+    expect(silent_output.string).to include(
+      '[EvilEvents:EventEmitted(rabbit)]: ' \
+      "ID: #{match_event.id} :: " \
+      'TYPE: match_lost :: ' \
+      "PAYLOAD: #{match_event.payload} :: " \
+      "METADATA: #{match_event.metadata}"
+    )
+
+    # overwatch_released event log with explicitly defined adapter :rabbit
+    expect(silent_output.string).to match(
+      %r{
+        \[EvilEvents:EventEmitted\(rabbit\)\]:\s
+        ID:\s#{Regexp.escape(class_method_overwatch_released_attrs[:id].to_s)}\s::\s
+        TYPE:\soverwatch_released\s::\s
+        PAYLOAD:\s#{Regexp.escape(class_method_overwatch_released_attrs[:payload].to_s)}\s::\s
+        METADATA:\s#{Regexp.escape(class_method_overwatch_released_attrs[:metadata].to_s)}
+      }x
+    )
+    # match_lost event log with explicitly defined adapter :background
+    expect(silent_output.string).to include(
+      '[EvilEvents:EventEmitted(background)]: ' \
+      "ID: #{overwatch_event.id} :: " \
+      'TYPE: overwatch_released :: ' \
+      "PAYLOAD: #{overwatch_event.payload} :: " \
+      "METADATA: #{overwatch_event.metadata}"
+    )
+
+    # BROADCASTING: emit scoped events
+    # subscribers: []
+    DepositAntifrode.emit!(id: 100_500, payload: { amount: 5_571 })
+
+    # subscribers: EventCounter
+    DepositCanceled.emit!(id: 'secure123', payload: { reason: 'low_balance' })
+
+    # subscribers: EventCounter
+    DepositCanceledImmediately.emit!(id: 'id555', payload: { reason: 'banned_user' })
+
+    # changed
+    # (deposit.rejected + deposit.rejected.immediately)
+    expect(EventCounter.count).to eq(12)
+
+    # not changed
+    expect(EventStoreStub.events).to contain_exactly(
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      overwatch_event, # old event
+      match_event # old event
+    )
+
+    # not changed
+    expect(ElasticSearchStub.event_store).to contain_exactly(
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      a_kind_of(OverwatchReleased), # old event
+      a_kind_of(MatchLost), # old event
+      overwatch_event, # old event
+      match_event # old event
+    )
   end
 
   specify 'event callbacks' do
@@ -421,7 +566,7 @@ describe 'Event Broadcasting', :stub_event_system do
 
     begin
       event.emit!
-    rescue EvilEvents::FailedNotifiedSubscribersError
+    rescue EvilEvents::FailingSubscribersError
       # do nothing, its a correct behaviour
     end
 

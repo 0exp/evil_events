@@ -3,7 +3,7 @@ require: rubocop-rspec
 AllCops:
   DisplayCopNames:   true
   DisplayStyleGuide: true
-  TargetRubyVersion: 2.4.2
+  TargetRubyVersion: 2.4.4
   Include:
     - lib/**/*
     - spec/**/*
@@ -56,6 +56,12 @@ Style/CommentedKeyword:
 Style/EvalWithLocation:
   Enabled: false
 
+Style/RegexpLiteral:
+  EnforcedStyle: mixed
+
+Layout/MultilineOperationIndentation:
+  Enabled: false
+
 Lint/AmbiguousRegexpLiteral:
   Enabled: false
 
@@ -70,6 +76,9 @@ Naming/FileName:
 
 Naming/VariableNumber:
   EnforcedStyle: snake_case
+
+Naming/UncommunicativeMethodParamName:
+  Enabled: false
 
 Metrics/LineLength:
   Max: 100

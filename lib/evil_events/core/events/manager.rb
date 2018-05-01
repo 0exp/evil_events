@@ -39,7 +39,7 @@ module EvilEvents::Core::Events
 
     # @param event [EvilEvents::Core::Events::AbstractEvent]
     # @raise [EvilEvents::InconsistentEventClassError]
-    # @raise [EvilEvents::FailedNotifiedSubscribersError]
+    # @raise [EvilEvents::FailingSubscribersError]
     #
     # @return void
     #

@@ -6,11 +6,12 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
   let(:emitter) { described_class.new }
 
   describe 'event handling logic' do
-    let(:silent_output)   { StringIO.new }
-    let(:silent_logger)   { ::Logger.new(silent_output) }
-    let(:sidekiq_adapter) { build_adapter_class.new }
-    let(:rabbit_adapter)  { build_adapter_class.new }
-    let(:redis_adapter)   { build_adapter_class.new }
+    let(:silent_output)      { StringIO.new }
+    let(:silent_logger)      { ::Logger.new(silent_output) }
+    let(:sidekiq_adapter)    { build_adapter_class.new }
+    let(:rabbit_adapter)     { build_adapter_class.new }
+    let(:redis_adapter)      { build_adapter_class.new }
+    let(:background_adapter) { build_adapter_class.new }
 
     before do
       system_config.configure do |config|
@@ -18,8 +19,9 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
       end
 
       event_system.register_adapter(:sidekiq, sidekiq_adapter)
-      event_system.register_adapter(:redis,   redis_adapter)
-      event_system.register_adapter(:rabbit,  rabbit_adapter)
+      event_system.register_adapter(:redis, redis_adapter)
+      event_system.register_adapter(:rabbit, rabbit_adapter)
+      event_system.register_adapter(:background, background_adapter)
     end
 
     describe '#emit' do
@@ -61,45 +63,97 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
             metadata: { uuid: 712 }
           )
 
-          # four different adapters
+          # four different adapters (emit via pre-configured adapters)
           [redis_event, rabbit_event, sidekiq_event].each do |event|
             # expected messages which should be processed by logger
-            expected_message = Regexp.union(
-              /\[EvilEvents::EventEmitted\(#{event.adapter_name}\)\]\s/,
-              /ID:\s#{event.id}\s::\s/,
-              /TYPE:\s#{event.type}\s::\s/,
-              /PAYLOAD:\s#{event.payload}\s::\s/,
-              /METADATA:\s#{event.metadata}/
-            )
+            expected_message =
+              "[EvilEvents:EventEmitted(#{event.adapter_name})]: " \
+              "ID: #{event.id} :: " \
+              "TYPE: #{event.type} :: " \
+              "PAYLOAD: #{event.payload} :: " \
+              "METADATA: #{event.metadata}"
 
             # expects that logger output hasnt expected messages
-            expect(silent_output.string).not_to match(expected_message)
+            expect(silent_output.string).not_to include(expected_message)
 
             # emit event (and log :))
             emitter.emit(event)
 
             # epxects that logger output has expectedd messages
-            expect(silent_output.string).to match(expected_message)
+            expect(silent_output.string).to include(expected_message)
+          end
+
+          # four different adapters (emit via explicit :background adapter)
+          [redis_event, rabbit_event, sidekiq_event].each do |event|
+            explicit_adapter = :background
+
+            # expected messages which should be processed by logger
+            expected_message =
+              "[EvilEvents:EventEmitted(#{explicit_adapter})]: " \
+              "ID: #{event.id} :: " \
+              "TYPE: #{event.type} :: " \
+              "PAYLOAD: #{event.payload} :: " \
+              "METADATA: #{event.metadata}"
+
+            # expects that logger output hasnt expected messages
+            expect(silent_output.string).not_to include(expected_message)
+
+            # emit event (and log :))
+            emitter.emit(event, adapter: explicit_adapter)
+
+            # epxects that logger output has expectedd messages
+            expect(silent_output.string).to include(expected_message)
           end
         end
       end
 
       describe 'event handling', :null_logger do
-        it 'delegates event handling to appropriate pre-configured adapter' do
-          redis_event   = build_event_class('redis_event')   { adapter :redis }.new
-          sidekiq_event = build_event_class('sidekiq_event') { adapter :sidekiq }.new
-          rabbit_event  = build_event_class('rabbit_event')  { adapter :rabbit }.new
+        context 'dispatch via pre-configured adapter' do
+          it 'delegates event handling to appropriate pre-configured adapter' do
+            redis_event   = build_event_class('redis_event')   { adapter :redis }.new
+            sidekiq_event = build_event_class('sidekiq_event') { adapter :sidekiq }.new
+            rabbit_event  = build_event_class('rabbit_event')  { adapter :rabbit }.new
 
-          expect(redis_adapter).to   receive(:call).with(redis_event).twice
-          expect(sidekiq_adapter).to receive(:call).with(sidekiq_event).twice
-          expect(rabbit_adapter).to  receive(:call).with(rabbit_event).twice
+            expect(redis_adapter).to   receive(:call).with(redis_event).twice
+            expect(sidekiq_adapter).to receive(:call).with(sidekiq_event).twice
+            expect(rabbit_adapter).to  receive(:call).with(rabbit_event).twice
 
-          emitter.emit(redis_event)
-          emitter.emit(redis_event)
-          emitter.emit(rabbit_event)
-          emitter.emit(rabbit_event)
-          emitter.emit(sidekiq_event)
-          emitter.emit(sidekiq_event)
+            # dispatch via pre-configured adapter
+            emitter.emit(redis_event)
+            emitter.emit(redis_event)
+            emitter.emit(rabbit_event)
+            emitter.emit(rabbit_event)
+            emitter.emit(sidekiq_event)
+            emitter.emit(sidekiq_event)
+          end
+        end
+
+        context 'dispatch via explicit adapter' do
+          it 'delegates event handling to appropriate explicitly chosen adapter' do
+            redis_event   = build_event_class('redis_event')   { adapter :redis }.new
+            sidekiq_event = build_event_class('sidekiq_event') { adapter :sidekiq }.new
+            rabbit_event  = build_event_class('rabbit_event')  { adapter :rabbit }.new
+
+            expect(background_adapter).to receive(:call).with(redis_event).twice
+            expect(background_adapter).to receive(:call).with(sidekiq_event).twice
+            expect(background_adapter).to receive(:call).with(rabbit_event).twice
+
+            emitter.emit(redis_event, adapter: :background)
+            emitter.emit(redis_event, adapter: :background)
+            emitter.emit(sidekiq_event, adapter: :background)
+            emitter.emit(sidekiq_event, adapter: :background)
+            emitter.emit(rabbit_event, adapter: :background)
+            emitter.emit(rabbit_event, adapter: :background)
+          end
+
+          it 'fails when explicitly defined adapter cant be recognized' do
+            generic_event = build_event_class('generic_event') { adapter :redis }.new
+            unregistered_adapter_identifier = gen_symb
+
+            expect do
+              emitter.emit(generic_event, adapter: unregistered_adapter_identifier)
+            end.to raise_error(Dry::Container::Error)
+          end
         end
       end
 
@@ -112,14 +166,12 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
     describe '#raw_emit' do
       describe 'logging' do
         specify 'activity: event adapter name :: message: event type / event pyload' do
-          # event class sample (with redis adapter)
           build_event_class('excalibur_found') do
             payload :geo_location, EvilEvents::Types::Strict::String
             metadata :id, EvilEvents::Types::Strict::Int.default(-1)
             adapter :redis
           end
 
-          # event class sample (whti rabbit adapter)
           build_event_class('racing_finished') do
             payload :race, EvilEvents::Types::Strict::String.default('rocket')
             payload :reason, EvilEvents::Types::Strict::String
@@ -127,7 +179,6 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
             adapter :rabbit
           end
 
-          # event class sample (whti sidekiq adapter)
           build_event_class('not_enough_money') do
             payload :money_limit, EvilEvents::Types::Strict::Float.default(123_777.70)
             payload :required_money, EvilEvents::Types::Strict::Float
@@ -165,22 +216,40 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
             event_payload    = event_attrs[:default_payload].merge(event_attrs[:payload])
             event_metadata   = event_attrs[:default_metadata].merge(event_attrs[:metadata])
 
-            expected_message = Regexp.union(
-              /\[EvilEvents:EventEmitted\(#{expected_adapter}\)\]\s/,
-              /ID:\s[a-b0-9\-]s\s::\s/,
-              /TYPE:\s#{expected_type}\s::\s/,
-              /PAYLOAD:\s#{event_payload}\s::\s/,
-              /METADATA:\s#{event_metadata}/
-            )
+            # emit via pre-configured adapter
+            expected_message = %r{
+              \[EvilEvents:EventEmitted\(#{expected_adapter}\)\]:\s
+              ID:\s[a-z0-9]{8}-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}-[a-z0-9]{12}\s::\s
+              TYPE:\s#{expected_type}\s::\s
+              PAYLOAD:\s#{Regexp.escape(event_payload.to_s)}\s::\s
+              METADATA:\s#{Regexp.escape(event_metadata.to_s)}
+            }x
 
             expect(silent_output.string).not_to match(expected_message)
-
             emitter.raw_emit(
               event_attrs[:type],
               payload: event_attrs[:payload],
               metadata: event_attrs[:metadata]
             )
+            expect(silent_output.string).to match(expected_message)
 
+            # emit via explicitly defined adapter
+            explicit_adapter = :background
+            expected_message = %r{
+              \[EvilEvents:EventEmitted\(#{explicit_adapter}\)\]:\s
+              ID:\s[a-z0-9]{8}-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}-[a-z0-9]{12}\s::\s
+              TYPE:\s#{expected_type}\s::\s
+              PAYLOAD:\s#{Regexp.escape(event_payload.to_s)}\s::\s
+              METADATA:\s#{Regexp.escape(event_metadata.to_s)}
+            }x
+
+            expect(silent_output.string).not_to match(expected_message)
+            emitter.raw_emit(
+              event_attrs[:type],
+              payload: event_attrs[:payload],
+              metadata: event_attrs[:metadata],
+              adapter: explicit_adapter
+            )
             expect(silent_output.string).to match(expected_message)
           end
         end
