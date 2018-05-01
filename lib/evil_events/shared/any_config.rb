@@ -12,7 +12,7 @@ class EvilEvents::Shared::AnyConfig
     def configure(&configuration)
       case
       when !block_given? && !instance_variable_defined?(:@setup)
-        @setup = proc {}
+        @setup = proc {} # :nocov:
       when block_given?
         @setup = configuration
       else
@@ -55,3 +55,4 @@ class EvilEvents::Shared::AnyConfig
     config.respond_to?(method_name, include_private) || super
   end
 end
+# :nocov:

@@ -89,6 +89,22 @@ class EvilEvents::Core::System
 
     # @see EvilEvents::Core::System
     # @since 0.1.0
+    def serialize_to_json(event); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.1.0
+    def serialize_to_hash(event); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.4.0
+    def serialize_to_xml(event); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.4.0
+    def serialize_to_msgpack(event); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.1.0
     def deserialize_from_json(serialized_event); end
 
     # @see EvilEvents::Core::System

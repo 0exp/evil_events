@@ -17,6 +17,8 @@ module EvilEvents::Core
     include Mocking
 
     # @see EvilEvents::Core::System::Broadcaster
+    #
+    # @api private
     # @since 0.1.0
     def_delegators :broadcaster,
                    :emit,
@@ -27,6 +29,8 @@ module EvilEvents::Core
                    :restart_event_notifier
 
     # @see EvilEvents::Core::System::EventManager
+    #
+    # @api private
     # @since 0.1.0
     def_delegators :event_manager,
                    :observe,
@@ -45,16 +49,24 @@ module EvilEvents::Core
                    :managed_event?
 
     # @see EvilEvents::Core::System::EventBuilder
+    #
+    # @api private
     # @since 0.1.0
-    def_delegators 'EvilEvents::Core::System::EventBuilder',
+    def_delegators :event_builder,
                    :define_event_class,
                    :define_abstract_event_class,
                    :deserialize_from_json,
                    :deserialize_from_hash,
                    :deserialize_from_xml,
-                   :deserialize_from_msgpack
+                   :deserialize_from_msgpack,
+                   :serialize_to_json,
+                   :serialize_to_hash,
+                   :serialize_to_msgpack,
+                   :serialize_to_xml
 
     # @see EvilEvents::Core::System::TypeManager
+    #
+    # @api private
     # @since 0.2.0
     def_delegators :type_manager,
                    :register_converter,
@@ -62,21 +74,32 @@ module EvilEvents::Core
 
     # @return [EvilEvents::Core::System::Broadcaster]
     #
+    # @api private
     # @since 0.1.0
     attr_reader :broadcaster
 
     # @return [EvilEvents::Core::System::EventManager]
     #
+    # @api private
     # @since 0.1.0
     attr_reader :event_manager
 
     # @return [EvilEvents::Core::System::TypeManager]
     #
+    # @api private
     # @since 0.2.0
     attr_reader :type_manager
 
+    # @return [EvilEvents::Core::System::EventBuilder]
+    #
+    # @api private
+    # @since 0.4.0
+    attr_reader :event_builder
+
+    # @api private
     # @since 0.1.0
     def initialize
+      @event_builder = EventBuilder.new
       @broadcaster   = Broadcaster.new
       @event_manager = EventManager.new
       @type_manager  = TypeManager.new

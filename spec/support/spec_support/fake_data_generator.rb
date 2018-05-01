@@ -65,8 +65,8 @@ module SpecSupport::FakeDataGenerator
     rand(range)
   end
 
-  def gen_float(range = FLOAT_RANGE)
-    rand(range)
+  def gen_float(range = FLOAT_RANGE, round: 4)
+    rand(range).round(round)
   end
 
   def gen_str(max_len: STR_LENGTH, only_letters: false)
@@ -101,8 +101,8 @@ module SpecSupport::FakeDataGenerator
     -> {}
   end
 
-  def gen_all
-    FACTORY_METHODS.map { |generator| send(generator) }.shuffle!
+  def gen_all(except: nil)
+    (FACTORY_METHODS - Array(except)).map { |generator| send(generator) }.shuffle!
   end
 
   def gen_event_attr_type(constraint = :primitive)
