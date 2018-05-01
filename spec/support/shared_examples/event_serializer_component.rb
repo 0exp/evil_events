@@ -65,7 +65,7 @@ shared_examples 'event serializer component' do
       context 'when passed object is a correctly serialized event data' do
         let(:data) { serializer.serialize(event) }
 
-        it 'restores the event' do
+        it 'restores event object' do
           deserialized_event = serializer.deserialize(data)
 
           expect(deserialized_event).to          be_a(event_class)

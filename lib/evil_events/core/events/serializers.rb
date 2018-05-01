@@ -9,6 +9,7 @@ module EvilEvents::Core::Events
 
     # @return void
     #
+    # @api private
     # @since 0.4.0
     def register_core_serializers!
       register(:json, memoize: true)    { JSON::Factory.new.create! }

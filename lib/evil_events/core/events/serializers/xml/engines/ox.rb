@@ -27,5 +27,5 @@ class EvilEvents::Core::Events::Serializers::XML::Engines
   end
 
   # @since 0.4.0
-  register(:ox) { Ox }
+  register(:ox, Ox)
 end

@@ -5,6 +5,7 @@ class EvilEvents::Core::Events::Serializers::MessagePack::Engines
   # @since 0.4.0
   class Mpacker < EvilEvents::Core::Events::Serializers::Base::AbstractEngine
     # @param config [EvilEvents::Core::Events::Serializers::MessagePack::Config]
+    # @raise [EvilEvents::SerializationEngineError]
     #
     # @api private
     # @since 0.4.0
@@ -76,5 +77,5 @@ class EvilEvents::Core::Events::Serializers::MessagePack::Engines
   end
 
   # @since 0.4.0
-  register(:mpacker) { Mpacker }
+  register(:mpacker, Mpacker)
 end

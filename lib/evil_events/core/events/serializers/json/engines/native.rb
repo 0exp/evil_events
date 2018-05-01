@@ -19,7 +19,7 @@ class EvilEvents::Core::Events::Serializers::JSON::Engines
     end
 
     # @param json_string [String]
-    # @raise [EvilEvents::JSONDeserializationError]
+    # @raise [EvilEvents::SerializationEngineError]
     # @return [EventSerializationState]
     #
     # @since 0.4.0
@@ -39,5 +39,5 @@ class EvilEvents::Core::Events::Serializers::JSON::Engines
   end
 
   # @since 0.4.0
-  register(:native) { Native }
+  register(:native, Native)
 end

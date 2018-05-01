@@ -88,11 +88,11 @@ class EvilEvents::Core::System
     def define_abstract_event_class(event_type); end
 
     # @see EvilEvents::Core::System
-    # @since 0.1.0
+    # @since 0.4.0
     def serialize_to_json(event); end
 
     # @see EvilEvents::Core::System
-    # @since 0.1.0
+    # @since 0.4.0
     def serialize_to_hash(event); end
 
     # @see EvilEvents::Core::System

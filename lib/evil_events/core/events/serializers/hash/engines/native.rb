@@ -19,7 +19,7 @@ class EvilEvents::Core::Events::Serializers::Hash::Engines
     end
 
     # @param hash [::Hash]
-    # @raise [EvilEvents::HashDeserializationError]
+    # @raise [EvilEvents::SerializationEngineError]
     # @return [EventSerializationState]
     #
     # @since 0.4.0
@@ -56,5 +56,5 @@ class EvilEvents::Core::Events::Serializers::Hash::Engines
   end
 
   # @since 0.4.0
-  register(:native) { Native }
+  register(:native, Native)
 end

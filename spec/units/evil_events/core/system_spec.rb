@@ -20,17 +20,32 @@ describe EvilEvents::Core::System, :stub_event_system do
       event_builder_module = event_system.event_builder
 
       %i[
-        emit raw_emit resolve_adapter register_adapter
-        process_event_notification restart_event_notifier
+        emit
+        raw_emit
+        resolve_adapter
+        register_adapter
+        process_event_notification
+        restart_event_notifier
       ].each do |method_name|
         expect(broadcaster_module).to receive(method_name)
         event_system.public_send(method_name)
       end
 
       %i[
-        observe raw_observe observe_list conditional_observe observers register_event_class
-        unregister_event_class manager_of_event manager_of_event_type
-        registered_events resolve_event_class resolve_event_object managed_event?
+        observe
+        raw_observe
+        observe_list
+        conditional_observe
+        scoped_observe
+        observers
+        register_event_class
+        unregister_event_class
+        manager_of_event
+        manager_of_event_type
+        registered_events
+        resolve_event_class
+        resolve_event_object
+        managed_event?
       ].each do |method_name|
         expect(event_manager_module).to receive(method_name)
         event_system.public_send(method_name)
@@ -41,6 +56,12 @@ describe EvilEvents::Core::System, :stub_event_system do
         define_abstract_event_class
         deserialize_from_json
         deserialize_from_hash
+        deserialize_from_xml
+        deserialize_from_msgpack
+        serialize_to_json
+        serialize_to_hash
+        serialize_to_msgpack
+        serialize_to_xml
       ].each do |method_name|
         expect(event_builder_module).to receive(method_name)
         event_system.public_send(method_name)

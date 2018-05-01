@@ -23,6 +23,7 @@ describe EvilEvents::Shared::AnyConfig do
 
     # dry-configurable: hash representation
     expect(config.to_h).to match(my_simple_setting: 55, nested: { pre_processed: 100 })
+    expect(config.to_hash).to match(my_simple_setting: 55, nested: { pre_processed: 100 })
     # dry-configurable: config object
     expect(config.config.my_simple_setting).to eq(55)
     expect(config.config.nested.pre_processed).to eq(100)
@@ -37,6 +38,7 @@ describe EvilEvents::Shared::AnyConfig do
     end
     # dry-configurable: hash representation after changing
     expect(config.to_h).to match(my_simple_setting: 66, nested: { pre_processed: 60 })
+    expect(config.to_hash).to match(my_simple_setting: 66, nested: { pre_processed: 60 })
     # dry-configurable: config object after changing
     expect(config.config.my_simple_setting).to eq(66)
     expect(config.config.nested.pre_processed).to eq(60)
