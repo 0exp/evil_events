@@ -35,6 +35,18 @@ class EvilEvents::Core::System
                       .observe(raw_subscriber, delegator)
     end
 
+    # @param scoped_event_type [String]
+    # @param raw_subscriber [Mixed]
+    # @param delegator [String, Symbol, NilClass]
+    # @return void
+    #
+    # @api private
+    # @since 0.4.0
+    def scoped_observe(scoped_event_type, raw_subscriber, delegator)
+      manager_registry.managers_of_scoped_event_type(scoped_event_type)
+                      .each { |manager| manager.observe(raw_subscriber, delegator) }
+    end
+
     # @param event_pattern [Regexp]
     # @param raw_subscriber [Mixed]
     # @param delegator [String, Symbol, NilClass]

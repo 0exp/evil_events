@@ -104,17 +104,18 @@ describe EvilEvents::Core::Events::Notifier::Worker::Executor, :stub_event_syste
 
     describe 'job execution' do
       specify 'successful execution' do
+        expected_log_message =
+          "[EvilEvents:EventProcessed(#{event.type})]: " \
+          "EVENT_ID: #{event.id} :: " \
+          'STATUS: successful :: ' \
+          "SUBSCRIBER: #{successful_job.subscriber.source_object}"
+
+        expect(silent_output.string).not_to include(expected_log_message)
+
         promise = executor.execute(successful_job)
         loop { break if promise.complete? }
 
-        expect(silent_output.string).to match(
-          Regexp.union(
-            /\[EvilEvents::EventProcessed\(#{event.type}\)\]\s/,
-            /EVENT_ID:\s#{event.id}\s::\s/,
-            /STATUS:\ssuccessful\s::\s/,
-            /SUBSCRIBER:\s#{successful_job.subscriber.source_object.to_s}/
-          )
-        )
+        expect(silent_output.string).to include(expected_log_message)
       end
 
       specify 'failing execution' do
@@ -125,18 +126,18 @@ describe EvilEvents::Core::Events::Notifier::Worker::Executor, :stub_event_syste
           error_callback_hook[:error] = error
         end)
 
+        expected_log_message =
+          "[EvilEvents:EventProcessed(#{event.type})]: " \
+          "EVENT_ID: #{event.id} :: " \
+          'STATUS: failed :: ' \
+          "SUBSCRIBER: #{failing_job.subscriber.source_object}"
+
+        expect(silent_output.string).not_to include(expected_log_message)
+
         promise = executor.execute(failing_job)
         loop { break if promise.complete? }
 
-        expect(silent_output.string).to match(
-          Regexp.union(
-            /\[EvilEvents::EventProcessed\(#{event.type}\)\]\s/,
-            /EVENT_ID:\s#{event.id}\s::\s/,
-            /STATUS:\sfailed\s::\s/,
-            /SUBSCRIBER:\s#{successful_job.subscriber.source_object.to_s}/
-          )
-        )
-
+        expect(silent_output.string).to include(expected_log_message)
         expect(error_callback_hook[:event]).to eq(event)
         expect(error_callback_hook[:error]).to be_a(
           SpecSupport::EventFactories::EventSubscriberError

@@ -5,8 +5,12 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
   let(:event_manager)    { described_class.new }
   let(:manager_registry) { event_manager.manager_registry }
 
-  let(:event_class)         { build_abstract_event_class('test_event') }
-  let(:another_event_class) { build_abstract_event_class('another_test_event') }
+  let(:event_class)                   { build_abstract_event_class('test') }
+  let(:scoped_event_class)            { build_abstract_event_class('test.covered') }
+  let(:subscoped_event_class)         { build_abstract_event_class('test.covered.fully') }
+  let(:another_event_class)           { build_abstract_event_class('another_test') }
+  let(:scoped_another_event_class)    { build_abstract_event_class('another_test.covered') }
+  let(:subscoped_another_event_class) { build_abstract_event_class('another_test.covered.fully') }
 
   describe '#manager_registry' do
     it 'returns an instance of the corresponding logical element with appropriate initial state' do
@@ -108,6 +112,29 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
         event_manager.unregister_event_class(another_event_class)
 
         expect(event_manager.registered_events).to eq({})
+      end
+    end
+
+    describe '#resolve_event_class' do
+      subject(:resolve) { event_manager.resolve_event_class(event_type) }
+
+      context 'when required event class with passed type is registered' do
+        let(:event_class) { build_event_class(gen_str) }
+        let(:event_type)  { event_class.type }
+
+        before { event_manager.register_event_class(event_class) }
+
+        it 'returns event class which type is eqaul to the passed event type' do
+          expect(resolve).to eq(event_class)
+        end
+      end
+
+      context 'when required event class with passed type isnt registered' do
+        let(:event_type) { gen_str }
+
+        it 'fails with corresponding error' do
+          expect { resolve }.to raise_error(EvilEvents::NonManagedEventClassError)
+        end
       end
     end
 
@@ -257,12 +284,131 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
     end
 
     describe 'subscribe to the list of events' do
-      let(:first_manager)  { manager_registry.manager_of_event(event_class) }
-      let(:second_manager) { manager_registry.manager_of_event(another_event_class) }
+      let(:first_manager) do
+        manager_registry.manager_of_event(event_class)
+      end
+
+      let(:scoped_first_manager) do
+        manager_registry.manager_of_event(scoped_event_class)
+      end
+
+      let(:subscoped_first_manager) do
+        manager_registry.manager_of_event(subscoped_event_class)
+      end
+
+      let(:second_manager) do
+        manager_registry.manager_of_event(another_event_class)
+      end
+
+      let(:scoped_second_manager) do
+        manager_registry.manager_of_event(scoped_another_event_class)
+      end
+
+      let(:subscoped_second_manager) do
+        manager_registry.manager_of_event(subscoped_another_event_class)
+      end
 
       before do
         event_manager.register_event_class(event_class)
+        event_manager.register_event_class(scoped_event_class)
+        event_manager.register_event_class(subscoped_event_class)
         event_manager.register_event_class(another_event_class)
+        event_manager.register_event_class(scoped_another_event_class)
+        event_manager.register_event_class(subscoped_another_event_class)
+      end
+
+      def match_observed!(manager, subscriber, delegator)
+        expect(manager.subscribers.registered?(subscriber)).to eq(true)
+        expect(manager.subscribers.wrapper_of(subscriber).delegator).to eq(delegator)
+      end
+
+      def match_non_observed!(manager, subscriber)
+        expect(manager.subscribers.registered?(subscriber)).to eq(false)
+      end
+
+      describe '#scoped_observe' do
+        shared_examples 'routing key subscription' do |observed:, non_observed:|
+          let(:subscriber) { ->(event) {} }
+          let(:delegator) { gen_symb(only_letters: true) }
+
+          it 'subscribes an object to the list of events whose type aliases are comparable' \
+             'with a routing-key pattern' do
+
+            event_manager.scoped_observe(routing_pattern, subscriber, delegator)
+
+            observed.each { |mngr| match_observed!(send(mngr), subscriber, delegator) }
+            non_observed.each { |mngr| match_non_observed!(send(mngr), subscriber) }
+          end
+        end
+
+        context '<test> routing pattern' do
+          let(:routing_pattern) { 'test' }
+
+          it_behaves_like(
+            'routing key subscription',
+            observed: %i[first_manager],
+            non_observed: %i[
+              scoped_first_manager
+              subscoped_first_manager
+              second_manager
+              scoped_second_manager
+              subscoped_second_manager
+            ]
+          )
+        end
+
+        context '<*.fully> routing pattern' do
+          let(:routing_pattern) { '*.fully' }
+
+          it_behaves_like(
+            'routing key subscription',
+            observed: %i[],
+            non_observed: %i[
+              first_manager
+              scoped_first_manager
+              subscoped_first_manager
+              second_manager
+              scoped_second_manager
+              subscoped_second_manager
+            ]
+          )
+        end
+
+        context '<#.covered.*> routing pattern' do
+          let(:routing_pattern) { '#.covered.*' }
+
+          it_behaves_like(
+            'routing key subscription',
+            observed: %i[
+              subscoped_first_manager
+              subscoped_second_manager
+            ],
+            non_observed: %i[
+              first_manager
+              scoped_first_manager
+              second_manager
+              scoped_second_manager
+            ]
+          )
+        end
+
+        context '<#> routing pattern' do
+          let(:routing_pattern) { '#' }
+
+          it_behaves_like(
+            'routing key subscription',
+            observed: %i[
+              first_manager
+              scoped_first_manager
+              subscoped_first_manager
+              second_manager
+              scoped_second_manager
+              subscoped_second_manager
+            ],
+            non_observed: %i[
+            ]
+          )
+        end
       end
 
       describe '#observe_list' do
@@ -272,59 +418,77 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
           pattern = /#{gen_str}/ # no matches
           event_manager.observe_list(pattern, subscriber, delegator)
 
-          expect(first_manager.subscribers.registered?(subscriber)).to eq(false)
-          expect(second_manager.subscribers.registered?(subscriber)).to eq(false)
+          match_non_observed!(first_manager, subscriber)
+          match_non_observed!(scoped_first_manager, subscriber)
+          match_non_observed!(subscoped_first_manager, subscriber)
+          match_non_observed!(second_manager, subscriber)
+          match_non_observed!(scoped_second_manager, subscriber)
+          match_non_observed!(subscoped_second_manager, subscriber)
 
-          pattern = /\Atest_event\z/ # matches with test_event (event_class)
+          pattern = /\Atest\z/ # matches with test (event_class)
           event_manager.observe_list(pattern, subscriber, delegator)
 
-          expect(first_manager.subscribers.registered?(subscriber)).to eq(true)
-          expect(first_manager.subscribers.wrapper_of(subscriber).delegator).to eq(delegator)
-          expect(second_manager.subscribers.registered?(subscriber)).to eq(false)
+          match_observed!(first_manager, subscriber, delegator)
+          match_non_observed!(scoped_first_manager, subscriber)
+          match_non_observed!(subscoped_first_manager, subscriber)
+          match_non_observed!(second_manager, subscriber)
+          match_non_observed!(scoped_second_manager, subscriber)
+          match_non_observed!(subscoped_second_manager, subscriber)
 
           pattern = /.+/ # matches with all
           event_manager.observe_list(pattern, subscriber, delegator)
 
-          expect(first_manager.subscribers.registered?(subscriber)).to eq(true)
-          expect(second_manager.subscribers.registered?(subscriber)).to eq(true)
-          expect(first_manager.subscribers.wrapper_of(subscriber).delegator).to eq(delegator)
-          expect(second_manager.subscribers.wrapper_of(subscriber).delegator).to eq(delegator)
+          match_observed!(first_manager, subscriber, delegator)
+          match_observed!(scoped_first_manager, subscriber, delegator)
+          match_observed!(subscoped_first_manager, subscriber, delegator)
+          match_observed!(second_manager, subscriber, delegator)
+          match_observed!(scoped_second_manager, subscriber, delegator)
+          match_observed!(subscoped_second_manager, subscriber, delegator)
         end
       end
 
       describe '#conditional_observe' do
-        specify 'condition of alias isnt false/nil ==> subscribes an object to this event' do
+        specify 'condition of an alias isnt false/nil ==> subscribes an object to this event' do
           subscriber, delegator = (->(event) {}), gen_symb(only_letters: true)
 
           # fail condition => doesnt register
           condition = ->(_event_type) { false }
           event_manager.conditional_observe(condition, subscriber, delegator)
 
-          expect(first_manager.subscribers.registered?(subscriber)).to eq(false)
-          expect(second_manager.subscribers.registered?(subscriber)).to eq(false)
+          match_non_observed!(first_manager, subscriber)
+          match_non_observed!(scoped_first_manager, subscriber)
+          match_non_observed!(subscoped_first_manager, subscriber)
+          match_non_observed!(second_manager, subscriber)
+          match_non_observed!(scoped_second_manager, subscriber)
+          match_non_observed!(subscoped_second_manager, subscriber)
 
           # true for another_event_class => subscribes on this
-          condition = ->(event_type) { event_type == 'another_test_event' }
+          condition = ->(event_type) { event_type == 'another_test' }
           event_manager.conditional_observe(condition, subscriber, delegator)
 
-          expect(first_manager.subscribers.registered?(subscriber)).to eq(false)
-          expect(second_manager.subscribers.registered?(subscriber)).to eq(true)
-          expect(second_manager.subscribers.wrapper_of(subscriber).delegator).to eq(delegator)
+          match_non_observed!(first_manager, subscriber)
+          match_non_observed!(scoped_first_manager, subscriber)
+          match_non_observed!(subscoped_first_manager, subscriber)
+          match_observed!(second_manager, subscriber, delegator)
+          match_non_observed!(scoped_second_manager, subscriber)
+          match_non_observed!(subscoped_second_manager, subscriber)
 
           # true for all => subscribes on all
           condition = ->(event_type) { event_type.match(/.+/) }
           event_manager.conditional_observe(condition, subscriber, delegator)
 
-          expect(first_manager.subscribers.registered?(subscriber)).to eq(true)
-          expect(second_manager.subscribers.registered?(subscriber)).to eq(true)
-          expect(first_manager.subscribers.wrapper_of(subscriber).delegator).to eq(delegator)
-          expect(second_manager.subscribers.wrapper_of(subscriber).delegator).to eq(delegator)
+          match_observed!(first_manager, subscriber, delegator)
+          match_observed!(scoped_first_manager, subscriber, delegator)
+          match_observed!(subscoped_first_manager, subscriber, delegator)
+          match_observed!(second_manager, subscriber, delegator)
+          match_observed!(scoped_second_manager, subscriber, delegator)
+          match_observed!(subscoped_second_manager, subscriber, delegator)
         end
       end
     end
 
     describe '#observers' do
-      context 'when passed event class is registered' do
+      context 'when the passed event class is registered' do
         before { event_manager.register_event_class(event_class) }
 
         it 'returns subscribers of the passed event class' do

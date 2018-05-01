@@ -9,13 +9,13 @@ module EvilEvents::Core::Events::Notifier
 
     # @param manager [EvilEvents::Core::Events::Manager]
     # @param event [EvilEvents::Core::Events::AbstractEvent]
-    # @raise [EvilEvents::FailedNotifiedSubscribersError]
+    # @raise [EvilEvents::FailingSubscribersError]
     # @return void
     #
     # @api private
     # @since 0.3.0
     def notify(manager, event)
-      errors_stack = EvilEvents::FailedNotifiedSubscribersError.new
+      errors_stack = EvilEvents::FailingSubscribersError.new
 
       event.__call_before_hooks__
 

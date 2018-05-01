@@ -10,5 +10,6 @@ module EvilEvents::Core
     require_relative 'broadcasting/adapters/memory_sync'
     require_relative 'broadcasting/adapters/memory_async'
     require_relative 'broadcasting/emitter'
+    require_relative 'broadcasting/emitter/adapter_proxy'
   end
 end

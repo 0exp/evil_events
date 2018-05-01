@@ -52,7 +52,7 @@ describe 'Event Creation', :stub_event_system do
       end
 
       types.define_converter(:bigdecimal) do |value|
-        BigDecimal.new(value)
+        BigDecimal(value)
       end
 
       types.define_converter(:timestamp) do |value|

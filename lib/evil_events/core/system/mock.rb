@@ -32,16 +32,20 @@ class EvilEvents::Core::System
     def conditional_observe(event_condition, raw_subscriber, delegator); end
 
     # @see EvilEvents::Core::System
+    # @since 0.4.0
+    def scoped_observe(scoped_event_type, raw_subscriber, delegator); end
+
+    # @see EvilEvents::Core::System
     # @since 0.1.0
     def observers(event_class); end
 
     # @see EvilEvents::Core::System
     # @since 0.1.0
-    def emit(event); end
+    def emit(event, adapter: nil); end
 
     # @see EvilEvents::Core::System
     # @since 0.1.0
-    def raw_emit(event_type, **event_attributes); end
+    def raw_emit(event_type, id: nil, payload: {}, metadata: {}, adapter: nil); end
 
     # @see EvilEvents::Core::System
     # @since 0.1.0
@@ -84,12 +88,36 @@ class EvilEvents::Core::System
     def define_abstract_event_class(event_type); end
 
     # @see EvilEvents::Core::System
+    # @since 0.4.0
+    def serialize_to_json(event); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.4.0
+    def serialize_to_hash(event); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.4.0
+    def serialize_to_xml(event); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.4.0
+    def serialize_to_msgpack(event); end
+
+    # @see EvilEvents::Core::System
     # @since 0.1.0
     def deserialize_from_json(serialized_event); end
 
     # @see EvilEvents::Core::System
     # @since 0.1.0
     def deserialize_from_hash(serialized_event); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.4.0
+    def deserialize_from_xml(serialized_event); end
+
+    # @see EvilEvents::Core::System
+    # @since 0.4.0
+    def deserialize_from_msgpack(serialized_event); end
 
     # @see EvilEvents::Core::System
     # @since 0.1.0
