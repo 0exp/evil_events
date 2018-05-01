@@ -12,7 +12,7 @@ class EvilEvents::Shared::AnyConfig
     def configure(&configuration)
       case
       when !block_given? && !instance_variable_defined?(:@setup)
-        @setup = proc {} # :nocov:
+        @setup = proc {}
       when block_given?
         @setup = configuration
       else
@@ -34,25 +34,27 @@ class EvilEvents::Shared::AnyConfig
     @config.configure { |conf| yield(conf) if block_given? }
   end
 
-  private
-
-  # @return [Dry::Configurable]
+  # @return [Hash]
   #
-  # @api private
+  # @api public
   # @since 0.4.0
-  attr_reader :config
+  def to_h
+    @config.config.to_h
+  end
+  alias_method :to_hash, :to_h
 
   # @api private
   # @since 0.4.0
   def method_missing(method_name, *attributes, &block)
-    return super unless config.respond_to?(method_name)
-    config.public_send(method_name, *attributes, &block)
+    return super unless @config.respond_to?(method_name)
+    @config.public_send(method_name, *attributes, &block)
   end
 
+  # :nocov:
   # @api private
   # @since 0.4.0
   def respond_to_missing?(method_name, include_private = false)
-    config.respond_to?(method_name, include_private) || super
+    @config.respond_to?(method_name, include_private) || super
   end
+  # :nocov:
 end
-# :nocov:

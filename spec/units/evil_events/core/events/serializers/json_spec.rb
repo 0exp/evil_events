@@ -6,7 +6,7 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
     let(:serialization_error) { EvilEvents::JSONSerializationError }
     let(:deserialization_error) { EvilEvents::JSONDeserializationError }
     let(:serialization_type) { String }
-    let(:incorrect_deserialization_objects) { gen_all(except: :gen_str) }
+    let(:incorrect_deserialization_objects) { gen_all }
     let(:invalid_serializations) do
       data = serializer.serialize(event)
 
