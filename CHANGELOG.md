@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.4.0] - 2018-05-02
 ### Added
 - **Routing Key Based Event Types**. A new way of subscribing to events and approach to event naming: routing-key-based event naming;
   - Event names must be named in the routing-key style;
