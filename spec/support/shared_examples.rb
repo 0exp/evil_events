@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'shared_examples/event_serializer_component'
 require_relative 'shared_examples/event_subscriber_component'
 require_relative 'shared_examples/dependency_container_interface'
 require_relative 'shared_examples/event_dispatching_interface'

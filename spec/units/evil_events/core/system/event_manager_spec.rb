@@ -115,6 +115,29 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
       end
     end
 
+    describe '#resolve_event_class' do
+      subject(:resolve) { event_manager.resolve_event_class(event_type) }
+
+      context 'when required event class with passed type is registered' do
+        let(:event_class) { build_event_class(gen_str) }
+        let(:event_type)  { event_class.type }
+
+        before { event_manager.register_event_class(event_class) }
+
+        it 'returns event class which type is eqaul to the passed event type' do
+          expect(resolve).to eq(event_class)
+        end
+      end
+
+      context 'when required event class with passed type isnt registered' do
+        let(:event_type) { gen_str }
+
+        it 'fails with corresponding error' do
+          expect { resolve }.to raise_error(EvilEvents::NonManagedEventClassError)
+        end
+      end
+    end
+
     describe '#resolve_event_object' do
       context 'when required event class is registered' do
         let(:event_class) do
