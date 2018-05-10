@@ -4,6 +4,9 @@ module EvilEvents::Shared
   # @api public
   # @since 0.1.0
   class Structure < Dry::Struct
+    # NOTE: dry-struct API + dry-initializer API
+    input input.strict
+
     class << self
       # @since 0.1.0
       alias_method :_native_attribute, :attribute
@@ -16,8 +19,5 @@ module EvilEvents::Shared
         _native_attribute(key, type)
       end
     end
-
-    # NOTE: dry-struct API + dry-initializer API
-    constructor_type :strict_with_defaults
   end
 end

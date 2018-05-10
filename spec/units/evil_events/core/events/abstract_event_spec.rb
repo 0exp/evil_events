@@ -70,7 +70,7 @@ describe EvilEvents::Core::Events::AbstractEvent do
       describe '#metadata' do
         let(:event_instance) do
           Class.new(metadata_abstraction) do
-            metadata :sum,  EvilEvents::Types::Strict::Int.default(proc { 123_456 })
+            metadata :sum,  EvilEvents::Types::Strict::Integer.default(proc { 123_456 })
             metadata :sys,  EvilEvents::Types::String
             metadata :type, EvilEvents::Types::Strict::Symbol.default(proc { :lols })
           end.new(metadata: { sys: 'lol' })
@@ -95,7 +95,7 @@ describe EvilEvents::Core::Events::AbstractEvent do
       describe '#payload' do
         let(:event_instance) do
           Class.new(payload_abstraction) do
-            payload :sum,  EvilEvents::Types::Strict::Int.default(proc { 123_456 })
+            payload :sum,  EvilEvents::Types::Strict::Integer.default(proc { 123_456 })
             payload :sys,  EvilEvents::Types::String
             payload :type, EvilEvents::Types::Strict::Symbol.default(proc { :lols })
           end.new(payload: { sys: 'lol' })

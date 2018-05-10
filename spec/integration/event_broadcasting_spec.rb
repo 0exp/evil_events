@@ -82,7 +82,7 @@ describe 'Event Broadcasting', :stub_event_system do
       payload :date,  EvilEvents::Types::DateTime
       payload :price, EvilEvents::Types::Float
 
-      metadata :timestamp, EvilEvents::Types::Int
+      metadata :timestamp, EvilEvents::Types::Integer
 
       adapter :sidekiq
     end
@@ -97,7 +97,7 @@ describe 'Event Broadcasting', :stub_event_system do
     end
 
     DepositAntifrode = Class.new(EvilEvents::Event['deposit.antifrode']) do
-      payload :amount, EvilEvents::Types::Int
+      payload :amount, EvilEvents::Types::Integer
       adapter :redis
     end
 
@@ -526,7 +526,7 @@ describe 'Event Broadcasting', :stub_event_system do
 
     # create simple event class
     BonusReached = Class.new(EvilEvents::Event['bonus_reached']) do
-      metadata :timestamp, EvilEvents::Types::Int
+      metadata :timestamp, EvilEvents::Types::Integer
 
       # register corresponding hooks
       # rubocop:disable Metrics/LineLength

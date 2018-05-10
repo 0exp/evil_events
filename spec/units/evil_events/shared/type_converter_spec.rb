@@ -33,6 +33,7 @@ describe EvilEvents::Shared::TypeConverter do
 
         # without options
         custom_type = type_converter.resolve_type(type_key)
+
         expect(custom_type[raw_value]).to eq(raw_value.to_s)
         expect(custom_type[nil]).to eq('')
 
@@ -41,14 +42,14 @@ describe EvilEvents::Shared::TypeConverter do
           type_key, default: raw_default
         )
         expect(custom_type_with_default[raw_value]).to eq(raw_value.to_s)
-        expect(custom_type_with_default[nil]).to eq(raw_default)
+        expect(custom_type_with_default[]).to eq(raw_default)
 
         # with default option as a proc
         custom_type_with_proc_default = type_converter.resolve_type(
           type_key, default: -> { raw_default }
         )
         expect(custom_type_with_proc_default[raw_value]).to eq(raw_value.to_s)
-        expect(custom_type_with_proc_default[nil]).to eq(raw_default)
+        expect(custom_type_with_proc_default[]).to eq(raw_default)
       end
     end
   end

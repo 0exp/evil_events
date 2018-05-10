@@ -41,7 +41,7 @@ shared_examples 'payloadable interface' do
         it 'delegates the attribute definition process to Payload', :stub_event_system do
           # using Dry::Types
           common_attr = :amount
-          common_type = EvilEvents::Types::Strict::Int
+          common_type = EvilEvents::Types::Strict::Integer
           expect(event_class::Payload).to receive(:attribute).with(common_attr, common_type)
           event_class.payload common_attr, common_type
 

@@ -48,7 +48,7 @@ shared_examples 'payload entity component' do
           expect do
             payload_class.class_eval do
               # Dry::Types API
-              payload :foo, EvilEvents::Types::Int
+              payload :foo, EvilEvents::Types::Integer
               payload :bar, EvilEvents::Types::Strict::String.default(proc { 'KEK' })
               payload :baz, EvilEvents::Types::Strict::Bool.default(false)
 
@@ -64,7 +64,7 @@ shared_examples 'payload entity component' do
           payload_class = Class.new(payload_abstraction)
           expect do
             payload_class.class_eval do # only Dry::Types
-              payload :foo, EvilEvents::Types::Int
+              payload :foo, EvilEvents::Types::Integer
               payload :foo, EvilEvents::Types::Strict::String.default(proc { 'KEK' })
             end
           end.to raise_error(Dry::Struct::RepeatedAttributeError)
@@ -78,7 +78,7 @@ shared_examples 'payload entity component' do
 
           expect do
             payload_class.class_eval do # both TypeConverter and Dry::Types
-              payload :baz, EvilEvents::Types::Int
+              payload :baz, EvilEvents::Types::Integer
               payload :baz, :string, default: -> { 'test' }
             end
           end.to raise_error(Dry::Struct::RepeatedAttributeError)
@@ -111,7 +111,7 @@ shared_examples 'payload entity component' do
         payload_class = Class.new(payload_abstraction)
         expect do
           payload_class.class_eval do
-            payload :amount,   EvilEvents::Types::Int
+            payload :amount,   EvilEvents::Types::Integer
             payload :currency, EvilEvents::Types::Strict::String.default(proc { 'EUR' })
             payload :done,     EvilEvents::Types::Strict::Bool.default(false)
           end
@@ -153,7 +153,7 @@ shared_examples 'payload entity component' do
         end
 
         payload_class = Class.new(payload_abstraction) do
-          payload :size, EvilEvents::Types::Strict::Int.default(proc { 123_456 })
+          payload :size, EvilEvents::Types::Strict::Integer.default(proc { 123_456 })
           payload :name, EvilEvents::Types::String
           payload :role, EvilEvents::Types::Strict::Symbol.default(proc { :admin })
           payload :path, :string
