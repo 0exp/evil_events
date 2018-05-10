@@ -99,7 +99,7 @@ describe 'Configuration', :stub_event_system do
 
         metadata :timestamp, :time, default: Time.now
         metadata :server_id, :uuid
-        metadata :ref_id,    EvilEvents::Types::Strict::Int
+        metadata :ref_id,    EvilEvents::Types::Strict::Integer
       end
     end.to raise_error(Dry::Container::Error)
 
@@ -129,7 +129,7 @@ describe 'Configuration', :stub_event_system do
 
         metadata :timestamp, :time, default: Time.now
         metadata :server_id, :uuid
-        metadata :ref_id,    EvilEvents::Types::Strict::Int
+        metadata :ref_id,    EvilEvents::Types::Strict::Integer
       end
     end.not_to raise_error
   end

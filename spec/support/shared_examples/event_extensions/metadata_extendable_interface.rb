@@ -40,7 +40,7 @@ shared_examples 'metadata extendable interface' do
         it 'delegates the attribute definition process to Metadata', :stub_event_system do
           # using Dry::Types
           common_attr = :amount
-          common_type = EvilEvents::Types::Strict::Int
+          common_type = EvilEvents::Types::Strict::Integer
           expect(event_class::Metadata).to receive(:attribute).with(common_attr, common_type)
           event_class.metadata common_attr, common_type
 

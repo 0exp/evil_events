@@ -27,8 +27,8 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_dependency 'dry-monads',       '~> 0.4.0'
-  spec.add_dependency 'dry-types',        '~> 0.12.2'
-  spec.add_dependency 'dry-struct',       '~> 0.3.1'
+  spec.add_dependency 'dry-types',        '~> 0.13.0'
+  spec.add_dependency 'dry-struct',       '~> 0.5.0'
   spec.add_dependency 'dry-configurable', '~> 0.7.0'
   spec.add_dependency 'dry-container',    '~> 0.6.0'
   spec.add_dependency 'concurrent-ruby',  '~> 1.0.5'

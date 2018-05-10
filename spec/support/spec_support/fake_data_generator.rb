@@ -25,27 +25,30 @@ module SpecSupport::FakeDataGenerator
     primitive:       nil,
     strict:          '::Strict',
     coercible:       '::Coercible',
-    form:            '::Form',
-    json:            '::Json',
+    form:            '::Params',
+    json:            '::JSON',
     maybe_strict:    '::Maybe::Strict',
     maybe_coercible: '::Maybe::Coercible'
   }.freeze
 
   EVENT_ATTR_TYPES = {
     primitive: %i[
-      Any Nil Symbol Class True False Bool Int Float Decimal String Date DateTime Time Array Hash
+      Any Nil Symbol Class True False Bool Integer
+      Float Decimal String Date DateTime Time Array Hash
     ].freeze,
 
     strict: %i[
-      Nil Symbol Class True False Bool Int Float Decimal String Date DateTime Time Array Hash
+      Nil Symbol Class True False Bool Integer
+      Float Decimal String Date DateTime Time Array Hash
     ].freeze,
 
     coercible: %i[
-      String Int Float Decimal Array Hash
+      String Integer Float Decimal Array Hash
     ].freeze,
 
     form: %i[
-      Nil Date DateTime Time True False Bool Int Float Decimal Array Hash
+      Nil Date DateTime Time True False Bool
+      Integer Float Decimal Array Hash
     ].freeze,
 
     json: %i[
@@ -53,11 +56,12 @@ module SpecSupport::FakeDataGenerator
     ].freeze,
 
     maybe_strict: %i[
-      Class String Symbol True False Int Float Decimal Date DateTime Time Array Hash
+      Class String Symbol True False Integer Float
+      Decimal Date DateTime Time Array Hash
     ].freeze,
 
     maybe_coercible: %i[
-      String Int Float Decimal Array Hash
+      String Integer Float Decimal Array Hash
     ].freeze
   }.freeze
 

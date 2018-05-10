@@ -64,7 +64,7 @@ describe EvilEvents::Core::System::TypeManager, :stub_event_system do
 
       # check coercible type behavior with options
       coercible_type = type_manager.resolve_type(type_name, default: default_value)
-      expect(coercible_type[nil_value]).to eq(default_value)
+      expect(coercible_type[]).to eq(default_value)
       expect(coercible_type[number_value]).to eq("coerced_#{number_value}")
     end
   end

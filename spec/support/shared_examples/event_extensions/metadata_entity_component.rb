@@ -47,7 +47,7 @@ shared_examples 'metadata entity component' do
           expect do
             metadata_class.class_eval do
               # Dry::Types API
-              metadata :foo, EvilEvents::Types::Int
+              metadata :foo, EvilEvents::Types::Integer
               metadata :bar, EvilEvents::Types::Strict::String.default(proc { 'KEK' })
               metadata :baz, EvilEvents::Types::Strict::Bool.default(false)
 
@@ -63,7 +63,7 @@ shared_examples 'metadata entity component' do
           metadata_class = Class.new(metadata_abstraction)
           expect do
             metadata_class.class_eval do # only Dry::Types
-              metadata :foo, EvilEvents::Types::Int
+              metadata :foo, EvilEvents::Types::Integer
               metadata :foo, EvilEvents::Types::Strict::String.default(proc { 'KEK' })
             end
           end.to raise_error(Dry::Struct::RepeatedAttributeError)
@@ -77,7 +77,7 @@ shared_examples 'metadata entity component' do
 
           expect do
             metadata_class.class_eval do # both TypeConverter and Dry::Types
-              metadata :baz, EvilEvents::Types::Int
+              metadata :baz, EvilEvents::Types::Integer
               metadata :baz, :string, default: -> { 'test' }
             end
           end.to raise_error(Dry::Struct::RepeatedAttributeError)
@@ -110,7 +110,7 @@ shared_examples 'metadata entity component' do
         metadata_class = Class.new(metadata_abstraction)
         expect do
           metadata_class.class_eval do
-            metadata :amount,   EvilEvents::Types::Int
+            metadata :amount,   EvilEvents::Types::Integer
             metadata :currency, EvilEvents::Types::Strict::String.default(proc { 'EUR' })
             metadata :done,     EvilEvents::Types::Strict::Bool.default(false)
           end
@@ -152,7 +152,7 @@ shared_examples 'metadata entity component' do
         end
 
         metadata_class = Class.new(metadata_abstraction) do
-          metadata :size, EvilEvents::Types::Strict::Int.default(proc { 123_456 })
+          metadata :size, EvilEvents::Types::Strict::Integer.default(proc { 123_456 })
           metadata :name, EvilEvents::Types::String
           metadata :role, EvilEvents::Types::Strict::Symbol.default(proc { :admin })
           metadata :path, :string

@@ -59,7 +59,7 @@ describe EvilEvents::Shared::TypeConverter::Converter do
           type = converter.transform_to_type(default: default_value)
 
           values.each do |value|
-            expect(type[nil]).to eq(default_value)
+            expect(type[]).to eq(default_value)
             expect(type[value]).to eq(converter.convert(value))
           end
 
@@ -68,7 +68,7 @@ describe EvilEvents::Shared::TypeConverter::Converter do
           type = converter.transform_to_type(default: -> { default_value })
 
           values.each do |value|
-            expect(type[nil]).to eq(default_value)
+            expect(type[]).to eq(default_value)
             expect(type[value]).to eq(converter.convert(value))
           end
         end

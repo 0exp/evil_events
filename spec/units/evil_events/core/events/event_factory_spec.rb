@@ -203,7 +203,7 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
           payload :default, EvilEvents::Types::String.default('test')
 
           metadata :test
-          metadata :default, EvilEvents::Types::Int.default(-1)
+          metadata :default, EvilEvents::Types::Integer.default(-1)
 
           adapter :memory_async
         end
