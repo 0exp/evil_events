@@ -33,7 +33,7 @@ class EvilEvents::Core::Events::Serializers::JSON::Engines
         payload:  json[:payload],
         metadata: json[:metadata]
       )
-    rescue ::Oj::Error, NoMethodError, TypeError
+    rescue ::Oj::Error, NoMethodError, TypeError, ArgumentError
       raise EvilEvents::SerializationEngineError
     end
   end

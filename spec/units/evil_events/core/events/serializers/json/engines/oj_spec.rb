@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe EvilEvents::Core::Events::Serializers::JSON::Engines::Native do
+describe EvilEvents::Core::Events::Serializers::JSON::Engines::Oj do
   let(:serialization_state) do
     build_serialization_state(
       id: gen_str,
@@ -17,7 +17,7 @@ describe EvilEvents::Core::Events::Serializers::JSON::Engines::Native do
 
   describe '#dump' do
     it 'returns json representation of event serialization state' do
-      native_json_dump = ::JSON.generate(
+      oj_dump = ::Oj.dump(
         id:       serialization_state.id,
         type:     serialization_state.type,
         payload:  serialization_state.payload,
@@ -27,7 +27,7 @@ describe EvilEvents::Core::Events::Serializers::JSON::Engines::Native do
       serialization = engine.dump(serialization_state)
 
       expect(serialization).to be_a(String)
-      expect(serialization).to match(native_json_dump)
+      expect(serialization).to match(oj_dump)
     end
 
     it 'each invocation returns new string object' do
