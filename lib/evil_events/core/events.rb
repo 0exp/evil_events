@@ -14,6 +14,7 @@ module EvilEvents::Core
     require_relative 'events/serializers/json'
     require_relative 'events/serializers/json/engines'
     require_relative 'events/serializers/json/engines/native'
+    require_relative 'events/serializers/json/engines/oj'
     require_relative 'events/serializers/json/config'
     require_relative 'events/serializers/json/factory'
     require_relative 'events/serializers/json/packer'
