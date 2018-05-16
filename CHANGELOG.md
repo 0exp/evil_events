@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Added
+- Added Oj serialization engine for JSON format;
+  - Setup: `EvilEvents::Config.configure { |c| c.serializers.json.engines = :oj }`;
+  - Requirements: `oj ~> 3.6.0`;
+
 ## [0.4.0] - 2018-05-02
 ### Added
 - **Routing Key Based Event Types**. A new way of subscribing to events and approach to event naming: routing-key-based event naming;
