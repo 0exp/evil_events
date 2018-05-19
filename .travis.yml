@@ -21,8 +21,6 @@ matrix:
     - rvm: ruby-head
       gemfile: gemfiles/with_native_extensions.gemfile
       env: TEST_NATIVE_EXTENSIONS=true
-    - rvm: ruby-head
-      gemfile: gemfiles/without_native_extensions.gemfile
     - rvm: 2.2.10
       gemfile: gemfiles/without_native_extensions.gemfile
     - rvm: 2.3.7
