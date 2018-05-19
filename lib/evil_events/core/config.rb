@@ -3,7 +3,7 @@
 module EvilEvents::Core
   # @api private
   # @since 0.1.0
-  class Config < EvilEvents::Shared::AnyConfig
+  class Config < Qonfig::DataSet
     class << self
       # @api private
       # @since 0.1.0
@@ -12,55 +12,51 @@ module EvilEvents::Core
       end
     end
 
-    # rubocop:disable Metrics/BlockLength
-    configure do
-      setting :serializers, reader: true do
-        setting :json do
-          setting :engine, :native
-        end
-
-        setting :hashing do
-          setting :engine, :native
-        end
-
-        setting :xml do
-          setting :engine, :ox
-        end
-
-        setting :msgpack do
-          setting :engine, :mpacker
-
-          setting :mpacker do
-            setting :configurator, ->(engine) {}
-          end
-        end
+    setting :serializers do
+      setting :json do
+        setting :engine, :native
       end
 
-      setting :adapter, reader: true do
-        setting :default, :memory_sync
+      setting :hashing do
+        setting :engine, :native
       end
 
-      setting :subscriber, reader: true do
-        setting :default_delegator, :call
+      setting :xml do
+        setting :engine, :ox
       end
 
-      setting :logger, EvilEvents::Shared::Logger.new(STDOUT), reader: true
+      setting :msgpack do
+        setting :engine, :mpacker
 
-      setting :notifier, reader: true do
-        setting :type, :sequential
-
-        setting :sequential, reader: true do
-          # NOTE: place future settings here
-        end
-
-        setting :worker, reader: true do
-          setting :min_threads, 0
-          setting :max_threads, 5
-          setting :max_queue, 1000
-          setting :fallback_policy, :main_thread
+        setting :mpacker do
+          setting :configurator, ->(engine) {}
         end
       end
     end
-    # rubocop:enable Metrics/BlockLength
+
+    setting :adapter do
+      setting :default, :memory_sync
+    end
+
+    setting :subscriber do
+      setting :default_delegator, :call
+    end
+
+    setting :logger, EvilEvents::Shared::Logger.new(STDOUT)
+
+    setting :notifier do
+      setting :type, :sequential
+
+      setting :sequential do
+        # NOTE: place future settings here
+      end
+
+      setting :worker do
+        setting :min_threads, 0
+        setting :max_threads, 5
+        setting :max_queue, 1000
+        setting :fallback_policy, :main_thread
+      end
+    end
   end
 end

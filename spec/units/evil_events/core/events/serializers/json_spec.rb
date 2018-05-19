@@ -25,12 +25,12 @@ describe EvilEvents::Core::Events::Serializers::JSON, :stub_event_system do
   end
 
   context 'native engine' do
-    before { system_config.serializers.json.engine = :native }
+    before { system_config.configure { |c| c.serializers.json.engine = :native } }
     it_behaves_like 'serialization behaviour'
   end
 
   context 'oj engine' do
-    before { system_config.serializers.json.engine = :oj }
+    before { system_config.configure { |c| c.serializers.json.engine = :oj } }
     it_behaves_like 'serialization behaviour'
   end
 end

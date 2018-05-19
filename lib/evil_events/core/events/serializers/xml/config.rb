@@ -5,7 +5,7 @@ class EvilEvents::Core::Events::Serializers
     # @api private
     # @since 0.4.0
     class Config < Base::GenericConfig
-      configure { setting :engine, reader: true }
+      setting :engine
     end
   end
 end

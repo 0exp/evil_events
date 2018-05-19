@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'dry-configurable'
 require 'dry-container'
 require 'dry-struct'
 require 'dry-types'
@@ -10,6 +9,7 @@ require 'symbiont'
 require 'securerandom'
 require 'forwardable'
 require 'msgpack'
+require 'qonfig'
 require 'logger'
 require 'json'
 require 'ox'

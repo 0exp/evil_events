@@ -27,7 +27,7 @@ describe 'Configuration', :stub_event_system do
     expect(EvilEvents::Config.options.subscriber.default_delegator).to eq(:process_event)
 
     # open configuration context
-    EvilEvents::Config.options.configure do |config|
+    EvilEvents::Config.configure do |config|
       # configure logger object
       config.logger = io_logger
 

@@ -27,23 +27,23 @@ describe EvilEvents::Core::Events::Serializers, :stub_event_system do
     end
 
     specify 'fails when serialization engine cant be recognized', :stub_event_system do
-      system_config.serializers.json.engine = gen_symb
+      system_config.configure { |c| c.serializers.json.engine = gen_symb }
 
       expect { serializers_container.resolve(:json) }.to raise_error(
         EvilEvents::UnrecognizedSerializationEngineError
       )
 
-      system_config.serializers.hashing.engine = gen_symb
+      system_config.configure { |c| c.serializers.hashing.engine = gen_symb }
       expect { serializers_container.resolve(:hash) }.to raise_error(
         EvilEvents::UnrecognizedSerializationEngineError
       )
 
-      system_config.serializers.msgpack.engine = gen_symb
+      system_config.configure { |c| c.serializers.msgpack.engine = gen_symb }
       expect { serializers_container.resolve(:msgpack) }.to raise_error(
         EvilEvents::UnrecognizedSerializationEngineError
       )
 
-      system_config.serializers.xml.engine = gen_symb
+      system_config.configure { |c| c.serializers.xml.engine = gen_symb }
       expect { serializers_container.resolve(:xml) }.to raise_error(
         EvilEvents::UnrecognizedSerializationEngineError
       )

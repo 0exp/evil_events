@@ -3,5 +3,5 @@
 class EvilEvents::Core::Events::Serializers::Base
   # @api private
   # @since 0.4.0
-  GenericConfig = Class.new(EvilEvents::Shared::AnyConfig)
+  GenericConfig = Class.new(Qonfig::DataSet)
 end
