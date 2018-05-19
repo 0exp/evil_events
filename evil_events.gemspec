@@ -34,10 +34,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'symbiont-ruby',    '~> 0.2.0'
   spec.add_dependency 'qonfig',           '~> 0.1.0'
 
-  spec.add_development_dependency 'ox',      '~> 2.9.2'
-  spec.add_development_dependency 'oj',      '~> 3.6.0'
-  spec.add_development_dependency 'msgpack', '~> 1.2.4'
-
   spec.add_development_dependency 'coveralls',      '~> 0.8.21'
   spec.add_development_dependency 'simplecov',      '~> 0.14.1'
   spec.add_development_dependency 'simplecov-json', '~> 0.2'
