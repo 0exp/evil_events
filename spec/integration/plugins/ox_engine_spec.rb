@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+return unless SpecSupport::Testing.test_native_extensions?
+
 EvilEvents::Plugins.load! :ox_engine
 
 describe 'Ox - XML serialization engine plugin', :stub_event_system do

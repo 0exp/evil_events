@@ -15,17 +15,11 @@ describe EvilEvents::Core::Events::Serializers, :stub_event_system do
     it 'has following registered serializers' do
       expect(serializers_container.resolve(:json)).to    be_a(described_class::JSON)
       expect(serializers_container.resolve(:hash)).to    be_a(described_class::Hash)
-      expect(serializers_container.resolve(:xml)).to     be_a(described_class::XML)
-
-      expect { serializers_container.resolve(:msgpack) }.to raise_error(
-        EvilEvents::UnrecognizedSerializationEngineError
-      ) # serializer is registered but has no engine
     end
 
     specify 'serializers should be memoized' do
-      expect(serializers_container.resolve(:json)).to    eq(serializers_container.resolve(:json))
-      expect(serializers_container.resolve(:hash)).to    eq(serializers_container.resolve(:hash))
-      expect(serializers_container.resolve(:xml)).to     eq(serializers_container.resolve(:xml))
+      expect(serializers_container.resolve(:json)).to eq(serializers_container.resolve(:json))
+      expect(serializers_container.resolve(:hash)).to eq(serializers_container.resolve(:hash))
     end
 
     specify 'fails when serialization engine cant be recognized', :stub_event_system do

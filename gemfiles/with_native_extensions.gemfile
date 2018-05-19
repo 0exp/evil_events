@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+
+gem 'ox',      '~> 2.9.2'
+gem 'oj',      '~> 3.6.0'
+gem 'msgpack', '~> 1.2.4'
+
+gemspec path: '..'

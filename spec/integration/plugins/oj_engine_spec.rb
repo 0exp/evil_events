@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
-EvilEvents::Plugins.load! :oj_engine
+return unless SpecSupport::Testing.test_native_extensions?
 
 describe 'Oj - JSON serialization engine plugin', :stub_event_system do
+  EvilEvents::Plugins.load! :oj_engine
+
   include_context 'event system'
 
   describe 'Oj engine usage' do

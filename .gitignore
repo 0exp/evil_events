@@ -9,3 +9,5 @@
 /tmp/
 .rspec_status
 .ruby-version
+gemfiles/*.lock
+*.gem

@@ -8,11 +8,9 @@ require 'concurrent/map'
 require 'symbiont'
 require 'securerandom'
 require 'forwardable'
-require 'msgpack'
 require 'qonfig'
 require 'logger'
 require 'json'
-require 'ox'
 
 # @api public
 # @since 0.1.0

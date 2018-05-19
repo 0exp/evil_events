@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+return unless SpecSupport::Testing.test_native_extensions?
+
 EvilEvents::Plugins.load! :mpacker_engine
 
 describe 'Mpacker - MessagePack serialization engine plugin', :stub_event_system do
