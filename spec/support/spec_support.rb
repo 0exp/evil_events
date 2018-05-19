@@ -8,4 +8,5 @@ module SpecSupport
   require_relative 'spec_support/event_manager_factories'
   require_relative 'spec_support/dispatching_adapter_factories'
   require_relative 'spec_support/notifier_factories'
+  require_relative 'spec_support/testing'
 end

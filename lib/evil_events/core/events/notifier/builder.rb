@@ -11,7 +11,7 @@ module EvilEvents::Core::Events::Notifier
       # @api private
       # @since 0.3.0
       def build_notifier!
-        case EvilEvents::Core::Bootstrap[:config].notifier.type
+        case EvilEvents::Core::Bootstrap[:config].settings.notifier.type
         when :sequential then build_sequential_notifier!
         when :worker     then build_worker_notifier!
         else
@@ -26,7 +26,7 @@ module EvilEvents::Core::Events::Notifier
       # @api private
       # @since 0.3.0
       def build_sequential_notifier!
-        options = EvilEvents::Core::Bootstrap[:config].notifier.sequential.to_h
+        options = EvilEvents::Core::Bootstrap[:config].to_h[:notifier][:sequential]
         Sequential.new(**options)
       end
 
@@ -35,7 +35,7 @@ module EvilEvents::Core::Events::Notifier
       # @api private
       # @since 0.3.0
       def build_worker_notifier!
-        options = EvilEvents::Core::Bootstrap[:config].notifier.worker.to_h
+        options = EvilEvents::Core::Bootstrap[:config].to_h[:notifier][:worker]
         Worker.new(**options)
       end
     end

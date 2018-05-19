@@ -12,14 +12,14 @@ module EvilEvents
       # @api public
       # @since 0.1.0
       def options
-        EvilEvents::Core::Bootstrap[:config]
+        EvilEvents::Core::Bootstrap[:config].settings
       end
 
       # @see EvilEvents::Core::Config
       # @api public
       # @since 0.1.0
       def configure
-        options.configure { |conf| yield(conf) if block_given? }
+        EvilEvents::Core::Bootstrap[:config].configure { |conf| yield(conf) if block_given? }
       end
 
       # @see EvilEvents::Config::Types

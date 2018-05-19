@@ -52,7 +52,7 @@ module EvilEvents::Core::Events::EventExtensions
       #
       # @since 0.4.0
       def adapter_name
-        @adapter_identifier || EvilEvents::Core::Bootstrap[:config].adapter.default
+        @adapter_identifier || EvilEvents::Core::Bootstrap[:config].settings.adapter.default
       end
 
       # @option id [NilClass,Object]

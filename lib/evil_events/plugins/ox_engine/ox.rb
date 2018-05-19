@@ -2,12 +2,12 @@
 
 class EvilEvents::Core::Events::Serializers::XML::Engines
   # @api private
-  # @since 0.4.0
+  # @since 0.5.0
   class Ox < EvilEvents::Core::Events::Serializers::Base::AbstractEngine
     # @param serialization_state [Base::EventSerializationState]
     # @return [String]
     #
-    # @since 0.4.0
+    # @since 0.5.0
     # @api private
     def dump(serialization_state)
       ::Ox.dump(serialization_state)
@@ -17,7 +17,7 @@ class EvilEvents::Core::Events::Serializers::XML::Engines
     # @raise [EvilEvents::SerializationEngineError]
     # @return [EventSerializationState]
     #
-    # @since 0.4.0
+    # @since 0.5.0
     # @api private
     def load(xml)
       ::Ox.parse_obj(xml)
@@ -26,6 +26,6 @@ class EvilEvents::Core::Events::Serializers::XML::Engines
     end
   end
 
-  # @since 0.4.0
+  # @since 0.5.0
   register(:ox, Ox)
 end

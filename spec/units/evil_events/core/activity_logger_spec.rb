@@ -32,7 +32,7 @@ describe EvilEvents::Core::ActivityLogger do
 
         expected_progname = "[EvilEvents:#{activity}]"
 
-        expect(system_config.logger).to(
+        expect(system_config.settings.logger).to(
           receive(:add).with(expected_level, message, expected_progname)
         )
 
@@ -51,7 +51,7 @@ describe EvilEvents::Core::ActivityLogger do
     end
 
     it 'uses globally pre-configured logger object inside itself' do
-      preconfigured_logger = system_config.logger
+      preconfigured_logger = system_config.settings.logger
 
       level    = preconfigured_logger.level
       activity = 'RSpec'

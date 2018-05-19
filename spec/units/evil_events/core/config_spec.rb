@@ -3,21 +3,22 @@
 describe EvilEvents::Core::Config do
   let(:config) { described_class.new }
 
+  # rubocop:disable Metrics/LineLength
   specify 'default options' do
-    expect(config.adapter.default).to                          eq(:memory_sync)
-    expect(config.subscriber.default_delegator).to             eq(:call)
-    expect(config.logger).to                                   be_a(EvilEvents::Shared::Logger)
-    expect(config.serializers.json.engine).to                  eq(:native)
-    expect(config.serializers.hashing.engine).to               eq(:native)
-    expect(config.serializers.xml.engine).to                   eq(:ox)
-    expect(config.serializers.msgpack.engine).to               eq(:mpacker)
-    expect(config.serializers.msgpack.mpacker.configurator).to be_a(Proc)
-    expect(config.notifier.type).to                            eq(:sequential)
-    expect(config.notifier.worker.min_threads).to              eq(0)
-    expect(config.notifier.worker.max_threads).to              eq(5)
-    expect(config.notifier.worker.max_queue).to                eq(1_000)
-    expect(config.notifier.worker.fallback_policy).to          eq(:main_thread)
+    expect(config.settings.adapter.default).to                          eq(:memory_sync)
+    expect(config.settings.subscriber.default_delegator).to             eq(:call)
+    expect(config.settings.logger).to                                   be_a(EvilEvents::Shared::Logger)
+    expect(config.settings.serializers.json.engine).to                  eq(:native)
+    expect(config.settings.serializers.hashing.engine).to               eq(:native)
+    expect(config.settings.serializers.xml.engine).to                   eq(:ox)
+    expect(config.settings.serializers.msgpack.engine).to               eq(nil)
+    expect(config.settings.notifier.type).to                            eq(:sequential)
+    expect(config.settings.notifier.worker.min_threads).to              eq(0)
+    expect(config.settings.notifier.worker.max_threads).to              eq(5)
+    expect(config.settings.notifier.worker.max_queue).to                eq(1_000)
+    expect(config.settings.notifier.worker.fallback_policy).to          eq(:main_thread)
   end
+  # rubocop:enable Metrics/LineLength
 
   specify 'all meaningful options are configurable' do
     2.times do
@@ -29,7 +30,6 @@ describe EvilEvents::Core::Config do
         serializers_hashing_engine:       gen_symb,
         serializers_xml_engine:           gen_symb,
         serializers_msgpack_engine:       gen_symb,
-        serializers_msgpack_configurator: gen_symb,
         notifier_type:                    gen_symb,
         notifier_worker_min_threads:      gen_symb,
         notifier_worker_max_threads:      gen_symb,
@@ -45,7 +45,6 @@ describe EvilEvents::Core::Config do
         c.serializers.hashing.engine               = opts[:serializers_hashing_engine]
         c.serializers.xml.engine                   = opts[:serializers_xml_engine]
         c.serializers.msgpack.engine               = opts[:serializers_msgpack_engine]
-        c.serializers.msgpack.mpacker.configurator = opts[:serializers_msgpack_configurator]
         c.notifier.type                            = opts[:notifier_type]
         c.notifier.worker.min_threads              = opts[:notifier_worker_min_threads]
         c.notifier.worker.max_threads              = opts[:notifier_worker_max_thre]
@@ -53,43 +52,40 @@ describe EvilEvents::Core::Config do
         c.notifier.worker.fallback_policy          = opts[:notifier_worker_fallback_policy]
       end
 
-      expect(config.adapter.default).to(
+      expect(config.settings.adapter.default).to(
         eq(opts[:adapter_default])
       )
-      expect(config.subscriber.default_delegator).to(
+      expect(config.settings.subscriber.default_delegator).to(
         eq(opts[:subscriber_default_delegator])
       )
-      expect(config.logger).to(
+      expect(config.settings.logger).to(
         eq(opts[:logger])
       )
-      expect(config.serializers.json.engine).to(
+      expect(config.settings.serializers.json.engine).to(
         eq(opts[:serializers_json_engine])
       )
-      expect(config.serializers.hashing.engine).to(
+      expect(config.settings.serializers.hashing.engine).to(
         eq(opts[:serializers_hashing_engine])
       )
-      expect(config.serializers.xml.engine).to(
+      expect(config.settings.serializers.xml.engine).to(
         eq(opts[:serializers_xml_engine])
       )
-      expect(config.serializers.msgpack.engine).to(
+      expect(config.settings.serializers.msgpack.engine).to(
         eq(opts[:serializers_msgpack_engine])
       )
-      expect(config.serializers.msgpack.mpacker.configurator).to(
-        eq(opts[:serializers_msgpack_configurator])
-      )
-      expect(config.notifier.type).to(
+      expect(config.settings.notifier.type).to(
         eq(opts[:notifier_type])
       )
-      expect(config.notifier.worker.min_threads).to(
+      expect(config.settings.notifier.worker.min_threads).to(
         eq(opts[:notifier_worker_min_threads])
       )
-      expect(config.notifier.worker.max_threads).to(
+      expect(config.settings.notifier.worker.max_threads).to(
         eq(opts[:notifier_worker_max_thre])
       )
-      expect(config.notifier.worker.max_queue).to(
+      expect(config.settings.notifier.worker.max_queue).to(
         eq(opts[:notifier_worker_max_queue])
       )
-      expect(config.notifier.worker.fallback_policy).to(
+      expect(config.settings.notifier.worker.fallback_policy).to(
         eq(opts[:notifier_worker_fallback_policy])
       )
     end
