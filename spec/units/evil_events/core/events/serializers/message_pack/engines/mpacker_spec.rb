@@ -11,7 +11,10 @@ describe EvilEvents::Core::Events::Serializers::MessagePack::Engines::Mpacker do
   end
 
   let(:engine) do
-    config = EvilEvents::Core::Events::Serializers::MessagePack::Config.new
+    config = EvilEvents::Core::Events::Serializers::MessagePack::Config.new.tap do |conf|
+      conf.settings.options = { mpacker: { configurator: ->(engine) {} } }
+    end
+
     described_class.new(config)
   end
 

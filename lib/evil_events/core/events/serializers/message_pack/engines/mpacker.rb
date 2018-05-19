@@ -10,7 +10,7 @@ class EvilEvents::Core::Events::Serializers::MessagePack::Engines
     # @api private
     # @since 0.4.0
     def initialize(config)
-      configurator = config.settings.mpacker.configurator
+      configurator = config.settings.options[:mpacker][:configurator]
       raise EvilEvents::SerializationEngineError unless configurator.is_a?(Proc)
       @factory = ::MessagePack::Factory.new.tap { |factory| configurator.call(factory) }
     end

@@ -10,12 +10,8 @@ class EvilEvents::Core::Events::Serializers
       # @api private
       # @since 0.4.0
       def build_config
-        settings = EvilEvents::Core::Bootstrap[:config].settings.serializers.msgpack
-
-        Config.new.tap do |config|
-          config.settings.engine = settings.engine
-          config.settings.mpacker.configurator = settings.mpacker.configurator
-        end
+        options = EvilEvents::Core::Bootstrap[:config].settings.serializers.msgpack
+        Config.new.tap { |conf| conf.settings.options = options }
       end
 
       # @param config [MessagePack::Config]
@@ -25,7 +21,7 @@ class EvilEvents::Core::Events::Serializers
       # @api private
       # @since 0.4.0
       def build_engine(config)
-        Engines.resolve(config.settings.engine).new(config)
+        Engines.resolve(config.settings.options[:engine]).new(config)
       rescue Dry::Container::Error
         raise EvilEvents::UnrecognizedSerializationEngineError
       end
