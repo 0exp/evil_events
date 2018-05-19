@@ -13,7 +13,6 @@ require 'qonfig'
 require 'logger'
 require 'json'
 require 'ox'
-require 'oj'
 
 # @api public
 # @since 0.1.0

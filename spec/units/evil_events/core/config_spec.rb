@@ -11,8 +11,7 @@ describe EvilEvents::Core::Config do
     expect(config.settings.serializers.json.engine).to                  eq(:native)
     expect(config.settings.serializers.hashing.engine).to               eq(:native)
     expect(config.settings.serializers.xml.engine).to                   eq(:ox)
-    expect(config.settings.serializers.msgpack.engine).to               eq(:mpacker)
-    expect(config.settings.serializers.msgpack.mpacker.configurator).to be_a(Proc)
+    expect(config.settings.serializers.msgpack.engine).to               eq(nil)
     expect(config.settings.notifier.type).to                            eq(:sequential)
     expect(config.settings.notifier.worker.min_threads).to              eq(0)
     expect(config.settings.notifier.worker.max_threads).to              eq(5)
@@ -31,7 +30,6 @@ describe EvilEvents::Core::Config do
         serializers_hashing_engine:       gen_symb,
         serializers_xml_engine:           gen_symb,
         serializers_msgpack_engine:       gen_symb,
-        serializers_msgpack_configurator: gen_symb,
         notifier_type:                    gen_symb,
         notifier_worker_min_threads:      gen_symb,
         notifier_worker_max_threads:      gen_symb,
@@ -47,7 +45,6 @@ describe EvilEvents::Core::Config do
         c.serializers.hashing.engine               = opts[:serializers_hashing_engine]
         c.serializers.xml.engine                   = opts[:serializers_xml_engine]
         c.serializers.msgpack.engine               = opts[:serializers_msgpack_engine]
-        c.serializers.msgpack.mpacker.configurator = opts[:serializers_msgpack_configurator]
         c.notifier.type                            = opts[:notifier_type]
         c.notifier.worker.min_threads              = opts[:notifier_worker_min_threads]
         c.notifier.worker.max_threads              = opts[:notifier_worker_max_thre]
@@ -75,9 +72,6 @@ describe EvilEvents::Core::Config do
       )
       expect(config.settings.serializers.msgpack.engine).to(
         eq(opts[:serializers_msgpack_engine])
-      )
-      expect(config.settings.serializers.msgpack.mpacker.configurator).to(
-        eq(opts[:serializers_msgpack_configurator])
       )
       expect(config.settings.notifier.type).to(
         eq(opts[:notifier_type])

@@ -46,10 +46,7 @@ module EvilEvents::Core::Events
     #
     # @since 0.1.0
     def default_resolver
-      delegation = lambda do
-        EvilEvents::Core::Bootstrap[:config].settings.subscriber.default_delegator
-      end
-
+      delegation = -> { EvilEvents::Core::Bootstrap[:config].settings.subscriber.default_delegator }
       EvilEvents::Shared::DelegatorResolver.new(delegation)
     end
   end

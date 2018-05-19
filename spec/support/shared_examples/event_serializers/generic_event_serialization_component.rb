@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-shared_examples 'event serializer component' do
+shared_examples 'generic event serialization component' do
   describe 'serializer component behaviour', :stub_event_system do
     let(:serialization_error)   { EvilEvents::SerializationError }
     let(:deserialization_error) { EvilEvents::DeserializationError }
