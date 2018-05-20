@@ -25,11 +25,11 @@ module EvilEvents::Core::Events::Notifier
 
           log_success(event, subscriber)
         rescue StandardError => error
+          log_failure(event, subscriber)
+
           event.__call_on_error_hooks__(error)
 
           errors_stack << error
-
-          log_failure(event, subscriber)
         end
       end
 

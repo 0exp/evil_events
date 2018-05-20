@@ -125,3 +125,6 @@ RSpec/AnyInstance:
 
 RSpec/ExpectChange:
   Enabled: false
+
+Bundler/OrderedGems:
+  Enabled: false

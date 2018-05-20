@@ -60,8 +60,8 @@ class EvilEvents::Core::Events::Notifier::Worker::Executor
     end.on_success do
       log_success(job.event, job.subscriber)
     end.on_error do |error|
-      job.event.__call_on_error_hooks__(error)
       log_failure(job.event, job.subscriber)
+      job.event.__call_on_error_hooks__(error)
     end.execute
   rescue Concurrent::RejectedExecutionError
     raise EvilEvents::WorkerDisabledOrBusyError
