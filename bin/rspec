@@ -22,11 +22,11 @@ module EvilEventsSpecRunner
       OptionParser.new do |opts|
         opts.banner = 'Usage: bin/rspec [options]'
 
-        opts.on('-n', '--without-native-extensions', 'Test without native extensions') do
+        opts.on('-w', '--without-native-extensions', 'Test without native extensions') do
           run_without_native_extensions!
         end
 
-        opts.on('-w', '--with-native-extensions', 'Test with native extensions') do
+        opts.on('-n', '--with-native-extensions', 'Test with native extensions') do
           run_with_native_extensions!
         end
 
