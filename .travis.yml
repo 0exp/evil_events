@@ -1,12 +1,35 @@
 language: ruby
-rvm:
-- 2.2.10
-- 2.3.7
-- 2.4.4
-- 2.5.1
-- ruby-head
-
 sudo: false
 before_install: gem install bundler
 cache: bundler
 script: bundle exec rspec
+matrix:
+  fast_finish: true
+  include:
+    - rvm: 2.2.10
+      gemfile: gemfiles/with_native_extensions.gemfile
+      env: TEST_NATIVE_EXTENSIONS=true
+    - rvm: 2.3.7
+      gemfile: gemfiles/with_native_extensions.gemfile
+      env: TEST_NATIVE_EXTENSIONS=true
+    - rvm: 2.4.4
+      gemfile: gemfiles/with_native_extensions.gemfile
+      env: TEST_NATIVE_EXTENSIONS=true
+    - rvm: 2.5.1
+      gemfile: gemfiles/with_native_extensions.gemfile
+      env: TEST_NATIVE_EXTENSIONS=true
+    - rvm: ruby-head
+      gemfile: gemfiles/with_native_extensions.gemfile
+      env: TEST_NATIVE_EXTENSIONS=true
+    - rvm: 2.2.10
+      gemfile: gemfiles/without_native_extensions.gemfile
+    - rvm: 2.3.7
+      gemfile: gemfiles/without_native_extensions.gemfile
+    - rvm: 2.4.4
+      gemfile: gemfiles/without_native_extensions.gemfile
+    - rvm: 2.5.1
+      gemfile: gemfiles/without_native_extensions.gemfile
+    - rvm: ruby-head
+      gemfile: gemfiles/without_native_extensions.gemfile
+    - rvm: jruby-head
+      gemfile: gemfiles/without_native_extensions.gemfile

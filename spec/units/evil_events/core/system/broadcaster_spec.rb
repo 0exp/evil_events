@@ -205,7 +205,7 @@ describe EvilEvents::Core::System::Broadcaster, :stub_event_system, :null_logger
           end
 
           build_event_class('stored') do
-            payload :kek, EvilEvents::Types::Strict::Int.default(1)
+            payload :kek, EvilEvents::Types::Strict::Integer.default(1)
             payload :pek, EvilEvents::Types::Strict::String
             adapter :sidekiq
           end

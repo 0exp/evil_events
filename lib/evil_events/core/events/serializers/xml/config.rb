@@ -4,8 +4,6 @@ class EvilEvents::Core::Events::Serializers
   class XML
     # @api private
     # @since 0.4.0
-    class Config < Base::GenericConfig
-      configure { setting :engine, reader: true }
-    end
+    Config = Class.new(Base::GenericConfig)
   end
 end

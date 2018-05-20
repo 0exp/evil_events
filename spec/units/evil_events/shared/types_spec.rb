@@ -5,7 +5,7 @@ describe EvilEvents::Shared::Types do
     expect(described_class.constants).to contain_exactly(
       # dry-types constants
       :String,
-      :Int,
+      :Integer,
       :Float,
       :Decimal,
       :Array,
@@ -24,9 +24,10 @@ describe EvilEvents::Shared::Types do
       :Bool,
       :Any,
       :Object,
-      :Form,
-      :Json,
-      :Maybe
+      :Params,
+      :JSON,
+      :Maybe,
+      :Range
     )
   end
 end

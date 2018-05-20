@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ModuleLength
 module SpecSupport::FakeDataGenerator
   module_function
 
@@ -22,42 +23,57 @@ module SpecSupport::FakeDataGenerator
   ].freeze
 
   EVENT_ATTR_CONSTRAINTS = {
-    primitive:       nil,
-    strict:          '::Strict',
-    coercible:       '::Coercible',
-    form:            '::Form',
-    json:            '::Json',
-    maybe_strict:    '::Maybe::Strict',
-    maybe_coercible: '::Maybe::Coercible'
+    primitive:          nil,
+    strict:             '::Strict',
+    coercible:          '::Coercible',
+    params:             '::Params',
+    json:               '::JSON',
+    maybe_strict:       '::Maybe::Strict',
+    maybe_coercible:    '::Maybe::Coercible',
+    optional_strict:    '::Optional::Strict',
+    optional_coercible: '::Optional::Coercible'
   }.freeze
 
   EVENT_ATTR_TYPES = {
     primitive: %i[
-      Any Nil Symbol Class True False Bool Int Float Decimal String Date DateTime Time Array Hash
+      Decimal Nil True False Bool Time DateTime Integer
+      Float String Array Hash Range Object Symbol Class Date Any
     ].freeze,
 
     strict: %i[
-      Nil Symbol Class True False Bool Int Float Decimal String Date DateTime Time Array Hash
+      Decimal Nil Symbol Class False True Bool Time
+      Date Integer Float String Array Hash Range DateTime
     ].freeze,
 
     coercible: %i[
-      String Int Float Decimal Array Hash
+      Decimal Integer Float String Array Hash
     ].freeze,
 
-    form: %i[
-      Nil Date DateTime Time True False Bool Int Float Decimal Array Hash
+    params: %i[
+      Decimal Nil DateTime True False Bool
+      Time Date Integer Float Array Hash
     ].freeze,
 
     json: %i[
-      Nil Date DateTime Time Decimal Array Hash
+      Decimal Nil DateTime Time Date Array Hash
     ].freeze,
 
     maybe_strict: %i[
-      Class String Symbol True False Int Float Decimal Date DateTime Time Array Hash
+      Decimal Symbol Class False True Time Date
+      Integer Float String Array Hash Range DateTime
     ].freeze,
 
     maybe_coercible: %i[
-      String Int Float Decimal Array Hash
+      Decimal Integer Float String Array Hash
+    ].freeze,
+
+    optional_strict: %i[
+      Decimal Symbol Class False True Time Date Integer
+      Float String Array Hash Range DateTime
+    ].freeze,
+
+    optional_coercible: %i[
+      Decimal Integer Float String Array Hash
     ].freeze
   }.freeze
 
@@ -113,3 +129,4 @@ module SpecSupport::FakeDataGenerator
     Object.const_get(type_const)
   end
 end
+# rubocop:enable Metrics/ModuleLength

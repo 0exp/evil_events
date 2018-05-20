@@ -36,7 +36,9 @@ module EvilEvents::Core::Events::EventExtensions
       # @since 0.1.0
       def default_delegator(delegator = nil)
         @default_delegator = delegator if delegator
-        @default_delegator || EvilEvents::Core::Bootstrap[:config].subscriber.default_delegator
+        @default_delegator || begin
+          EvilEvents::Core::Bootstrap[:config].settings.subscriber.default_delegator
+        end
       end
 
       # @return [Array]
