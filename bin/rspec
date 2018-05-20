@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'pathname'
+require 'optparse'
+
+module EvilEventsSpecRunner
+  GEMFILES = {
+    with_native: File.expand_path(
+      File.join('..', '..', 'gemfiles', 'with_native_extensions.gemfile'),
+      Pathname.new(__FILE__).realpath
+    ),
+
+    without_naitve: File.expand_path(
+      File.join('..', '..', 'gemfiles', 'without_native_extensions.gemfile'),
+      Pathname.new(__FILE__).realpath
+    )
+  }.freeze
+
+  class << self
+    def run!
+      OptionParser.new do |opts|
+        opts.banner = 'Usage: bin/rspec [options]'
+
+        opts.on('-n', '--without-native-extensions', 'Test without native extensions') do
+          run_without_native_extensions!
+        end
+
+        opts.on('-w', '--with-native-extensions', 'Test with native extensions') do
+          run_with_native_extensions!
+        end
+
+        opts.on('-h', '--help', 'Show this message') do
+          puts opts
+        end
+      end.parse!
+    end
+
+    private
+
+    def run_with_native_extensions!
+      ENV['TEST_NATIVE_EXTENSIONS'] = 'true'
+      ENV['BUNDLE_GEMFILE'] = GEMFILES[:with_native]
+
+      run_tests!
+    end
+
+    def run_without_native_extensions!
+      ENV['BUNDLE_GEMFILE'] = GEMFILES[:without_native]
+
+      run_tests!
+    end
+
+    def run_tests!
+      require 'rubygems'
+      require 'bundler/setup'
+      load Gem.bin_path('rspec-core', 'rspec')
+    end
+  end
+end
+
+EvilEventsSpecRunner.run!
