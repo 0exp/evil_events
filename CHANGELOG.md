@@ -1,9 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.5.0] - 2018-05-20
 ### Added
 - Added Oj serialization engine for JSON format;
+- JRuby is BACK! 💣
+
+### Changed
+- No more `dry-configurable` dependency => gem `qonfig` is used instead;
 - Moved to plugins:
   - Ox serialization engine:
     - requires `gem ox ~> 2.9.2`;
@@ -20,8 +24,6 @@ All notable changes to this project will be documented in this file.
     - configuration:
       - `EvilEvents::Plugins.load! :mpacker_engine`
       - `EvilEvents::Config.configure { |c| c.serializers.msgpack.engine = :mpacker }`
-  - No more `dry-configurable` dependency => gem `qonfig` is used instead;
-  - JRuby is BACK! 💣
 
 ## [0.4.0] - 2018-05-02
 ### Added
