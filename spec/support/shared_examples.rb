@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'shared_examples/event_serializer_component'
+require_relative 'shared_examples/event_serializers/generic_event_serialization_component'
+require_relative 'shared_examples/event_serializers/json_event_serialization_component'
+require_relative 'shared_examples/event_serializers/hash_event_serialization_component'
+require_relative 'shared_examples/event_serializers/xml_event_serialization_component'
+require_relative 'shared_examples/event_serializers/messagepack_event_serialization_component'
 require_relative 'shared_examples/event_subscriber_component'
 require_relative 'shared_examples/dependency_container_interface'
 require_relative 'shared_examples/event_dispatching_interface'

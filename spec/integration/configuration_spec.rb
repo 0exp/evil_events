@@ -27,7 +27,7 @@ describe 'Configuration', :stub_event_system do
     expect(EvilEvents::Config.options.subscriber.default_delegator).to eq(:process_event)
 
     # open configuration context
-    EvilEvents::Config.options.configure do |config|
+    EvilEvents::Config.configure do |config|
       # configure logger object
       config.logger = io_logger
 
@@ -99,7 +99,7 @@ describe 'Configuration', :stub_event_system do
 
         metadata :timestamp, :time, default: Time.now
         metadata :server_id, :uuid
-        metadata :ref_id,    EvilEvents::Types::Strict::Int
+        metadata :ref_id,    EvilEvents::Types::Strict::Integer
       end
     end.to raise_error(Dry::Container::Error)
 
@@ -129,7 +129,7 @@ describe 'Configuration', :stub_event_system do
 
         metadata :timestamp, :time, default: Time.now
         metadata :server_id, :uuid
-        metadata :ref_id,    EvilEvents::Types::Strict::Int
+        metadata :ref_id,    EvilEvents::Types::Strict::Integer
       end
     end.not_to raise_error
   end

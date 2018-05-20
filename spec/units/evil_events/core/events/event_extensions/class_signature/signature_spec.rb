@@ -29,11 +29,11 @@ describe EvilEvents::Core::Events::EventExtensions::ClassSignature::Signature do
           )
 
           # check payload with two attributes
-          event_class.public_send(structure_type, :user_id, EvilEvents::Types::Strict::Int)
+          event_class.public_send(structure_type, :user_id, EvilEvents::Types::Strict::Integer)
           signature = described_class.new(event_class)
 
           expect(signature.public_send(stamp_method)).to match(
-            user_id: EvilEvents::Types::Strict::Int,
+            user_id: EvilEvents::Types::Strict::Integer,
             uuid:    EvilEvents::Types::String
           )
 
@@ -50,7 +50,7 @@ describe EvilEvents::Core::Events::EventExtensions::ClassSignature::Signature do
           expect(signature.public_send(stamp_method)).to match(
             boolean: be_a(Dry::Types::Definition),
             string:  be_a(Dry::Types::Definition),
-            user_id: EvilEvents::Types::Strict::Int,
+            user_id: EvilEvents::Types::Strict::Integer,
             uuid:    EvilEvents::Types::String
           )
         end
@@ -162,7 +162,7 @@ describe EvilEvents::Core::Events::EventExtensions::ClassSignature::Signature do
           payload :b, EvilEvents::Types::String
 
           metadata :a
-          metadata :b, EvilEvents::Types::Int
+          metadata :b, EvilEvents::Types::Integer
 
           adapter :memory_async
         end

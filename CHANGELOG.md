@@ -1,6 +1,28 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Added
+- Added Oj serialization engine for JSON format;
+- Moved to plugins:
+  - Ox serialization engine:
+    - requires `gem ox ~> 2.9.2`;
+    - configuration:
+      - `EvilEvents::Plugins.load! :ox_engine`
+      - `EvilEvents::Config.configure { |c| c.serializers.xml.engine = :ox }`
+  - Oj serialization engine:
+    - requires `gem oj ~> 3.6.0`
+    - configuration:
+      - `EvilEvents::Plugins.load! :oj_engine`
+      - `EvilEvents::Config.configure { |c| c.serializers.json.engine = :oj }`
+  - Mpacker serialization engine (uses gem `msgpack` with native dependencies)
+    - requires `gem msgpack ~> 1.2.4`
+    - configuration:
+      - `EvilEvents::Plugins.load! :mpacker_engine`
+      - `EvilEvents::Config.configure { |c| c.serializers.msgpack.engine = :mpacker }`
+  - No more `dry-configurable` dependency => gem `qonfig` is used instead;
+  - JRuby is BACK! 💣
+
 ## [0.4.0] - 2018-05-02
 ### Added
 - **Routing Key Based Event Types**. A new way of subscribing to events and approach to event naming: routing-key-based event naming;

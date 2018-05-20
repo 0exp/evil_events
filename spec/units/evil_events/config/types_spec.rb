@@ -86,7 +86,7 @@ describe EvilEvents::Config::Types, :stub_event_system do
 
       # check coercing logic + check default behaviour (defined => returns the predefined value)
       expect(another_type[stringified_number]).to eq(simple_number)
-      expect(another_type[nil]).to eq(another_default_value)
+      expect(another_type[]).to eq(another_default_value)
     end
 
     it 'fails when a coercer with required type name isnt registered' do

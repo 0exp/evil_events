@@ -80,7 +80,7 @@ describe 'Event Creation', :stub_event_system do
           on_error    ->(event, error) {}
 
           # payload keys
-          payload :user_id,  EvilEvents::Types::Strict::Int
+          payload :user_id,  EvilEvents::Types::Strict::Integer
           payload :utm_link, EvilEvents::Types::Strict::String
           payload :comment,  :comment
 
@@ -129,7 +129,7 @@ describe 'Event Creation', :stub_event_system do
           on_error    ->(event, error) {}
 
           # payload keys
-          payload :user_id,  EvilEvents::Types::Strict::Int
+          payload :user_id,  EvilEvents::Types::Strict::Integer
           payload :utm_link, EvilEvents::Types::Strict::String
 
           # metadata keys
@@ -149,7 +149,7 @@ describe 'Event Creation', :stub_event_system do
         # event type alias ('level_up')
         class LevelUp < EvilEvents::Event['level_up']
           # payload keys
-          payload :player_id, EvilEvents::Types::Strict::Int
+          payload :player_id, EvilEvents::Types::Strict::Integer
           payload :score,     EvilEvents::Types::Strict::Float
 
           # metadata keys
@@ -238,7 +238,7 @@ describe 'Event Creation', :stub_event_system do
         payload :reason,        EvilEvents::Types::Strict::String.default('violation')
         payload :tech_comment,  :comment, default: nil
 
-        metadata :timestamp, EvilEvents::Types::Strict::Int.default(0)
+        metadata :timestamp, EvilEvents::Types::Strict::Integer.default(0)
         metadata :server_id, :uuid, default: 'undefined'
       end
 
@@ -309,7 +309,7 @@ describe 'Event Creation', :stub_event_system do
     deposit_approved = EvilEvents::Event.define('deposit_approved') do
       default_delegator :process_event
 
-      payload :deposit_id, EvilEvents::Types::Strict::Int
+      payload :deposit_id, EvilEvents::Types::Strict::Integer
       payload :comment, :comment
 
       metadata :timestamp
@@ -322,7 +322,7 @@ describe 'Event Creation', :stub_event_system do
     DepositRejected = EvilEvents::Event.define('deposit_rejected') do
       default_delegator :process_event
 
-      payload :deposit_id, EvilEvents::Types::Strict::Int
+      payload :deposit_id, EvilEvents::Types::Strict::Integer
       payload :comment, :comment
 
       metadata :timestamp
@@ -335,7 +335,7 @@ describe 'Event Creation', :stub_event_system do
     sprint_passed = Class.new(EvilEvents::Event['sprint_passed']) do
       default_delegator :manage_event
 
-      payload :sprint_id, EvilEvents::Types::Int
+      payload :sprint_id, EvilEvents::Types::Integer
 
       metadata :points, EvilEvents::Types::Float
 
@@ -346,7 +346,7 @@ describe 'Event Creation', :stub_event_system do
     class SprintFailed < EvilEvents::Event['sprint_failed']
       default_delegator :manage_event
 
-      payload :sprint_id, EvilEvents::Types::Int
+      payload :sprint_id, EvilEvents::Types::Integer
 
       metadata :points, EvilEvents::Types::Float
 
@@ -365,7 +365,7 @@ describe 'Event Creation', :stub_event_system do
       expect(signature.adapter_stamp).to    eq(memory_sync: EvilEvents::Config::Adapters[:memory_sync])
 
       expect(signature.payload_stamp).to match(
-        deposit_id: EvilEvents::Types::Strict::Int,
+        deposit_id: EvilEvents::Types::Strict::Integer,
         comment:    be_a(Dry::Types::Definition)
       )
 
@@ -382,7 +382,7 @@ describe 'Event Creation', :stub_event_system do
       expect(signature.adapter_stamp).to    eq(memory_sync: EvilEvents::Config::Adapters[:memory_sync])
 
       expect(signature.payload_stamp).to match(
-        deposit_id: EvilEvents::Types::Strict::Int,
+        deposit_id: EvilEvents::Types::Strict::Integer,
         comment:    be_a(Dry::Types::Definition)
       )
 
@@ -397,7 +397,7 @@ describe 'Event Creation', :stub_event_system do
       expect(signature.type_alias_stamp).to eq('sprint_passed')
       expect(signature.delegator_stamp).to  eq(:manage_event)
       expect(signature.adapter_stamp).to    eq(memory_async: EvilEvents::Config::Adapters[:memory_async])
-      expect(signature.payload_stamp).to    match(sprint_id: EvilEvents::Types::Int)
+      expect(signature.payload_stamp).to    match(sprint_id: EvilEvents::Types::Integer)
       expect(signature.metadata_stamp).to   match(points: EvilEvents::Types::Float)
     end
 
@@ -406,7 +406,7 @@ describe 'Event Creation', :stub_event_system do
       expect(signature.type_alias_stamp).to eq('sprint_failed')
       expect(signature.delegator_stamp).to  eq(:manage_event)
       expect(signature.adapter_stamp).to    eq(memory_async: EvilEvents::Config::Adapters[:memory_async])
-      expect(signature.payload_stamp).to    match(sprint_id: EvilEvents::Types::Int)
+      expect(signature.payload_stamp).to    match(sprint_id: EvilEvents::Types::Integer)
       expect(signature.metadata_stamp).to   match(points: EvilEvents::Types::Float)
     end
 

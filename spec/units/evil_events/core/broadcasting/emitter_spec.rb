@@ -30,14 +30,14 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
           # event class sample (with redis adapter)
           redis_event_class = build_event_class('excalibur_found') do
             payload :geo_location, EvilEvents::Types::Strict::String
-            metadata :uuid, EvilEvents::Types::Strict::Int
+            metadata :uuid, EvilEvents::Types::Strict::Integer
             adapter :redis
           end
 
           # event class sample (whti rabbit adapter)
           rabbit_event_class = build_event_class('racing_finished') do
             payload :reason, EvilEvents::Types::Strict::String
-            metadata :uuid, EvilEvents::Types::Strict::Int
+            metadata :uuid, EvilEvents::Types::Strict::Integer
             adapter :rabbit
           end
 
@@ -45,7 +45,7 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
           sidekiq_event_class = build_event_class('not_enough_money') do
             payload :money_limit, EvilEvents::Types::Strict::Float.default(0.0)
             payload :required_money, EvilEvents::Types::Strict::Float
-            metadata :uuid, EvilEvents::Types::Strict::Int
+            metadata :uuid, EvilEvents::Types::Strict::Integer
             adapter :sidekiq
           end
 
@@ -168,7 +168,7 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
         specify 'activity: event adapter name :: message: event type / event pyload' do
           build_event_class('excalibur_found') do
             payload :geo_location, EvilEvents::Types::Strict::String
-            metadata :id, EvilEvents::Types::Strict::Int.default(-1)
+            metadata :id, EvilEvents::Types::Strict::Integer.default(-1)
             adapter :redis
           end
 
@@ -182,7 +182,7 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
           build_event_class('not_enough_money') do
             payload :money_limit, EvilEvents::Types::Strict::Float.default(123_777.70)
             payload :required_money, EvilEvents::Types::Strict::Float
-            metadata :user_id, EvilEvents::Types::Strict::Int
+            metadata :user_id, EvilEvents::Types::Strict::Integer
             adapter :sidekiq
           end
 
@@ -266,8 +266,8 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
             end
 
             finished_event_class = build_event_class('finished') do
-              payload :project_id, EvilEvents::Types::Strict::Int
-              payload :assignee_id, EvilEvents::Types::Strict::Int.default(-1)
+              payload :project_id, EvilEvents::Types::Strict::Integer
+              payload :assignee_id, EvilEvents::Types::Strict::Integer.default(-1)
               metadata :uuid, EvilEvents::Types::Strict::String.default('undefined')
               adapter :rabbit
             end
@@ -285,10 +285,10 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
         specify 'event object recognition works correct' do
           # register event
           build_event_class('tests_finished') do
-            payload :failed, EvilEvents::Types::Strict::Int
-            payload :passed, EvilEvents::Types::Strict::Int
+            payload :failed, EvilEvents::Types::Strict::Integer
+            payload :passed, EvilEvents::Types::Strict::Integer
             payload :rank, EvilEvents::Types::Strict::String.default('undefined')
-            metadata :timestamp, EvilEvents::Types::Strict::Int
+            metadata :timestamp, EvilEvents::Types::Strict::Integer
             metadata :uuid, EvilEvents::Types::Strict::String
             adapter :sidekiq
           end
@@ -382,7 +382,7 @@ describe EvilEvents::Core::Broadcasting::Emitter, :stub_event_system do
 
       it 'fails when event object cant be recognized (or event attributes are incorrect)' do
         build_event_class('simple_event') do
-          payload :id, EvilEvents::Types::Strict::Int.default(123)
+          payload :id, EvilEvents::Types::Strict::Integer.default(123)
           payload :test, EvilEvents::Types::Strict::String
           metadata :uuid, EvilEvents::Types::Strict::String.default('test')
         end

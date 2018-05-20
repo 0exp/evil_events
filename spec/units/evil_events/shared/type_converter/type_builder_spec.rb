@@ -111,7 +111,7 @@ describe EvilEvents::Shared::TypeConverter::TypeBuilder do
         # correct default value
         builder.append(:default, default_value)
         type = builder.result
-        expect(type[nil]).to eq(default_value)
+        expect(type[]).to eq(default_value)
         expect(type[common_value]).to eq(common_value.to_s)
       end
     end

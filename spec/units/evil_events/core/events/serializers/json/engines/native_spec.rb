@@ -31,7 +31,7 @@ describe EvilEvents::Core::Events::Serializers::JSON::Engines::Native do
     end
 
     it 'each invocation returns new string object' do
-      first_deserialization = engine.dump(serialization_state)
+      first_deserialization  = engine.dump(serialization_state)
       second_deserialization = engine.dump(serialization_state)
 
       expect(first_deserialization.object_id).not_to eq(second_deserialization.object_id)

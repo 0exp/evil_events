@@ -21,7 +21,7 @@ module EvilEvents::Core
       #
       # @since 0.1.0
       def logger
-        EvilEvents::Core::Bootstrap[:config].logger
+        EvilEvents::Core::Bootstrap[:config].settings.logger
       end
     end
   end
