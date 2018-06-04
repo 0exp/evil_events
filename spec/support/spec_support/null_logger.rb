@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable Style/MethodMissing, Lint/UnusedMethodArgument
+# rubocop:disable Style/MethodMissingSuper, Lint/UnusedMethodArgument
 module SpecSupport::NullLogger
   class << self
     def method_missing(method_name, *arguments, &block)
@@ -12,4 +12,4 @@ module SpecSupport::NullLogger
     end
   end
 end
-# rubocop:enable Style/MethodMissing, Lint/UnusedMethodArgument
+# rubocop:enable Style/MethodMissingSuper, Lint/UnusedMethodArgument
