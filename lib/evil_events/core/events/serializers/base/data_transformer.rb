@@ -48,8 +48,8 @@ class EvilEvents::Core::Events::Serializers::Base
 
       EvilEvents::Core::Events::EventFactory.restore_instance(
         event_class,
-        id: serialization_state.id,
-        payload: serialization_state.payload,
+        id:       serialization_state.id,
+        payload:  serialization_state.payload,
         metadata: serialization_state.metadata
       )
     end

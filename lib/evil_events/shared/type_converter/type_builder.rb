@@ -21,7 +21,7 @@ class EvilEvents::Shared::TypeConverter
         case option
         when :default
           # NOTE: Dry::Types callable wrapper (see Dry::Types::Default::Callable#evaulate)
-          default_value = value.is_a?(Proc) ? (->(_type) { value.call }) : (proc { value })
+          default_value = value.is_a?(Proc) ? (-> (_type) { value.call }) : (proc { value })
           type.default(default_value)
         when :constructor
           type.constructor(value)

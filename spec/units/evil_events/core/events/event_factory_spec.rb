@@ -139,8 +139,8 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
           payload :b
           payload :c
 
-          observe ->(event) {}
-          observe ->(event) {}
+          observe -> (event) {}
+          observe -> (event) {}
         end
 
         expect { concrete_class.new(payload: { a: '10', b: 20, c: :"30" }) }.not_to raise_error

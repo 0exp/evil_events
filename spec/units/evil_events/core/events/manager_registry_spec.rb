@@ -272,20 +272,20 @@ describe EvilEvents::Core::Events::ManagerRegistry do
 
           describe '#managers_of_event_condition' do
             it 'returns a list of managers which aliases has passed required condition (proc)' do
-              condition = ->(event_type) { event_type.match(/\A[a-z]+_[a-z]+\z/i) }
+              condition = -> (event_type) { event_type.match(/\A[a-z]+_[a-z]+\z/i) }
 
               expect(registry.managers_of_event_condition(condition)).to contain_exactly(
                 first_manager,
                 second_manager
               )
 
-              condition = ->(event_type) { event_type == 'first_event' }
+              condition = -> (event_type) { event_type == 'first_event' }
 
               expect(registry.managers_of_event_condition(condition)).to contain_exactly(
                 first_manager
               )
 
-              condition = ->(event_type) { event_type == 'second_event' }
+              condition = -> (event_type) { event_type == 'second_event' }
 
               expect(registry.managers_of_event_condition(condition)).to contain_exactly(
                 second_manager

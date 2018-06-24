@@ -18,7 +18,7 @@ describe EvilEvents::Shared::TypeConverter::ConverterRegistry do
         test_key    = gen_symb
         another_key = gen_symb
 
-        test_coercer    = ->(value) { value.to_s }
+        test_coercer    = -> (value) { value.to_s }
         another_coercer = proc { |value| value.to_s }
 
         expect { registry.register(test_key, test_coercer) }.not_to raise_error

@@ -13,13 +13,13 @@ shared_examples 'notifier callbacks invokation interface' do
 
       hook_results = (1..10).to_a
 
-      event_class.before_emit ->(event) { before_emit_hook_buffer << hook_results.shift }
-      event_class.before_emit ->(event) { before_emit_hook_buffer << hook_results.shift }
-      event_class.after_emit  ->(event) { after_emit_hook_buffer << hook_results.shift }
-      event_class.after_emit  ->(event) { after_emit_hook_buffer << hook_results.shift }
-      event_class.on_error    ->(event, error) { on_error_hook_buffer << error }
+      event_class.before_emit -> (event) { before_emit_hook_buffer << hook_results.shift }
+      event_class.before_emit -> (event) { before_emit_hook_buffer << hook_results.shift }
+      event_class.after_emit  -> (event) { after_emit_hook_buffer << hook_results.shift }
+      event_class.after_emit  -> (event) { after_emit_hook_buffer << hook_results.shift }
+      event_class.on_error    -> (event, error) { on_error_hook_buffer << error }
 
-      successfull_subscriber = ->(event) {}
+      successfull_subscriber = -> (event) {}
       event_manager.observe(successfull_subscriber, :call)
       notifier.notify(event_manager, event)
 
@@ -27,7 +27,7 @@ shared_examples 'notifier callbacks invokation interface' do
       expect(after_emit_hook_buffer).to contain_exactly(3, 4)
       expect(on_error_hook_buffer).to be_empty
 
-      failing_subscriber = ->(event) { raise ArgumentError }
+      failing_subscriber = -> (event) { raise ArgumentError }
       event_manager.observe(failing_subscriber, :call)
 
       begin

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable RSpec/EmptyLineAfterExampleGroup
 if SpecSupport::Testing.test_native_extensions?
   describe 'Ox - XML serialization engine plugin', :stub_event_system do
     EvilEvents::Plugins.load! :ox_engine
@@ -38,9 +39,9 @@ if SpecSupport::Testing.test_native_extensions?
 
       let(:serialization_state) do
         build_serialization_state(
-          id: gen_str,
-          type: gen_str,
-          payload: { gen_symb => gen_str, gen_symb => gen_str },
+          id:       gen_str,
+          type:     gen_str,
+          payload:  { gen_symb => gen_str, gen_symb => gen_str },
           metadata: { gen_symb => gen_str, gen_symb => gen_str }
         )
       end
@@ -98,3 +99,4 @@ if SpecSupport::Testing.test_native_extensions?
     end
   end
 end
+# rubocop:enable RSpec/EmptyLineAfterExampleGroup

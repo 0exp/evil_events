@@ -4,13 +4,12 @@ require 'simplecov'
 require 'simplecov-json'
 require 'coveralls'
 
-# rubocop:disable Layout/IndentArray
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
   SimpleCov::Formatter::HTMLFormatter,
   SimpleCov::Formatter::JSONFormatter,
   Coveralls::SimpleCov::Formatter
 ])
-# rubocop:enable Layout/IndentArray
+
 SimpleCov.start { add_filter 'spec' }
 
 require 'pry'

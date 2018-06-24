@@ -1,130 +1,16 @@
-require: rubocop-rspec
+inherit_gem:
+  armitage-rubocop:
+    - lib/rubocop.general.yml
+    - lib/rubocop.rspec.yml
 
 AllCops:
-  DisplayCopNames:   true
-  DisplayStyleGuide: true
+  UseCache: true
   TargetRubyVersion: 2.4.4
   Include:
-    - lib/**/*
-    - spec/**/*
-  Exclude:
+    - bin/console
+    - bin/rspec
+    - lib/**/*.rb
+    - spec/**/*.rb
     - Gemfile
     - Rakefile
     - evil_events.gemspec
-
-Style/SingleLineMethods:
-  Exclude:
-    - spec/**/*
-
-Style/RescueModifier:
-  Exclude:
-    - spec/**/*
-
-Style/AsciiComments:
-  Enabled: false
-
-Style/Alias:
-  Enabled: false
-
-Style/GuardClause:
-  Enabled: false
-
-Style/DoubleNegation:
-  Enabled: false
-
-Style/Documentation:
-  Enabled: false
-
-Style/ClassAndModuleChildren:
-  Enabled: false
-
-Style/EmptyCaseCondition:
-  Enabled: false
-
-Style/FrozenStringLiteralComment:
-  Enabled: true
-
-Style/InverseMethods:
-  Enabled: false
-
-Style/ParallelAssignment:
-  Enabled: false
-
-Style/CommentedKeyword:
-  Enabled: false
-
-Style/EvalWithLocation:
-  Enabled: false
-
-Style/RegexpLiteral:
-  EnforcedStyle: mixed
-
-Layout/MultilineOperationIndentation:
-  Enabled: false
-
-Lint/AmbiguousRegexpLiteral:
-  Enabled: false
-
-Lint/HandleExceptions:
-  Enabled: false
-
-Lint/UnusedBlockArgument:
-  Enabled: false
-
-Naming/FileName:
-  Enabled: false
-
-Naming/VariableNumber:
-  EnforcedStyle: snake_case
-
-Naming/UncommunicativeMethodParamName:
-  Enabled: false
-
-Metrics/LineLength:
-  Max: 100
-
-Metrics/BlockLength:
-  Exclude:
-    - spec/**/*
-
-Metrics/CyclomaticComplexity:
-  Max: 10
-
-Metrics/PerceivedComplexity:
-  Max: 10
-
-Metrics/MethodLength:
-  Max: 25
-
-RSpec/ContextWording:
-  Enabled: false
-
-RSpec/HookArgument:
-  Enabled: false
-
-RSpec/NestedGroups:
-  Max: 6
-
-RSpec/MessageSpies:
-  Enabled: false
-
-RSpec/ExampleLength:
-  Enabled: false
-
-RSpec/MultipleExpectations:
-  Enabled: false
-
-RSpec/DescribeClass:
-  Enabled: false
-
-RSpec/LetSetup:
-  Enabled: false
-
-RSpec/AnyInstance:
-  Enabled: false
-
-RSpec/ExpectChange:
-  Enabled: false
-
-Bundler/OrderedGems:
-  Enabled: false

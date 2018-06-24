@@ -76,9 +76,11 @@ module EvilEvents::Core::Events
     #
     # @since 0.2.0
     def managers_of_event_condition(event_condition)
+      # rubocop:disable Style/InverseMethods
       event_classes = managed_events.select do |managed_event|
         !!event_condition.call(managed_event.type)
       end
+      # rubocop:enable Style/InverseMethods
 
       event_classes.map { |event_class| manager_of_event(event_class) }
     end

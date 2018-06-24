@@ -214,8 +214,8 @@ shared_examples 'dispatchable interface' do
         )
 
         dispatchable.emit!(
-          id: expected_id,
-          payload: expected_payload,
+          id:       expected_id,
+          payload:  expected_payload,
           metadata: expected_metadata
         )
 
@@ -232,10 +232,10 @@ shared_examples 'dispatchable interface' do
         )
 
         dispatchable.emit!(
-          id: expected_id,
-          payload: expected_payload,
+          id:       expected_id,
+          payload:  expected_payload,
           metadata: expected_metadata,
-          adapter: custom_adapter_identifier
+          adapter:  custom_adapter_identifier
         )
       end
     end

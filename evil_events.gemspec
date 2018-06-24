@@ -1,6 +1,7 @@
 # coding: utf-8
+# frozen_string_literal: true
 
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'evil_events/version'
 
@@ -34,12 +35,11 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'symbiont-ruby',    '~> 0.3.0'
   spec.add_dependency 'qonfig',           '~> 0.3.0'
 
-  spec.add_development_dependency 'coveralls',      '~> 0.8.21'
-  spec.add_development_dependency 'simplecov',      '~> 0.14.1'
-  spec.add_development_dependency 'simplecov-json', '~> 0.2'
-  spec.add_development_dependency 'rubocop',        '~> 0.57.0'
-  spec.add_development_dependency 'rspec',          '~> 3.7.0'
-  spec.add_development_dependency 'rubocop-rspec',  '~> 1.26.0'
+  spec.add_development_dependency 'coveralls',        '~> 0.8.21'
+  spec.add_development_dependency 'simplecov',        '~> 0.14.1'
+  spec.add_development_dependency 'simplecov-json',   '~> 0.2'
+  spec.add_development_dependency 'rspec',            '~> 3.7.0'
+  spec.add_development_dependency 'armitage-rubocop', '~> 0.3.0'
 
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake'
