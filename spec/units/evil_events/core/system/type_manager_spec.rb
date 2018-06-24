@@ -52,7 +52,7 @@ describe EvilEvents::Core::System::TypeManager, :stub_event_system do
 
     it 'returns a correct delegation result (new coercible type)' do
       type_name = gen_symb
-      type_manager.register_converter(type_name, ->(value) { "coerced_#{value}" })
+      type_manager.register_converter(type_name, -> (value) { "coerced_#{value}" })
 
       # checking values
       nil_value, number_value, default_value = nil, gen_int, gen_symb

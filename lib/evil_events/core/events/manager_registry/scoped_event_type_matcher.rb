@@ -149,7 +149,6 @@ class EvilEvents::Core::Events::ManagerRegistry
     #
     # @api private
     # @since 0.4.0
-    # rubocop:disable Metrics/AbcSize
     def build_pattern_matcher(scope_pattern)
       routing_parts = scope_pattern.split(EVENT_SCOPE_SPLITTER)
 
@@ -172,6 +171,5 @@ class EvilEvents::Core::Events::ManagerRegistry
 
       Regexp.new('\A' + regexp_string + '\z')
     end
-    # rubocop:enable Metrics/AbcSize
   end
 end

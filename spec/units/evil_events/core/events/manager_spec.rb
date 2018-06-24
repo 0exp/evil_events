@@ -140,8 +140,8 @@ describe EvilEvents::Core::Events::Manager, :stub_event_system, :null_logger do
       describe '#notify' do
         subject(:notify) { manager.notify(event) }
 
-        let(:first_subscriber)  { ->(event) {} }
-        let(:second_subscriber) { ->(event) {} }
+        let(:first_subscriber)  { -> (event) {} }
+        let(:second_subscriber) { -> (event) {} }
         let(:third_subscriber)  { Class.new { def process_event(event); end }.new }
 
         context 'when passed attribute is an instance of registered event class' do

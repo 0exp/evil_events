@@ -26,7 +26,7 @@ describe EvilEvents::Shared::TypeConverter do
 
       specify 'type resolving with type builder options' do
         type_key = gen_symb
-        type_converter.register(type_key, ->(value) { value.to_s })
+        type_converter.register(type_key, -> (value) { value.to_s })
 
         raw_value   = gen_int
         raw_default = gen_str
