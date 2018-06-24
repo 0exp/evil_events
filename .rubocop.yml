@@ -9,8 +9,8 @@ AllCops:
   Include:
     - bin/console
     - bin/rspec
-    - lib/**/*
-    - spec/**/*
+    - lib/**/*.rb
+    - spec/**/*.rb
     - Gemfile
     - Rakefile
     - evil_events.gemspec
