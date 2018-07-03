@@ -6,9 +6,6 @@ script: bundle exec rspec
 matrix:
   fast_finish: true
   include:
-  - rvm: 2.2.10
-    gemfile: gemfiles/with_native_extensions.gemfile
-    env: TEST_NATIVE_EXTENSIONS=true
   - rvm: 2.3.7
     gemfile: gemfiles/with_native_extensions.gemfile
     env: TEST_NATIVE_EXTENSIONS=true
@@ -21,8 +18,6 @@ matrix:
   - rvm: ruby-head
     gemfile: gemfiles/with_native_extensions.gemfile
     env: TEST_NATIVE_EXTENSIONS=true
-  - rvm: 2.2.10
-    gemfile: gemfiles/without_native_extensions.gemfile
   - rvm: 2.3.7
     gemfile: gemfiles/without_native_extensions.gemfile
   - rvm: 2.4.4
