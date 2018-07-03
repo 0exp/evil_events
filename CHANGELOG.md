@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+## Changed
+- Dropped Ruby 2.2.x support;
+
 ## [0.5.0] - 2018-05-20
 ### Added
 - Added Oj serialization engine for JSON format;
