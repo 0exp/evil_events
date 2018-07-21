@@ -86,7 +86,7 @@ module SpecSupport::FakeDataGenerator
   end
 
   def gen_str(max_len: STR_LENGTH, only_letters: false)
-    only_letters ? Array.new(STR_LENGTH) { STR_LETTERS.sample }.join : SecureRandom.hex(max_len)
+    only_letters ? Array.new(max_len) { STR_LETTERS.sample }.join : SecureRandom.hex(max_len)
   end
 
   def gen_obj
