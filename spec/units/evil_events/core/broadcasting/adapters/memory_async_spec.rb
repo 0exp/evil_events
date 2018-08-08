@@ -18,8 +18,8 @@ describe EvilEvents::Core::Broadcasting::Adapters::MemoryAsync, :stub_event_syst
         Concurrent::Future
       )
 
-      expect(EvilEvents::Core::Broadcasting::Dispatcher).not_to(
-        receive(:dispatch).with(event).twice
+      expect(EvilEvents::Core::Broadcasting::Dispatcher).to(
+        receive(:dispatch).with(event).exactly(2).times
       )
 
       [
