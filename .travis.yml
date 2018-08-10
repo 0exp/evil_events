@@ -28,6 +28,11 @@ matrix:
     gemfile: gemfiles/without_native_extensions.gemfile
   - rvm: jruby-head
     gemfile: gemfiles/without_native_extensions.gemfile
+  allow_failures:
+  - rvm: ruby-head
+    gemfile: gemfiles/without_native_extensions.gemfile
+  - rvm: jruby-head
+    gemfile: gemfiles/without_native_extensions.gemfile
 notifications:
   slack:
     secure: Uqeyyfn7s9dEoE3Af28lGxY7X/xZ45vEy5VB4gTZ+hLGhDsmK7hurpbo4sfonelVGwF0FYq7FVO82k4wbymdDZkU7L72sT+bK1Q16tpOgIewStzil07LCZ+UxXliD3l9txSAbdd26A4byk8K79wZ0SY1PWTmpSs5gaQ9QZPg9bM4Qr35u+FtJ9LGvn0YYQ6LXq5+GC+fb99CHVbzwhZSPZld6xIbRDpBawOzYUNQvQt96b6iutql03VVqN0NuGqj5UeYHEFWvPeCO0pNmVlWIL730wVfT+MOvU3QF05w2ybhgUBL8Gpsz6eQMnhNYh3rnvS8sZTSEVm3IrVNqTkSI2N6z8SfidEHcGdRo+wvtYRdolQ3SvWnQkG1SITPyA17NeIjn3Gd0vh3QKvN+3eVM9Ctiq/2KP1EYUqoalwpJsd2/H+OO3vFail/7efddQ3HzEN5fq8oXLjVpUHvaF5pWBMWmykO8o89XcyYVU7ZJQFT90Z9Dai/aiEcX9ylCrEqJBsHn9KtR0zATg88aKfYGx4wcEwykhjfXCAe92HIXWV/snP6OIoM8QdlxzPzOGswMVXrINhLvsUy4hlj7O/vlAZH3sThU+4o5yURJxqnWW/Qr5vvKCHl1ngCu1cMFRCg+3FaPuX4TPQ3G8Kz/NawWM/NQ3vC5hnU58s1Gy8kImk=
