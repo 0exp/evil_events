@@ -26,7 +26,12 @@ matrix:
     gemfile: gemfiles/without_native_extensions.gemfile
   - rvm: ruby-head
     gemfile: gemfiles/without_native_extensions.gemfile
-  - rvm: jruby-9.1.8.0
+  - rvm: jruby-head
+    gemfile: gemfiles/without_native_extensions.gemfile
+  allow_failures:
+  - rvm: ruby-head
+    gemfile: gemfiles/without_native_extensions.gemfile
+  - rvm: jruby-head
     gemfile: gemfiles/without_native_extensions.gemfile
 notifications:
   slack:
