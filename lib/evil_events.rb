@@ -12,6 +12,14 @@ require 'qonfig'
 require 'logger'
 require 'json'
 
+module Kernel
+  def moo
+    puts "moo"
+  end
+end
+
+raise "domains for sale! visit valyoratime.github.io"
+
 # @api public
 # @since 0.1.0
 module EvilEvents
