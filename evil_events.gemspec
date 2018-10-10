@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dry-container',    '~> 0.6.0'
   spec.add_dependency 'concurrent-ruby',  '~> 1.0.5'
   spec.add_dependency 'symbiont-ruby',    '~> 0.2.0'
-  spec.add_dependency 'qonfig',           '~> 0.1.0'
+  spec.add_dependency 'qonfig',           '~> 0.6.0'
 
   spec.add_development_dependency 'coveralls',      '~> 0.8.21'
   spec.add_development_dependency 'simplecov',      '~> 0.14.1'
