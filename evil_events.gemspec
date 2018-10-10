@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
     f.match(%r{^(spec|features)/})
   end
 
-  spec.add_dependency 'dry-monads',       '~> 0.4.0'
+  spec.add_dependency 'dry-monads',       '~> 1.0.1'
   spec.add_dependency 'dry-types',        '~> 0.13.0'
   spec.add_dependency 'dry-struct',       '~> 0.5.0'
   spec.add_dependency 'dry-container',    '~> 0.6.0'
