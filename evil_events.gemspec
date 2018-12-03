@@ -6,7 +6,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'evil_events/version'
 
 Gem::Specification.new do |spec|
-  spec.required_ruby_version = '>= 2.3.7'
+  spec.required_ruby_version = '>= 2.3.8'
 
   spec.name        = 'evil_events'
   spec.version     = EvilEvents::VERSION
@@ -27,19 +27,18 @@ Gem::Specification.new do |spec|
     f.match(%r{^(spec|features)/})
   end
 
-  spec.add_dependency 'dry-monads',      '~> 1.0.0'
+  spec.add_dependency 'dry-monads',      '~> 1.1.0'
   spec.add_dependency 'dry-types',       '~> 0.13.2'
-  spec.add_dependency 'dry-struct',      '~> 0.5.0'
+  spec.add_dependency 'dry-struct',      '~> 0.6.0'
   spec.add_dependency 'dry-container',   '~> 0.6.0'
-  spec.add_dependency 'concurrent-ruby', '~> 1.0.5'
-  spec.add_dependency 'symbiont-ruby',   '~> 0.3.0'
-  spec.add_dependency 'qonfig',          '~> 0.6.0'
+  spec.add_dependency 'concurrent-ruby', '~> 1.0'
+  spec.add_dependency 'symbiont-ruby',   '~> 0.4.0'
+  spec.add_dependency 'qonfig',          '~> 0.9.0'
 
-  spec.add_development_dependency 'coveralls',        '~> 0.8.21'
+  spec.add_development_dependency 'coveralls',        '~> 0.8.22'
   spec.add_development_dependency 'simplecov',        '~> 0.16.1'
-  spec.add_development_dependency 'simplecov-json',   '~> 0.2'
   spec.add_development_dependency 'rspec',            '~> 3.8.0'
-  spec.add_development_dependency 'armitage-rubocop', '~> 0.9.0'
+  spec.add_development_dependency 'armitage-rubocop', '~> 0.13.0'
 
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake'

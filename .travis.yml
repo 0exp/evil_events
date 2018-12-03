@@ -6,23 +6,23 @@ script: bundle exec rspec
 matrix:
   fast_finish: true
   include:
-  - rvm: 2.3.7
+  - rvm: 2.3.8
     gemfile: gemfiles/with_native_extensions.gemfile
     env: TEST_NATIVE_EXTENSIONS=true
-  - rvm: 2.4.4
+  - rvm: 2.4.5
     gemfile: gemfiles/with_native_extensions.gemfile
     env: TEST_NATIVE_EXTENSIONS=true
-  - rvm: 2.5.1
+  - rvm: 2.5.3
     gemfile: gemfiles/with_native_extensions.gemfile
     env: TEST_NATIVE_EXTENSIONS=true
   - rvm: ruby-head
     gemfile: gemfiles/with_native_extensions.gemfile
     env: TEST_NATIVE_EXTENSIONS=true
-  - rvm: 2.3.7
+  - rvm: 2.3.8
     gemfile: gemfiles/without_native_extensions.gemfile
-  - rvm: 2.4.4
+  - rvm: 2.4.5
     gemfile: gemfiles/without_native_extensions.gemfile
-  - rvm: 2.5.1
+  - rvm: 2.5.3
     gemfile: gemfiles/without_native_extensions.gemfile
   - rvm: ruby-head
     gemfile: gemfiles/without_native_extensions.gemfile

@@ -1,6 +1,4 @@
 # frozen_string_literal: true
-
-# rubocop:disable RSpec/EmptyLineAfterExampleGroup
 if SpecSupport::Testing.test_native_extensions?
   describe 'Oj - JSON serialization engine plugin', :stub_event_system do
     EvilEvents::Plugins.load! :oj_engine

@@ -1,6 +1,4 @@
 # frozen_string_literal: true
-
-# rubocop:disable RSpec/EmptyLineAfterExampleGroup
 if SpecSupport::Testing.test_native_extensions?
   describe 'Mpacker - MessagePack serialization engine plugin', :stub_event_system do
     EvilEvents::Plugins.load! :mpacker_engine

@@ -5,8 +5,8 @@ module SpecSupport::FakeDataGenerator
   module_function
 
   BOOL_VARIANTS   = [true, false].freeze
-  INT_RANGE       = (0..100)
-  FLOAT_RANGE     = (0.0..100.0)
+  INT_RANGE       = (0..100).freeze
+  FLOAT_RANGE     = (0.0..100.0).freeze
   STR_LENGTH      = 10
   STR_LETTERS     = (('a'..'z').to_a | ('A'..'Z').to_a).freeze
 
