@@ -15,6 +15,9 @@ matrix:
   - rvm: 2.5.3
     gemfile: gemfiles/with_native_extensions.gemfile
     env: TEST_NATIVE_EXTENSIONS=true
+  - rvm: 2.6.0
+    gemfile: gemfiles/with_native_extensions.gemfile
+    env: TEST_NATIVE_EXTENSIONS=true
   - rvm: ruby-head
     gemfile: gemfiles/with_native_extensions.gemfile
     env: TEST_NATIVE_EXTENSIONS=true
@@ -23,6 +26,8 @@ matrix:
   - rvm: 2.4.5
     gemfile: gemfiles/without_native_extensions.gemfile
   - rvm: 2.5.3
+    gemfile: gemfiles/without_native_extensions.gemfile
+  - rvm: 2.6.0
     gemfile: gemfiles/without_native_extensions.gemfile
   - rvm: ruby-head
     gemfile: gemfiles/without_native_extensions.gemfile
