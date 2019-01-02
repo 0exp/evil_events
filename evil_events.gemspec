@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_dependency 'dry-monads',      '~> 1.1.0'
-  spec.add_dependency 'dry-types',       '~> 0.13.2'
+  spec.add_dependency 'dry-types',       '~> 0.13.4'
   spec.add_dependency 'dry-struct',      '~> 0.6.0'
   spec.add_dependency 'dry-container',   '~> 0.6.0'
   spec.add_dependency 'concurrent-ruby', '~> 1.0'
@@ -38,7 +38,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'coveralls',        '~> 0.8.22'
   spec.add_development_dependency 'simplecov',        '~> 0.16.1'
   spec.add_development_dependency 'rspec',            '~> 3.8.0'
-  spec.add_development_dependency 'armitage-rubocop', '~> 0.13.0'
+  spec.add_development_dependency 'armitage-rubocop', '~> 0.16.0'
 
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake'

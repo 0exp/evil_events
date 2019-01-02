@@ -43,7 +43,7 @@ module EvilEvents::Core::Events
     # @since 0.1.1
     def create_class(event_type, &event_class_definitions)
       Class.new(AbstractEvent).tap do |klass|
-        begin
+        begin # rubocop:disable Style/RedundantBegin
           klass.__creation_strategy__ = PROC_EVAL_STRATEGY
           klass.type(event_type)
           klass.manage!

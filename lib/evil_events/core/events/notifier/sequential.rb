@@ -20,7 +20,7 @@ module EvilEvents::Core::Events::Notifier
       event.__call_before_hooks__
 
       manager.subscribers.each do |subscriber|
-        begin
+        begin # rubocop:disable Style/RedundantBegin
           subscriber.notify(event)
 
           log_success(event, subscriber)
