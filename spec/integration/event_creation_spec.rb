@@ -278,7 +278,7 @@ describe 'Event Creation', :stub_event_system do
       event = DocumentRejected.new(payload: { document_type: 'employee_data' })
       expect(event.metadata).to match(
         timestamp: 0, # Dry::Types is used
-        server_id: 'undefined', # coercible type is used
+        server_id: 'undefined' # coercible type is used
       )
       expect(event.payload).to match(
         document_type: 'employee_data',

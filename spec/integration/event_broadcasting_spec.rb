@@ -576,13 +576,13 @@ describe 'Event Broadcasting', :stub_event_system do
         { event: an_instance_of(BonusReached), indx: 1 }, # old
         { event: an_instance_of(BonusReached), indx: 2 }, # old
         { event: event, indx: 5 }, # new
-        { event: event, indx: 6 }, # new
+        { event: event, indx: 6 } # new
       ],
       after: [
         { event: an_instance_of(BonusReached), indx: 3 }, # old
         { event: an_instance_of(BonusReached), indx: 4 }, # old
         { event: event, indx: 8 }, # new
-        { event: event, indx: 9 }, # new
+        { event: event, indx: 9 } # new
       ],
       on_error: [
         { event: event, indx: 7, error: an_instance_of(ZeroDivisionError) }
