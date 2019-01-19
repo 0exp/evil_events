@@ -24,7 +24,7 @@ require 'evil_events'
 
 ## Contributing
 
-- Fork it ( https://github.com/0exp/qonfig/fork )
+- Fork it ( https://github.com/0exp/evil_events/fork )
 - Create your feature branch (`git checkout -b feature/my-new-feature`)
 - Commit your changes (`git commit -am 'Add some feature'`)
 - Push to the branch (`git push origin feature/my-new-feature`)
