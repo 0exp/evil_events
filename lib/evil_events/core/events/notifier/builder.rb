@@ -21,22 +21,31 @@ module EvilEvents::Core::Events::Notifier
 
       private
 
+      # rubocop:disable Lint/UselessAssignment
       # @return [Notifier::Sequential]
       #
       # @api private
       # @since 0.3.0
       def build_sequential_notifier!
-        options = EvilEvents::Core::Bootstrap[:config].to_h[:notifier][:sequential]
-        Sequential.new(**options)
+        options = EvilEvents::Core::Bootstrap[:config].settings.notifier.sequential
+
+        Sequential.new # TODO: use `options` when it will be consistent
       end
+      # rubocop:enable Lint/UselessAssignment
 
       # @return [Notifier::Worker]
       #
       # @api private
       # @since 0.3.0
       def build_worker_notifier!
-        options = EvilEvents::Core::Bootstrap[:config].to_h[:notifier][:worker]
-        Worker.new(**options)
+        options = EvilEvents::Core::Bootstrap[:config].settings.notifier.worker
+
+        Worker.new(
+          min_threads:     options.min_threads,
+          max_threads:     options.max_threads,
+          max_queue:       options.max_queue,
+          fallback_policy: options.fallback_policy
+        )
       end
     end
   end

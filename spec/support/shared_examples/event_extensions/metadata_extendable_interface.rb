@@ -19,8 +19,8 @@ shared_examples 'metadata extendable interface' do
         it 'defines the metadata attribute with a custom type', :stub_event_system do
           # register two coercible types
           EvilEvents::Core::Bootstrap[:event_system].tap do |system|
-            system.register_converter(:string,  ->(value) { value.to_s })
-            system.register_converter(:integer, ->(value) { value.to_i })
+            system.register_converter(:string,  -> (value) { value.to_s })
+            system.register_converter(:integer, -> (value) { value.to_i })
           end
 
           # define attribute without any strict type

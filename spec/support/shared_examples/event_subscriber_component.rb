@@ -192,7 +192,7 @@ shared_examples 'event subscriber component' do
         expect(another_event_class.observers).to be_empty
 
         # true for all even types
-        subscribeable.subscribe_to ->(event_type) { event_type.match(/.+/) }, delegator: :boot
+        subscribeable.subscribe_to -> (event_type) { event_type.match(/.+/) }, delegator: :boot
 
         expect(event_class.observers).to contain_exactly(
           have_attributes(source_object: subscribeable, delegator: :boot)
@@ -203,7 +203,7 @@ shared_examples 'event subscriber component' do
         )
 
         # false for all event types
-        subscribeable.subscribe_to ->(_event_type) { false }
+        subscribeable.subscribe_to -> (_event_type) { false }
 
         expect(event_class.observers).to contain_exactly(
           have_attributes(source_object: subscribeable, delegator: :boot)
@@ -214,7 +214,7 @@ shared_examples 'event subscriber component' do
         )
 
         # true for test_event only
-        subscribeable.subscribe_to ->(event_type) { event_type == 'test_event' }
+        subscribeable.subscribe_to -> (event_type) { event_type == 'test_event' }
 
         expect(event_class.observers).to contain_exactly(
           have_attributes(source_object: subscribeable, delegator: :boot),
@@ -226,7 +226,7 @@ shared_examples 'event subscriber component' do
         )
 
         # true for another_test_event only
-        subscribeable.subscribe_to ->(event_type) { event_type == 'another_test_event' }
+        subscribeable.subscribe_to -> (event_type) { event_type == 'another_test_event' }
 
         expect(event_class.observers).to contain_exactly(
           have_attributes(source_object: subscribeable, delegator: :boot),

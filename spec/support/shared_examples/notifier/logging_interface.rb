@@ -19,7 +19,7 @@ shared_examples 'notifier logging interface' do
       expect(silent_output.string).to include(
         "[EvilEvents:EventProcessed(#{event.type})]: " \
         "EVENT_ID: #{event.id} :: " \
-        'STATUS: failed :: ' \
+        "STATUS: failed :: " \
         "SUBSCRIBER: #{subscriber.source_object}"
       )
     end
@@ -30,7 +30,7 @@ shared_examples 'notifier logging interface' do
       expect(silent_output.string).to include(
         "[EvilEvents:EventProcessed(#{event.type})]: " \
         "EVENT_ID: #{event.id} :: " \
-        'STATUS: successful :: ' \
+        "STATUS: successful :: " \
         "SUBSCRIBER: #{subscriber.source_object}"
       )
     end

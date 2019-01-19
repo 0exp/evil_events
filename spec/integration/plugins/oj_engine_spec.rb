@@ -38,9 +38,9 @@ if SpecSupport::Testing.test_native_extensions?
 
       let(:serialization_state) do
         build_serialization_state(
-          id: gen_str,
-          type: gen_str,
-          payload: { gen_symb => gen_str, gen_symb => gen_str },
+          id:       gen_str,
+          type:     gen_str,
+          payload:  { gen_symb => gen_str, gen_symb => gen_str },
           metadata: { gen_symb => gen_str, gen_symb => gen_str }
         )
       end
@@ -104,10 +104,10 @@ if SpecSupport::Testing.test_native_extensions?
         context 'with partially defined dump' do
           let!(:partial_dumps) do
             state_data = {
-              id: gen_str,
-              type: gen_str,
+              id:       gen_str,
+              type:     gen_str,
               metadata: { gen_symb => gen_str },
-              paylaod: { gen_symb => gen_str }
+              paylaod:  { gen_symb => gen_str }
             }
 
             key_mappings = (

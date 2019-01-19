@@ -6,7 +6,7 @@ class EvilEvents::Core::Config
   setting :serializers do
     setting :msgpack do
       setting :mpacker do
-        setting :configurator, ->(engine) {}
+        setting :configurator, -> (engine) {}
       end
     end
   end

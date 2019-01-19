@@ -36,8 +36,8 @@ shared_examples 'generic event serialization component' do
 
     let!(:event) do
       event_class.new(
-        id: event_attributes[:id],
-        payload: event_attributes[:payload],
+        id:       event_attributes[:id],
+        payload:  event_attributes[:payload],
         metadata: event_attributes[:metadata]
       )
     end

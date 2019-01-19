@@ -328,8 +328,8 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
 
       describe '#scoped_observe' do
         shared_examples 'routing key subscription' do |observed:, non_observed:|
-          let(:subscriber) { ->(event) {} }
-          let(:delegator) { gen_symb(only_letters: true) }
+          let(:subscriber) { -> (event) {} }
+          let(:delegator)  { gen_symb(only_letters: true) }
 
           it 'subscribes an object to the list of events whose type aliases are comparable' \
              'with a routing-key pattern' do
@@ -413,7 +413,7 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
 
       describe '#observe_list' do
         it 'subscribes an object to events whose alias is comparable with a pattern' do
-          subscriber, delegator = (->(event) {}), gen_symb(only_letters: true)
+          subscriber, delegator = (-> (event) {}), gen_symb(only_letters: true)
 
           pattern = /#{gen_str}/ # no matches
           event_manager.observe_list(pattern, subscriber, delegator)
@@ -449,10 +449,10 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
 
       describe '#conditional_observe' do
         specify 'condition of an alias isnt false/nil ==> subscribes an object to this event' do
-          subscriber, delegator = (->(event) {}), gen_symb(only_letters: true)
+          subscriber, delegator = (-> (event) {}), gen_symb(only_letters: true)
 
           # fail condition => doesnt register
-          condition = ->(_event_type) { false }
+          condition = -> (_event_type) { false }
           event_manager.conditional_observe(condition, subscriber, delegator)
 
           match_non_observed!(first_manager, subscriber)
@@ -463,7 +463,7 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
           match_non_observed!(subscoped_second_manager, subscriber)
 
           # true for another_event_class => subscribes on this
-          condition = ->(event_type) { event_type == 'another_test' }
+          condition = -> (event_type) { event_type == 'another_test' }
           event_manager.conditional_observe(condition, subscriber, delegator)
 
           match_non_observed!(first_manager, subscriber)
@@ -474,7 +474,7 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
           match_non_observed!(subscoped_second_manager, subscriber)
 
           # true for all => subscribes on all
-          condition = ->(event_type) { event_type.match(/.+/) }
+          condition = -> (event_type) { event_type.match(/.+/) }
           event_manager.conditional_observe(condition, subscriber, delegator)
 
           match_observed!(first_manager, subscriber, delegator)
@@ -506,7 +506,7 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
           expect(event_manager.observers(event_class)).to include(
             have_attributes(
               source_object: first_subscriber,
-              delegator: first_delegator
+              delegator:     first_delegator
             )
           )
 
@@ -517,14 +517,14 @@ describe EvilEvents::Core::System::EventManager, :stub_event_system do
           expect(event_manager.observers(event_class)).to include(
             have_attributes(
               source_object: first_subscriber,
-              delegator: first_delegator
+              delegator:     first_delegator
             )
           )
 
           expect(event_manager.observers(event_class)).to include(
             have_attributes(
               source_object: second_subscriber,
-              delegator: second_delegator
+              delegator:     second_delegator
             )
           )
         end

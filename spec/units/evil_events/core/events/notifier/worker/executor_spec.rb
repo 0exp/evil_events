@@ -107,7 +107,7 @@ describe EvilEvents::Core::Events::Notifier::Worker::Executor, :stub_event_syste
         expected_log_message =
           "[EvilEvents:EventProcessed(#{event.type})]: " \
           "EVENT_ID: #{event.id} :: " \
-          'STATUS: successful :: ' \
+          "STATUS: successful :: " \
           "SUBSCRIBER: #{successful_job.subscriber.source_object}"
 
         expect(silent_output.string).not_to include(expected_log_message)
@@ -129,7 +129,7 @@ describe EvilEvents::Core::Events::Notifier::Worker::Executor, :stub_event_syste
         expected_log_message =
           "[EvilEvents:EventProcessed(#{event.type})]: " \
           "EVENT_ID: #{event.id} :: " \
-          'STATUS: failed :: ' \
+          "STATUS: failed :: " \
           "SUBSCRIBER: #{failing_job.subscriber.source_object}"
 
         expect(silent_output.string).not_to include(expected_log_message)

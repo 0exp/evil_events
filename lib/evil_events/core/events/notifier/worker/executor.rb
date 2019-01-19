@@ -53,7 +53,6 @@ class EvilEvents::Core::Events::Notifier::Worker::Executor
   #
   # @api private
   # @sicne 0.3.0
-  # rubocop:disable Metrics/AbcSize, Style/MultilineBlockChain
   def execute(job)
     Concurrent::Promise.new(executor: raw_executor) do
       job.perform
@@ -66,7 +65,6 @@ class EvilEvents::Core::Events::Notifier::Worker::Executor
   rescue Concurrent::RejectedExecutionError
     raise EvilEvents::WorkerDisabledOrBusyError
   end
-  # rubocop:enable Metrics/AbcSize, Style/MultilineBlockChain
 
   # @return void
   #

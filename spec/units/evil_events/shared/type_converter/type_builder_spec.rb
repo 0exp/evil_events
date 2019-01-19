@@ -8,7 +8,7 @@ describe EvilEvents::Shared::TypeConverter::TypeBuilder do
           builder = described_class.new
 
           builder.append(:default, :test)
-          builder.append(:constructor, (->(value) {}))
+          builder.append(:constructor, (-> (value) {}))
 
           result_type = builder.result
 
@@ -78,11 +78,11 @@ describe EvilEvents::Shared::TypeConverter::TypeBuilder do
 
         it_behaves_like 'type constructor definition',
                         value: gen_obj,
-                        constructor: ->(value) { value }
+                        constructor: -> (value) { value }
 
         it_behaves_like 'type constructor definition',
                         value: gen_float,
-                        constructor: ->(value) { value * 2 }
+                        constructor: -> (value) { value * 2 }
 
         it_behaves_like 'type constructor definition',
                         value: gen_str,
@@ -103,7 +103,7 @@ describe EvilEvents::Shared::TypeConverter::TypeBuilder do
         expect(type[common_value]).to eq(common_value)
 
         # correct constructor
-        builder.append(:constructor, ->(value) { value.to_s })
+        builder.append(:constructor, -> (value) { value.to_s })
         type = builder.result
         expect(type[nil]).to eq('')
         expect(type[common_value]).to eq(common_value.to_s)

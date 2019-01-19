@@ -20,13 +20,13 @@ describe EvilEvents::Shared::TypeConverter::Converter do
         str   = gen_str
         obj   = gen_obj
 
-        multiplier = described_class.new(->(value) { value * 2 })
+        multiplier = described_class.new(-> (value) { value * 2 })
         expect(multiplier.convert(int)).to    eq(int * 2)
         expect(multiplier.convert(float)).to  eq(float * 2)
         expect(multiplier.convert(str)).to    eq("#{str}#{str}")
         expect { multiplier.convert(obj) }.to raise_error(NoMethodError)
 
-        stringifier = described_class.new(->(value) { value.to_s })
+        stringifier = described_class.new(-> (value) { value.to_s })
         expect(stringifier.convert(int)).to   eq(int.to_s)
         expect(stringifier.convert(float)).to eq(float.to_s)
         expect(stringifier.convert(str)).to   eq(str)
@@ -39,11 +39,11 @@ describe EvilEvents::Shared::TypeConverter::Converter do
         it 'transforms the internal converter object to a type o.O' do
           values = [gen_str, gen_float, gen_int, gen_obj, gen_symb]
 
-          converter = described_class.new(->(value) { value.to_s })
+          converter = described_class.new(-> (value) { value.to_s })
           type = converter.transform_to_type
           values.each { |value| expect(type[value]).to eq(converter.convert(value)) }
 
-          converter = described_class.new(->(value) { value.object_id })
+          converter = described_class.new(-> (value) { value.object_id })
           type = converter.transform_to_type
           values.each { |value| expect(type[value]).to eq(converter.convert(value)) }
         end
@@ -55,7 +55,7 @@ describe EvilEvents::Shared::TypeConverter::Converter do
           default_value = values.sample
 
           # default as a value
-          converter = described_class.new(->(value) { value.to_s })
+          converter = described_class.new(-> (value) { value.to_s })
           type = converter.transform_to_type(default: default_value)
 
           values.each do |value|
@@ -64,7 +64,7 @@ describe EvilEvents::Shared::TypeConverter::Converter do
           end
 
           # default as a proc
-          converter = described_class.new(->(value) { value.to_s })
+          converter = described_class.new(-> (value) { value.to_s })
           type = converter.transform_to_type(default: -> { default_value })
 
           values.each do |value|

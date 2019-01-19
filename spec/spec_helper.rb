@@ -1,16 +1,13 @@
 # frozen_string_literal: true
 
 require 'simplecov'
-require 'simplecov-json'
 require 'coveralls'
 
-# rubocop:disable Layout/IndentArray
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
   SimpleCov::Formatter::HTMLFormatter,
-  SimpleCov::Formatter::JSONFormatter,
   Coveralls::SimpleCov::Formatter
 ])
-# rubocop:enable Layout/IndentArray
+
 SimpleCov.start { add_filter 'spec' }
 
 require 'pry'
@@ -25,8 +22,9 @@ require_relative 'support/application_state_metascopes'
 
 RSpec.configure do |config|
   config.shared_context_metadata_behavior = :apply_to_host_groups
-  config.order = :random
   config.expect_with(:rspec) { |c| c.syntax = :expect }
+  config.order = :random
+  Kernel.srand config.seed
 
   config.include SpecSupport::EventFactories
   config.include SpecSupport::NotifierFactories

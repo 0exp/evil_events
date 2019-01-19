@@ -60,16 +60,16 @@ if SpecSupport::Testing.test_native_extensions?
 
       let(:serialization_state) do
         build_serialization_state(
-          id: gen_str,
-          type: gen_str,
-          payload: { gen_symb => gen_str, gen_symb => gen_str },
+          id:       gen_str,
+          type:     gen_str,
+          payload:  { gen_symb => gen_str, gen_symb => gen_str },
           metadata: { gen_symb => gen_str, gen_symb => gen_str }
         )
       end
 
       let(:engine) do
         config = EvilEvents::Core::Events::Serializers::MessagePack::Config.new.tap do |conf|
-          conf.settings.options = { mpacker: { configurator: ->(engine) {} } }
+          conf.settings.options = { mpacker: { configurator: -> (engine) {} } }
         end
 
         described_class.new(config)

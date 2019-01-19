@@ -29,8 +29,8 @@ shared_examples 'class signature interface' do
 
       let(:event_attrs) do
         {
-          id: gen_str,
-          payload: { a: gen_int, b: gen_str, c: gen_symb },
+          id:       gen_str,
+          payload:  { a: gen_int, b: gen_str, c: gen_symb },
           metadata: { d: gen_float, e: gen_int, f: gen_str }
         }
       end
@@ -72,8 +72,8 @@ shared_examples 'class signature interface' do
       context 'when object has no equal general event attributes' do
         it 'returns false' do
           non_similar_event = event_klass.new(
-            id: gen_str,
-            payload: { a: gen_int, b: gen_str, c: gen_symb },
+            id:       gen_str,
+            payload:  { a: gen_int, b: gen_str, c: gen_symb },
             metadata: { d: gen_float, e: gen_int, f: gen_str }
           )
 

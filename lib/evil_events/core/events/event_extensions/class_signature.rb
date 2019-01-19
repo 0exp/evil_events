@@ -22,10 +22,12 @@ module EvilEvents::Core::Events::EventExtensions
     #
     # @since 0.4.0
     def similar_to?(another_event)
+      # rubocop:disable Layout/MultilineOperationIndentation
       id       == another_event.id &&
       type     == another_event.type &&
       payload  == another_event.payload &&
       metadata == another_event.metadata
+      # rubocop:enable Layout/MultilineOperationIndentation
     rescue NoMethodError
       false
     end

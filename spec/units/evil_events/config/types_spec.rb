@@ -61,11 +61,11 @@ describe EvilEvents::Config::Types, :stub_event_system do
     it 'returns a new type object based on registered coercer' do
       # constraints for the first type
       type_name    = gen_symb
-      type_coercer = ->(value) { value.to_s }
+      type_coercer = -> (value) { value.to_s }
 
       # constraints for the second type
       another_type_name     = gen_symb
-      another_type_coercer  = ->(value) { value.to_i }
+      another_type_coercer  = -> (value) { value.to_i }
       another_default_value = gen_int
 
       # register converters

@@ -118,7 +118,7 @@ describe 'Event Broadcasting', :stub_event_system do
     # via event class
     ElasticSearchStub.subscribe_to MatchLost, delegator: :store
     # via conditional proc
-    EventCounter.subscribe_to ->(event_type) { event_type == 'match_lost' }, delegator: :increase!
+    EventCounter.subscribe_to -> (event_type) { event_type == 'match_lost' }, delegator: :increase!
     # via event pattern
     EventCounter.subscribe_to /.*?overwatch.*?/i, delegator: :increase!
     # combination
@@ -165,18 +165,18 @@ describe 'Event Broadcasting', :stub_event_system do
 
     # check log output of the first event data
     expect(silent_output.string).to include(
-      '[EvilEvents:EventEmitted(memory_sync)]: ' \
+      "[EvilEvents:EventEmitted(memory_sync)]: " \
       "ID: #{match_event.id} :: " \
-      'TYPE: match_lost :: ' \
+      "TYPE: match_lost :: " \
       "PAYLOAD: #{match_event.payload} :: " \
       "METADATA: #{match_event.metadata}"
     )
 
     # check log output for the second event data
     expect(silent_output.string).to include(
-      '[EvilEvents:EventEmitted(sidekiq)]: ' \
+      "[EvilEvents:EventEmitted(sidekiq)]: " \
       "ID: #{overwatch_event.id} :: " \
-      'TYPE: overwatch_released :: ' \
+      "TYPE: overwatch_released :: " \
       "PAYLOAD: #{overwatch_event.payload} :: " \
       "METADATA: #{overwatch_event.metadata}"
     )
@@ -186,14 +186,14 @@ describe 'Event Broadcasting', :stub_event_system do
       expect(silent_output.string).to include(
         "[EvilEvents:EventProcessed(#{published_event.type})]: " \
         "EVENT_ID: #{published_event.id} :: " \
-        'STATUS: successful :: ' \
+        "STATUS: successful :: " \
         "SUBSCRIBER: #{ElasticSearchStub}"
       )
 
       expect(silent_output.string).to include(
         "[EvilEvents:EventProcessed(#{published_event.type})]: " \
         "EVENT_ID: #{published_event.id} :: " \
-        'STATUS: successful :: ' \
+        "STATUS: successful :: " \
         "SUBSCRIBER: #{EventStoreStub}"
       )
     end
@@ -449,9 +449,9 @@ describe 'Event Broadcasting', :stub_event_system do
     )
     # match_lost event log with explicitly defined adapter :rabbit
     expect(silent_output.string).to include(
-      '[EvilEvents:EventEmitted(rabbit)]: ' \
+      "[EvilEvents:EventEmitted(rabbit)]: " \
       "ID: #{match_event.id} :: " \
-      'TYPE: match_lost :: ' \
+      "TYPE: match_lost :: " \
       "PAYLOAD: #{match_event.payload} :: " \
       "METADATA: #{match_event.metadata}"
     )
@@ -468,9 +468,9 @@ describe 'Event Broadcasting', :stub_event_system do
     )
     # match_lost event log with explicitly defined adapter :background
     expect(silent_output.string).to include(
-      '[EvilEvents:EventEmitted(background)]: ' \
+      "[EvilEvents:EventEmitted(background)]: " \
       "ID: #{overwatch_event.id} :: " \
-      'TYPE: overwatch_released :: ' \
+      "TYPE: overwatch_released :: " \
       "PAYLOAD: #{overwatch_event.payload} :: " \
       "METADATA: #{overwatch_event.metadata}"
     )
@@ -530,11 +530,11 @@ describe 'Event Broadcasting', :stub_event_system do
 
       # register corresponding hooks
       # rubocop:disable Metrics/LineLength
-      before_emit ->(event)        { hook_results[:before]   << { event: event, indx: hook_data.shift } }
-      before_emit ->(event)        { hook_results[:before]   << { event: event, indx: hook_data.shift } }
-      after_emit  ->(event)        { hook_results[:after]    << { event: event, indx: hook_data.shift } }
-      after_emit  ->(event)        { hook_results[:after]    << { event: event, indx: hook_data.shift } }
-      on_error    ->(event, error) { hook_results[:on_error] << { event: event, indx: hook_data.shift, error: error } }
+      before_emit -> (event)        { hook_results[:before]   << { event: event, indx: hook_data.shift } }
+      before_emit -> (event)        { hook_results[:before]   << { event: event, indx: hook_data.shift } }
+      after_emit  -> (event)        { hook_results[:after]    << { event: event, indx: hook_data.shift } }
+      after_emit  -> (event)        { hook_results[:after]    << { event: event, indx: hook_data.shift } }
+      on_error    -> (event, error) { hook_results[:on_error] << { event: event, indx: hook_data.shift, error: error } }
       # rubocop:enable Metrics/LineLength
     end
 

@@ -139,8 +139,8 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
           payload :b
           payload :c
 
-          observe ->(event) {}
-          observe ->(event) {}
+          observe -> (event) {}
+          observe -> (event) {}
         end
 
         expect { concrete_class.new(payload: { a: '10', b: 20, c: :"30" }) }.not_to raise_error
@@ -178,14 +178,16 @@ describe EvilEvents::Core::Events::EventFactory, :stub_event_system do
       specify 'any other errors in event definition doesnt affects manager registry' do
         event_type = gen_str
 
-        # create event class with errors
+        # rubocop:disable Style/RedundantBegin
         expect do
+          # create event class with errors
           begin
             described_class.create_class(event_type) { raise ZeroDivisionError }
           rescue ZeroDivisionError
             nil
           end
         end.not_to(change { manager_registry.size })
+        # rubocop:enable Style/RedundantBegin
 
         # create event class without errors
         expect do

@@ -47,7 +47,7 @@ describe EvilEvents::Core::Events::Notifier::Builder, :stub_event_system do
         expect(notifier).to be_a(EvilEvents::Core::Events::Notifier::Worker)
 
         concurrent_executor = notifier.executor.raw_executor
-        worker_config = system_config.to_h[:notifier][:worker]
+        worker_config = system_config.settings.notifier.worker
         default_executor_options = {
           min_length:      worker_config[:min_threads],
           max_length:      worker_config[:max_threads],
