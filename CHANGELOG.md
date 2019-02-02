@@ -2,8 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+### Added
+- Support for Ruby 2.6.0;
 ## Changed
-- Dropped Ruby 2.2.x support;
+- No more Ruby 2.2.x;
 
 ## [0.5.0] - 2018-05-20
 ### Added
