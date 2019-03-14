@@ -33,12 +33,12 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dry-container',   '~> 0.7.0'
   spec.add_dependency 'concurrent-ruby', '~> 1.0'
   spec.add_dependency 'symbiont-ruby',   '~> 0.4.0'
-  spec.add_dependency 'qonfig',          '~> 0.9.0'
+  spec.add_dependency 'qonfig',          '~> 0.10.0'
 
   spec.add_development_dependency 'coveralls',        '~> 0.8.22'
   spec.add_development_dependency 'simplecov',        '~> 0.16.1'
   spec.add_development_dependency 'rspec',            '~> 3.8.0'
-  spec.add_development_dependency 'armitage-rubocop', '~> 0.21.0'
+  spec.add_development_dependency 'armitage-rubocop', '~> 0.22.0'
 
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake'

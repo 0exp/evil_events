@@ -25,9 +25,9 @@ matrix:
     gemfile: gemfiles/without_native_extensions.gemfile
   - rvm: 2.4.5
     gemfile: gemfiles/without_native_extensions.gemfile
-  - rvm: 2.5.3
+  - rvm: 2.5.4
     gemfile: gemfiles/without_native_extensions.gemfile
-  - rvm: 2.6.1
+  - rvm: 2.6.2
     gemfile: gemfiles/without_native_extensions.gemfile
   - rvm: ruby-head
     gemfile: gemfiles/without_native_extensions.gemfile
