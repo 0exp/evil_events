@@ -9,13 +9,13 @@ matrix:
   - rvm: 2.3.8
     gemfile: gemfiles/with_native_extensions.gemfile
     env: TEST_NATIVE_EXTENSIONS=true
-  - rvm: 2.4.5
+  - rvm: 2.4.6
     gemfile: gemfiles/with_native_extensions.gemfile
     env: TEST_NATIVE_EXTENSIONS=true
   - rvm: 2.5.3
     gemfile: gemfiles/with_native_extensions.gemfile
     env: TEST_NATIVE_EXTENSIONS=true
-  - rvm: 2.6.0
+  - rvm: 2.6.3
     gemfile: gemfiles/with_native_extensions.gemfile
     env: TEST_NATIVE_EXTENSIONS=true
   - rvm: ruby-head
@@ -23,11 +23,11 @@ matrix:
     env: TEST_NATIVE_EXTENSIONS=true
   - rvm: 2.3.8
     gemfile: gemfiles/without_native_extensions.gemfile
-  - rvm: 2.4.5
+  - rvm: 2.4.6
     gemfile: gemfiles/without_native_extensions.gemfile
   - rvm: 2.5.4
     gemfile: gemfiles/without_native_extensions.gemfile
-  - rvm: 2.6.2
+  - rvm: 2.6.3
     gemfile: gemfiles/without_native_extensions.gemfile
   - rvm: ruby-head
     gemfile: gemfiles/without_native_extensions.gemfile
